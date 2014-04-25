@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% block title %}{{ class_obj.name }}{% endblock %}
+{% block body %}
+
+<p>{{ class_obj.description }}</p>
+
+<ul>
+	{% for section in class_obj.textbooks %}
+	<li>{{ section.title }}</li>
+	<ul>
+		{% for textbook in section.books %}
+		<li>{{ textbook.title }}</li>
+		{% endfor %}
+	</ul>	
+	{% endfor %}
+</ul>
+
+{% endblock %}

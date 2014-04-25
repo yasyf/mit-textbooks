@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}{% endblock %} - MIT Textbooks</title>
+
+
+  <!-- Meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {% block meta %}{% endblock %}
+  
+  <!-- Link -->
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
+  {% block link %}{% endblock %}
+
+  <!-- CSS -->
+
+  {% block css %}{% endblock %}
+
+  <!-- JS -->
+
+  {% block js %}{% endblock %}
+
+</head>
+<body>
+
+  <!-- Header -->
+  {% include 'header.html' %}
+
+  {% block header %}{% endblock %}
+
+  
+  <!-- Body -->
+  {% block body %}{% endblock %}
+
+
+  <!-- Footer -->  
+  {% block footer %}{% endblock %}
+
+  {% include 'footer.html' %}
+
+</body>
+</html>
