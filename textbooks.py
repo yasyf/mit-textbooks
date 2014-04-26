@@ -60,6 +60,11 @@ def stellar_view(class_id):
 		return redirect(class_obj.stellar_site_url())
 	return redirect(url_for('site_view', class_id=class_id))
 
+@app.route('/amazon/<asin>')
+def amazon_view(asin):
+	url = "http://www.amazon.com/dp/{asin}/?tag=mit-tb-20".format(asin=asin)
+	return redirect(url)
+
 @app.route('/evaluation/<class_id>')
 def class_evaluation_view(class_id):
 	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)

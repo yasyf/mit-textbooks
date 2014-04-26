@@ -1,10 +1,12 @@
-import pymongo, os
+import pymongo, os, bottlenose
 
 client = pymongo.MongoClient(os.environ['db'])
 db = client.mit_textbooks
 classes = db.classes
 recents = db.recents
 groups = db.groups
+
+amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 
 TERM = "2014SP"
 TERM_LAST = "2014FA"

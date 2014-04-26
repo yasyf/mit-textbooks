@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time
 from bs4 import BeautifulSoup
+from lxml import objectify
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
 
@@ -210,14 +211,50 @@ def get_textbook_info(class_id, semesters):
 			for i, prop in enumerate(['author', 'title', 'publisher', 'isbn', 'price']):
 				book[prop] = clean_html(contents[i].text)
 			book['title'] = process_title(book['title'], book['author'], titles)
+			book['retail'] = book['price']
+			del book['price']
+			amazon_info = get_amazon_info(book['isbn'], book['title'], book['author'])
+			book = dict(book.items() + amazon_info.items())
 			book_category.append(book)
 		textbooks[clean_html(h2.string)] = book_category
 	return textbooks
 
+def get_amazon_info(isbn, title, author):
+	if '[Ebook]' in title:
+		title = title.replace("[Ebook]","")
+		title = "{title} ebook".format(title=title)
+	time.sleep(1)
+	response = amazon.ItemSearch(Keywords=isbn, SearchIndex="Books")
+	root = objectify.fromstring(response)
+	if root.Items.TotalResults == 0:
+		time.sleep(1.5)
+		response = amazon.ItemSearch(Keywords="{title} by {author}".format(title=title, author=author), SearchIndex='All')
+		root = objectify.fromstring(response)
+	if root.Items.TotalResults == 0:
+		time.sleep(1.5)
+		response = amazon.ItemSearch(Keywords=title, SearchIndex='All')
+		root = objectify.fromstring(response)
+	response = amazon.ItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='Offers,OfferSummary')
+	product = objectify.fromstring(response).Items.Item
+	d = {}
+	d['asin'] = product.ASIN.text
+	d['new'] = product.OfferSummary.LowestNewPrice.FormattedPrice.text
+	d['used'] = product.OfferSummary.LowestUsedPrice.FormattedPrice.text
+	d['availability'] = product.Offers.Offer.OfferListing.Availability.text
+	try:
+		d['saved'] = product.Offers.Offer.OfferListing.PercentageSaved.text
+	except AttributeError:
+		pass
+	try:
+		d['prime'] = True if product.Offers.Offer.OfferListing.IsEligibleForSuperSaverShipping.text == 1 else False
+	except AttributeError:
+		pass
+	return d
+
 def process_title(title, author, titles):
 	
 	replacements = {"W/6 Mo": "With 6 Month", " + ": " and ", "+": " and "}
-	removals = ["4e", "(Cs)", ">Ic"]
+	removals = ["4e", "(Cs)", ">Ic", "and Study Guide"]
 	
 	if "Ebk" in title and len(titles) > 0:
 		Levenshtein_ratios = dict()
@@ -233,7 +270,7 @@ def process_title(title, author, titles):
 			title = title.replace(v,"")
 		if title not in titles:
 			titles.add((title, title + " by " + author))
-		return title 
+		return title.strip()
 
 if __name__ == '__main__':
-	print get_textbook_info('14.01')
+	print get_amazon_info('9780980232714', 'Introduction to Linear Algebra', 'Strang')

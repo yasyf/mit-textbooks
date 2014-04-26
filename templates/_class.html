@@ -27,7 +27,7 @@
 	<li>{{ title }}</li>
 	<ul>
 		{% for textbook in section %}
-		<li>{{ textbook.title }}</li>
+		<li><a href="{{ url_for('amazon_view', asin=textbook.asin) }}" target='_blank'>{{ textbook.title }} by {{ textbook.author }} ({{ textbook.saved }}% Off!)</a></li>
 		{% endfor %}
 	</ul>	
 	{% endfor %}
