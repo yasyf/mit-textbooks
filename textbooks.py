@@ -18,6 +18,59 @@ def class_view(class_id):
 	update_recents_with_class(class_id)
 	return render_template('class.html', class_obj=get_class(class_id))
 
+@app.route('/group/<group_id>')
+def group_view(group_id):
+	group_obj = get_group(group_id)
+	return render_template('group.html', classes=[get_class(class_id) for class_id in group_obj.class_ids], group_obj=group_obj)
+
+@app.route('/search', methods=['POST'])
+def search_view():
+	search_term = request.form.get('search_term')
+	return go_view(search_term)
+
+@app.route('/go/<search_term>')
+def go_view(search_term):
+	classes = search_term.split(',')
+	if len(classes) == 1:
+		return redirect(url_for('class_view', class_id=classes[0]))
+	else:
+		group_id = prepare_class_hash(classes)
+		return redirect(url_for('group_view', group_id=group_id))
+
+@app.route('/site/<class_id>')
+def site_view(class_id):
+	class_obj = get_class(class_id)
+	return redirect(class_obj.class_site_url())
+
+@app.route('/stellar/<class_id>')
+def stellar_view(class_id):
+	class_obj = get_class(class_id)
+	if class_obj and class_obj.stellar_site_url():
+		return redirect(class_obj.stellar_site_url())
+	return redirect(url_for('site_view', class_id=class_id))
+
+@app.route('/evaluation/<class_id>')
+def class_evaluation_view(class_id):
+	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
+	return redirect(url)
+
+@app.route('/evaluation/<class_id>/<professor>')
+def professor_evaluation_view(class_id, professor):
+	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
+	return redirect(url)
+
+@app.template_filter('id_to_obj')
+def id_to_obj_filter(class_id):
+	return get_class(class_id)
+
+@app.template_filter('last_name')
+def last_name_filter(name):
+	return name.split('.')[-1].strip()
+
+@app.template_filter('sum_units')
+def sum_units_filter(classes):
+	return sum([sum(c.units) for c in classes])
+
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):

@@ -1,1 +1,1 @@
-__all__ = ["mitclass"]
+__all__ = ["mitclass", "mitclassgroup"]

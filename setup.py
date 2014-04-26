@@ -4,9 +4,7 @@ client = pymongo.MongoClient(os.environ['db'])
 db = client.mit_textbooks
 classes = db.classes
 recents = db.recents
-offers = db.offers
-named = db.named
-users = db.users
+groups = db.groups
 
 TERM = "2014SP"
 TERM_LAST = "2014FA"

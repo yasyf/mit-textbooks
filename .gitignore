@@ -3,6 +3,7 @@
 log/
 
 .env
+cert.pem
 
 # C extensions
 *.so

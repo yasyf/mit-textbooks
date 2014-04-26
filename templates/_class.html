@@ -1,0 +1,34 @@
+<a id='{{ class_obj.id }}'></a>
+<h1>{{ class_obj.display_name() }}</h1>
+<p>{{ class_obj.description }}</p>
+<p>
+	{% if class_obj.is_currently_available() %}
+	{{ class_obj.id }} is currrently being offered! This semester, it is taught by 
+	{% else %}
+	{{ class_obj.id }} is not currently being offered. It will be available in the {{ class_obj.formatted_availability() }}, and will be taught by
+	{% endif %}
+	{% for instructor in class_obj.current_instructors() %}
+	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
+	{% endfor %}
+	This class counts for a total of {{ class_obj.units|sum }} credits, with {{ class_obj.units[0] }} for lecture and recitation, {{ class_obj.units[1] }} for lab and design work, and {{ class_obj.units[2] }} for problem sets and other preparation.
+
+	In the {{ class_obj.evaluation[2] }} Subject Evaluations, {{ class_obj.id }} was rated {{ class_obj.evaluation[0] }} ({{ class_obj.evaluation[1] }} of students submitted a response).
+
+	You can find more information at <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
+	{% if class_obj.stellar_url %}
+	or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar site</a>.
+	{% else %}
+	.
+	{% endif %}
+</p>
+
+<ul>
+	{% for section in class_obj.textbooks %}
+	<li>{{ section.title }}</li>
+	<ul>
+		{% for textbook in section.books %}
+		<li>{{ textbook.title }}</li>
+		{% endfor %}
+	</ul>	
+	{% endfor %}
+</ul>

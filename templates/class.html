@@ -1,18 +1,9 @@
 {% extends "_base.html" %}
 {% block title %}{{ class_obj.name }}{% endblock %}
+{% block description %}Buy and sell both new and used textbooks for {{ class_obj.display_name() }} at MIT Textbooks.{% endblock %}
 {% block body %}
+{% include '_search.html' %}
 
-<p>{{ class_obj.description }}</p>
-
-<ul>
-	{% for section in class_obj.textbooks %}
-	<li>{{ section.title }}</li>
-	<ul>
-		{% for textbook in section.books %}
-		<li>{{ textbook.title }}</li>
-		{% endfor %}
-	</ul>	
-	{% endfor %}
-</ul>
+{% include '_class.html' %}
 
 {% endblock %}

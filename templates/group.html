@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% block title %}{{ group_obj.display_name() }}{% endblock %}
+{% block description %}{{ group_obj.display_description() }}{% endblock %}
+{% block body %}
+{% include '_search.html' %}
+
+<span>
+	Class Group ({{ classes|sum_units }} Units):
+	{% for class_obj in classes %}
+	<strong><a href="#{{ class_obj.id }}">{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }})
+	{% endfor %}
+</span>
+
+{% for class_obj in classes %}
+{% include '_class.html' %}
+{% endfor %}
+
+{% endblock %}
