@@ -202,6 +202,7 @@ def get_textbook_info(class_id, semesters):
 	soup = BeautifulSoup(requests.get(url).text)
 	textbooks = {}
 	titles = set()
+	asin = set()
 	for h2 in soup.findAll('h2'):
 		book_category = []
 		tbody = h2.next_sibling.next_sibling.contents[3]
@@ -215,7 +216,9 @@ def get_textbook_info(class_id, semesters):
 			del book['price']
 			amazon_info = get_amazon_info(book['isbn'], book['title'], book['author'])
 			book = dict(book.items() + amazon_info.items())
-			book_category.append(book)
+			if book['asin'] not in asin:
+				book_category.append(book)
+				asin.add(book['asin'])
 		textbooks[clean_html(h2.string)] = book_category
 	return textbooks
 
@@ -223,20 +226,22 @@ def get_amazon_info(isbn, title, author):
 	if '[Ebook]' in title:
 		title = title.replace("[Ebook]","")
 		title = "{title} ebook".format(title=title)
-	time.sleep(1)
 	response = amazon.ItemSearch(Keywords=isbn, SearchIndex="Books")
 	root = objectify.fromstring(response)
 	if root.Items.TotalResults == 0:
-		time.sleep(1.5)
+		time.sleep(1)
 		response = amazon.ItemSearch(Keywords="{title} by {author}".format(title=title, author=author), SearchIndex='All')
 		root = objectify.fromstring(response)
 	if root.Items.TotalResults == 0:
-		time.sleep(1.5)
+		time.sleep(1)
 		response = amazon.ItemSearch(Keywords=title, SearchIndex='All')
 		root = objectify.fromstring(response)
-	response = amazon.ItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='Offers,OfferSummary')
+	time.sleep(1)
+	response = amazon.ItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary')
 	product = objectify.fromstring(response).Items.Item
 	d = {}
+	d['author'] = product.ItemAttributes.Author.text
+	d['title'] = product.ItemAttributes.Title.text
 	d['asin'] = product.ASIN.text
 	d['new'] = product.OfferSummary.LowestNewPrice.FormattedPrice.text
 	d['used'] = product.OfferSummary.LowestUsedPrice.FormattedPrice.text
