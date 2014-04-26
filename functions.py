@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, grequests
 from bs4 import BeautifulSoup
 from lxml import objectify
 from models.mitclass import MITClass
@@ -175,7 +175,10 @@ def get_class_site(class_id):
 
 def get_subject_evauluation(class_id):
 	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
-	response = auth_browser.open(url)
+	try:
+		response = auth_browser.open(url)
+	except Exception:
+		response = auth_browser.open(url)
 	response_text = response.read()
 	if 'Welcome, please identify yourself to access MIT services.' in response_text:
 		init_auth_browser()
@@ -211,6 +214,8 @@ def get_textbook_info(class_id, semesters):
 			contents = filter(lambda x: x != '\n', tr.contents)
 			for i, prop in enumerate(['author', 'title', 'publisher', 'isbn', 'price']):
 				book[prop] = clean_html(contents[i].text)
+			if 'Course Has No Materials' in book['title']:
+				continue
 			book['title'] = process_title(book['title'], book['author'], titles)
 			book['retail'] = book['price']
 			del book['price']
@@ -219,7 +224,8 @@ def get_textbook_info(class_id, semesters):
 			if book['asin'] not in asin:
 				book_category.append(book)
 				asin.add(book['asin'])
-		textbooks[clean_html(h2.string)] = book_category
+		if len(book_category) > 0:
+			textbooks[clean_html(h2.string)] = book_category
 	return textbooks
 
 def get_amazon_info(isbn, title, author):
@@ -236,16 +242,26 @@ def get_amazon_info(isbn, title, author):
 		time.sleep(1)
 		response = amazon.ItemSearch(Keywords=title, SearchIndex='All')
 		root = objectify.fromstring(response)
-	time.sleep(1)
-	response = amazon.ItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary')
-	product = objectify.fromstring(response).Items.Item
 	d = {}
-	d['author'] = product.ItemAttributes.Author.text
-	d['title'] = product.ItemAttributes.Title.text
+	try:
+		time.sleep(1)
+		response = amazon.ItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary')
+		product = objectify.fromstring(response).Items.Item
+	except AttributeError:
+		d['asin'] = None
+		return d
 	d['asin'] = product.ASIN.text
-	d['new'] = product.OfferSummary.LowestNewPrice.FormattedPrice.text
-	d['used'] = product.OfferSummary.LowestUsedPrice.FormattedPrice.text
-	d['availability'] = product.Offers.Offer.OfferListing.Availability.text
+	d['title'] = product.ItemAttributes.Title.text
+	try:
+		d['author'] = product.ItemAttributes.Author.text
+	except AttributeError:
+		pass
+	try:
+		d['new'] = product.OfferSummary.LowestNewPrice.FormattedPrice.text
+		d['used'] = product.OfferSummary.LowestUsedPrice.FormattedPrice.text
+		d['availability'] = product.Offers.Offer.OfferListing.Availability.text
+	except AttributeError:
+		pass
 	try:
 		d['saved'] = product.Offers.Offer.OfferListing.PercentageSaved.text
 	except AttributeError:
@@ -277,5 +293,13 @@ def process_title(title, author, titles):
 			titles.add((title, title + " by " + author))
 		return title.strip()
 
+def check_class_json(class_id):
+	loaded = classes.find_one({'class': class_id}) != None
+	return json.dumps({'loaded': loaded})
+
+def check_class(class_id):
+	loaded = classes.find_one({'class': class_id}) != None
+	return loaded
+
 if __name__ == '__main__':
-	print get_amazon_info('9780980232714', 'Introduction to Linear Algebra', 'Strang')
+	print amazon.ItemLookup(ItemId='193493139X', ResponseGroup='ItemAttributes,Offers,OfferSummary')

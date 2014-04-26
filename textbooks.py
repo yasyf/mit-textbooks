@@ -15,9 +15,28 @@ def index_view():
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
 	return render_template('index.html', recent=recent)
 
+@app.route('/check/<class_id>')
+def check_view(class_id):
+	return Response(response=check_class_json(class_id), status=200, mimetype="application/json")
+
+@app.route('/loading/<class_ids>')
+def loading_view(class_ids):
+	classes = class_ids.split(',')
+	if len(classes) == 1:
+		url = url_for('class_view', class_id=classes[0], _external=True)
+	else:
+		group_id = prepare_class_hash(classes)
+		url = url_for('group_view', group_id=group_id, _external=True)
+
+	return render_template('loading.html', class_ids=json.dumps(classes), url=url)
+
 @app.route('/class/<class_id>')
 def class_view(class_id):
 	update_recents_with_class(class_id)
+	if not check_class(class_id) and not is_worker:
+		g = grequests.get(worker + url_for('class_view', class_id=class_id))
+		grequests.send(g)
+		return redirect(url_for('loading_view', class_ids=class_id))
 	return render_template('class.html', class_obj=get_class(class_id))
 
 @app.route('/overview/<class_id>')
@@ -60,9 +79,14 @@ def stellar_view(class_id):
 		return redirect(class_obj.stellar_site_url())
 	return redirect(url_for('site_view', class_id=class_id))
 
-@app.route('/amazon/<asin>')
-def amazon_view(asin):
+@app.route('/amazon/product/<asin>')
+def amazon_product_view(asin):
 	url = "http://www.amazon.com/dp/{asin}/?tag=mit-tb-20".format(asin=asin)
+	return redirect(url)
+
+@app.route('/amazon/search/<title>')
+def amazon_search_view(title):
+	url = "http://www.amazon.com/s/?tag=mit-tb-20&field-keywords={title}".format(title=title)
 	return redirect(url)
 
 @app.route('/evaluation/<class_id>')
