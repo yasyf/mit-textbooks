@@ -23,7 +23,7 @@
 </p>
 
 <ul>
-	{% for title, section in class_obj.textbooks.iteritems() %}
+	{% for title, section in class_obj.textbooks.sections.iteritems() %}
 	<li>{{ title }}</li>
 	<ul>
 		{% for textbook in section %}

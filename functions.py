@@ -42,6 +42,9 @@ def get_class(class_id):
 		return class_objects[class_id]
 	class_info = classes.find_one({"class": class_id})
 	if class_info and (time.time() - class_info['dt']) < CACHE_FOR:
+		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
+			g = grequests.get(worker + url_for('update_textbooks_view', class_id=class_id))
+			grequests.send(g)
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		return class_obj
@@ -51,6 +54,11 @@ def get_class(class_id):
 		class_objects[class_id] = class_obj
 		classes.update({"class": class_obj.id}, {"$set": class_obj.to_dict()}, upsert=True)
 		return class_obj
+
+def update_textbooks(class_id):
+	class_info = classes.find_one({"class": class_id})
+	class_info['textbooks'] = get_textbook_info(class_info['id'], class_info['semesters'])
+	classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
 
 def get_group(group_id):
 	global group_objects
@@ -203,7 +211,8 @@ def get_textbook_info(class_id, semesters):
 		term = TERM_LAST
 	url = "http://sisapp.mit.edu/textbook/books.html?Term={term}&Subject={class_id}".format(term=TERM, class_id=class_id)
 	soup = BeautifulSoup(requests.get(url).text)
-	textbooks = {}
+	textbooks = {'dt': time.time()}
+	sections = {}
 	titles = set()
 	asin = set()
 	for h2 in soup.findAll('h2'):
@@ -225,7 +234,8 @@ def get_textbook_info(class_id, semesters):
 				book_category.append(book)
 				asin.add(book['asin'])
 		if len(book_category) > 0:
-			textbooks[clean_html(h2.string)] = book_category
+			sections[clean_html(h2.string)] = book_category
+	textbooks["sections"] = sections
 	return textbooks
 
 def get_amazon_info(isbn, title, author):
@@ -299,6 +309,10 @@ def check_class_json(class_id):
 
 def check_class(class_id):
 	loaded = classes.find_one({'class': class_id}) != None
+	return loaded
+
+def check_group(class_ids):
+	loaded = None not in [classes.find_one({'class': class_id}) for class_id in class_ids]
 	return loaded
 
 if __name__ == '__main__':

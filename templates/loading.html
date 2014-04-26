@@ -3,20 +3,23 @@
 {% block body %}
 {% include '_search.html' %}
 
-Loading...
+Please be patient while we collect the latest information on the following classes: {{ desc }}. You should only see this loading page once, and return visits to this class page will be much snappier. Thanks for understanding!
 
 <script>
-var loaded = false;
 var t;
-
+var s = JSON.parse('{{ class_status|safe }}');
 function check (argument) {
 	_.each({{ class_ids|safe }}, function (id) {
 		url = "{{ url_for('check_view', class_id='CLASS_ID') }}".replace("CLASS_ID",id);
 		$.get(url, function (data) {
-			loaded = data.loaded;
+			s[id] = data.loaded;
 		});
 	});
-	if (loaded == true) {
+	all_done = _.filter(s, function (val) {
+		return val == false
+	});
+
+	if (all_done.length == 0) {
 		window.clearInterval(t);
 		window.location = "{{ url }}";
 	};

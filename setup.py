@@ -15,7 +15,7 @@ STERM = "sp14"
 STERM_LAST = "fa13"
 
 RECENTS = 5
-CACHE_FOR = 2419200
+CACHE_FOR = 1209600
 
 host_secure = "https://tb.mit.edu" + ":444"
 host_unsecure = "http://textbooksearch.mit.edu"
