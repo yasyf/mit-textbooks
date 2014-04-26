@@ -8,6 +8,8 @@ app = Flask(__name__)
 app.secret_key = os.environ['sk']
 dev = (os.getenv('dev','False') == 'True' or app.config['TESTING'] == True)
 
+init_auth_browser()
+
 @app.route('/')
 def index_view():
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
@@ -17,6 +19,15 @@ def index_view():
 def class_view(class_id):
 	update_recents_with_class(class_id)
 	return render_template('class.html', class_obj=get_class(class_id))
+
+@app.route('/overview/<class_id>')
+def overview_view(class_id):
+	return render_template('overview.html', class_obj=get_class(class_id))
+
+@app.route('/json/<class_id>')
+def json_view(class_id):
+	class_obj = get_class(class_id)
+	return Response(response=class_obj.json(), status=200, mimetype="application/json")
 
 @app.route('/group/<group_id>')
 def group_view(group_id):

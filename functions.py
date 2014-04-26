@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator
 from bs4 import BeautifulSoup
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
@@ -26,8 +26,6 @@ def init_auth_browser():
 	except Exception:
 		pass
 
-init_auth_browser()
-
 def sha(text):
 	return hashlib.sha256(text).hexdigest()
 
@@ -50,8 +48,7 @@ def get_class(class_id):
 	if class_info:
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
-		classes.remove({'class': class_id})
-		classes.insert(class_obj.to_dict())
+		classes.update({"class": class_obj.id}, {"$set": class_obj.to_dict()}, upsert=True)
 		return class_obj
 
 def get_group(group_id):
@@ -114,6 +111,7 @@ def clean_class_info(class_info):
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
+	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
 
 	excludes = ['staff']
 	def test_instructor(instructor):
@@ -155,7 +153,7 @@ def get_google_site_guess(class_id):
 		br.open("http://www.google.com/search?&q=MIT+{q}&btnG=Google+Search&inurl=https".format(q=class_id.replace(' ', '+')))
 		for link in br.links():
 			url = link.url
-			if 'mit.edu' in url and 'google' not in url and 'http' in url:
+			if 'mit.edu' in url and 'stellar' not in url and 'google' not in url and 'http' in url:
 				return url
 
 def get_class_site(class_id):
@@ -173,7 +171,6 @@ def get_class_site(class_id):
 	if 'MIT OpenCourseWare' in title:
 		title = title.split('|')[0]
 	return (title.strip(), r.url)
-
 
 def get_subject_evauluation(class_id):
 	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
@@ -194,6 +191,49 @@ def get_subject_evauluation(class_id):
 	percentage = soup.find('strong', text='Response rate:')
 	return (str(rating.next_sibling).strip(), str(percentage.next_sibling).strip(), date)
 
+def get_textbook_info(class_id, semesters):
+	pairing = {'SP': 'Spring', 'FA': 'Fall'}
+	if pairing[TERM[-2:]] in semesters:
+		term = TERM
+	else:
+		term = TERM_LAST
+	url = "http://sisapp.mit.edu/textbook/books.html?Term={term}&Subject={class_id}".format(term=TERM, class_id=class_id)
+	soup = BeautifulSoup(requests.get(url).text)
+	textbooks = {}
+	titles = set()
+	for h2 in soup.findAll('h2'):
+		book_category = []
+		tbody = h2.next_sibling.next_sibling.contents[3]
+		for tr in tbody.findAll('tr'):
+			book = {}
+			contents = filter(lambda x: x != '\n', tr.contents)
+			for i, prop in enumerate(['author', 'title', 'publisher', 'isbn', 'price']):
+				book[prop] = clean_html(contents[i].text)
+			book['title'] = process_title(book['title'], book['author'], titles)
+			book_category.append(book)
+		textbooks[clean_html(h2.string)] = book_category
+	return textbooks
+
+def process_title(title, author, titles):
+	
+	replacements = {"W/6 Mo": "With 6 Month", " + ": " and ", "+": " and "}
+	removals = ["4e", "(Cs)", ">Ic"]
+	
+	if "Ebk" in title and len(titles) > 0:
+		Levenshtein_ratios = dict()
+		for t in titles:
+			Levenshtein_ratios[t[0]] = Levenshtein.ratio(t[1], title + " by " + author)
+		title = max(Levenshtein_ratios.iteritems(), key=operator.itemgetter(1))[0]
+		return "[Ebook] " + title
+		
+	else:
+		for k,v in replacements.iteritems():
+			title = title.replace(k,v)
+		for v in removals:
+			title = title.replace(v,"")
+		if title not in titles:
+			titles.add((title, title + " by " + author))
+		return title 
+
 if __name__ == '__main__':
-	print get_subject_evauluation('8.02')
-	print get_subject_evauluation('8.01')
+	print get_textbook_info('14.01')

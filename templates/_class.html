@@ -14,7 +14,7 @@
 
 	In the {{ class_obj.evaluation[2] }} Subject Evaluations, {{ class_obj.id }} was rated {{ class_obj.evaluation[0] }} ({{ class_obj.evaluation[1] }} of students submitted a response).
 
-	You can find more information at <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
+	You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
 	{% if class_obj.stellar_url %}
 	or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar site</a>.
 	{% else %}
@@ -23,10 +23,10 @@
 </p>
 
 <ul>
-	{% for section in class_obj.textbooks %}
-	<li>{{ section.title }}</li>
+	{% for title, section in class_obj.textbooks.iteritems() %}
+	<li>{{ title }}</li>
 	<ul>
-		{% for textbook in section.books %}
+		{% for textbook in section %}
 		<li>{{ textbook.title }}</li>
 		{% endfor %}
 	</ul>	
