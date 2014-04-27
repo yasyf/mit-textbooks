@@ -3,17 +3,31 @@
 {% block body %}
 {% include '_search.html' %}
 
-Please be patient while we collect the latest information on the following classes: {{ desc }}. You should only see this loading page once, and return visits to this class page will be much snappier. Thanks for understanding!
+Please be patient while we collect the latest information on the following classes. You should only see this loading page once, and return visits to this page will be much snappier. Thanks for understanding!
+
+<ul>
+{% for class in classes %}
+	<li>
+		{{ class }}: <span id="{{ class|replace('.','') }}" class='loading'>Loading...</span>
+	</li>
+{% endfor %}
+</ul>
 
 <script>
 var t;
-var s = JSON.parse('{{ class_status|safe }}');
+var s = JSON.parse('{{ classes|tojson|safe }}');
 function check (argument) {
-	_.each({{ class_ids|safe }}, function (id) {
-		url = "{{ url_for('check_view', class_id='CLASS_ID') }}".replace("CLASS_ID",id);
-		$.get(url, function (data) {
-			s[id] = data.loaded;
-		});
+	_.each(s, function (done, id) {
+		if(done != true){
+			url = "{{ url_for('check_view', class_id='CLASS_ID') }}".replace("CLASS_ID",id);
+			$.get(url, function (data) {
+				s[id] = data.loaded;
+				if (data.loaded == true){
+					$("#"+id.replace('.','')).text('Done!');
+					$("#"+id.replace('.','')).toggleClass('loading loaded');
+				}
+			});
+		}
 	});
 	all_done = _.filter(s, function (val) {
 		return val == false

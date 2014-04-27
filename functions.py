@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, grequests
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, grequests, urllib, re
+from flask import g, flash
 from bs4 import BeautifulSoup
 from lxml import objectify
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
+from models.mituser import MITUser
 
 class_objects = {}
 group_objects = {}
+user_objects = {}
 
 auth_browser = None
 
@@ -35,6 +38,17 @@ def md5(s):
 
 def clean_html(html):
 	return html.strip().replace("\n"," ").encode('ascii','xmlcharrefreplace')
+
+def get_user(email, name, phone):
+	global user_objects
+	if not email:
+		return None
+	if email in user_objects:
+		return user_objects[email]
+	else:
+		u = MITUser(email, name, phone)
+		user_objects[email] = u
+		return u
 
 def get_class(class_id):
 	global class_objects
@@ -315,5 +329,24 @@ def check_group(class_ids):
 	loaded = None not in [classes.find_one({'class': class_id}) for class_id in class_ids]
 	return loaded
 
-if __name__ == '__main__':
-	print amazon.ItemLookup(ItemId='193493139X', ResponseGroup='ItemAttributes,Offers,OfferSummary')
+def save_group(group_obj, group_name):
+	global group_objects
+	if not g.user:
+		return json.dumps({"error": True, "message": "You must be logged in to do that."})
+	group_name = group_name.replace(' ','')
+	if not re.match('^[\w]+$', group_name):
+		return json.dumps({"error": True, "message": "The group name must be alphanumeric."})
+	if groups.find_one({"name": group_name}):
+		return json.dumps({"error": True, "message": "That group name is already taken."})
+	group_info = {}
+	group_info['named'] = True
+	group_info['name'] = group_name
+	group_info['user_id'] = g.user.get_id()
+	group_info['class_ids'] = ",".join(group_obj.class_ids)
+	named_group_obj = MITClassGroup(group_info)
+	group_objects[group_name] = named_group_obj
+	groups.insert(named_group_obj.to_dict())
+	flash('{name} was successfully created!'.format(name=group_name))
+	return json.dumps({"error": False})
+
+

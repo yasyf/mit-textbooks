@@ -1,0 +1,16 @@
+{% extends "_base.html" %}
+{% block title %}{{ g.user.name }}'s Account{% endblock %}
+{% block body %}
+{% include '_search.html' %}
+<h1>{{ g.user.name }}'s Account</h1>
+
+<h3>Postings</h3>
+
+<h3>Saved Groups</h3>
+<ul>
+	{% for group in g.user.get_groups() %}
+	<li><a href="{{ url_for('group_view', group_id=group.name) }}">{{ group.name }}</a></li>
+	{% endfor %}
+</ul>
+
+{% endblock %}

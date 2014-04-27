@@ -10,6 +10,17 @@ dev = (os.getenv('dev','False') == 'True' or app.config['TESTING'] == True)
 
 init_auth_browser()
 
+@app.before_request
+def preprocess_request():
+	email = request.cookies.get('id_email')
+	if email:
+		email = urllib.unquote(email)
+		name = urllib.unquote(request.cookies.get('id_name',''))
+		phone = urllib.unquote(request.cookies.get('id_phone',''))
+		g.user = get_user(email, name, phone)
+	else:
+		g.user = None
+
 @app.route('/')
 def index_view():
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
@@ -22,7 +33,7 @@ def check_view(class_id):
 @app.route('/update/textbooks/<class_id>')
 def update_textbooks_view(class_id):
 	update_textbooks(class_id)
-	return redirect(url_for('json_view', class_id=class_id))
+	return redirect(url_for('json_class_view', class_id=class_id))
 
 @app.route('/loading/<class_ids>')
 def loading_view(class_ids):
@@ -33,13 +44,13 @@ def loading_view(class_ids):
 		group_id = prepare_class_hash(classes)
 		url = url_for('group_view', group_id=group_id, _external=True)
 
-	return render_template('loading.html', desc=', '.join(classes), class_ids=json.dumps(classes), class_status=json.dumps({c:False for c in classes}), url=url)
+	return render_template('loading.html', classes={c:False for c in classes}, url=url)
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
 	update_recents_with_class(class_id)
 	if not check_class(class_id) and not is_worker:
-		g = grequests.get(worker + url_for('json_view', class_id=class_id))
+		g = grequests.get(worker + url_for('json_class_view', class_id=class_id))
 		grequests.send(g)
 		return loading_view(class_id)
 	return render_template('class.html', class_obj=get_class(class_id))
@@ -48,10 +59,15 @@ def class_view(class_id):
 def overview_view(class_id):
 	return render_template('overview.html', class_obj=get_class(class_id))
 
-@app.route('/json/<class_id>')
-def json_view(class_id):
+@app.route('/json/class/<class_id>')
+def json_class_view(class_id):
 	class_obj = get_class(class_id)
 	return Response(response=class_obj.json(), status=200, mimetype="application/json")
+
+@app.route('/json/class/<class_id>')
+def json_group_view(group_obj):
+	group_obj = get_group(group_obj)
+	return Response(response=json.dumps({c:get_class(c).to_dict() for c in group_obj.class_ids}), status=200, mimetype="application/json")
 
 @app.route('/group/<group_id>')
 def group_view(group_id):
@@ -61,6 +77,17 @@ def group_view(group_id):
 		grequests.send(g)
 		return loading_view(','.join(group_obj.class_ids))
 	return render_template('group.html', classes=[get_class(class_id) for class_id in group_obj.class_ids], group_obj=group_obj)
+
+@app.route('/name_group/<group_id>/<group_name>')
+def name_group_view(group_id, group_name):
+	group_obj = get_group(group_id)
+	return Response(response=save_group(group_obj, group_name), status=200, mimetype="application/json")
+
+@app.route('/account')
+def account_view():
+	if not g.user:
+		return redirect(url_for('index_view'))
+	return render_template('account.html')
 
 @app.route('/search', methods=['POST'])
 def search_view():
