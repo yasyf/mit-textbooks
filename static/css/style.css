@@ -1,0 +1,35 @@
+body {
+  padding-top: 50px;
+}
+.main {
+	font-size: 110%;
+	padding: 40px 15px;
+}
+.mit_logo {
+	height: 25px;
+	vertical-align: -2px;
+}
+
+.navbar-brand {
+	font-size: 190%;
+}
+
+.glyphicon {
+	top: 2px;
+}
+
+.center {
+	text-align:center;
+}
+
+blockquote{
+	font-size: 105%;
+}
+
+.sub_heading {
+	font-size:120%
+}
+
+.modal-footer {
+	margin-top: 0px;
+}

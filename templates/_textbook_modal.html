@@ -6,7 +6,7 @@
 		<h4 class='modal-title'>Purchase <i>{{ textbook.title }}</i></h4>
 	  </div>
 	  <div class='modal-body'>
-		<p>
+		<p class='center'>
 			<a 
 			{% if textbook.asin %}
 			href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
@@ -16,19 +16,19 @@
 			target='_blank'
 			data-toggle='modal'
 			class='btn btn-info'>
-				<span class='glyphicon glyphicon-credit-card'></span> Purchase on Amazon
+				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Purchase on Amazon
 			</a>
 			{% if class_obj.has_local() %}
 			<a
-			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
+			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local').modal();"
 			class='btn btn-info'>
-				<span class='glyphicon glyphicon-home'></span> Purchase Locally
+				<span class='glyphicon glyphicon-home'></span> &nbsp; Purchase Locally
 			</a>
 			{% endif %}
 			<a
 			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
 			class='btn btn-info'>
-				<span class='glyphicon glyphicon-usd'></span> Sell Locally
+				<span class='glyphicon glyphicon-usd'></span> &nbsp; Sell Locally
 			</a>
 		</p>
 	  </div>

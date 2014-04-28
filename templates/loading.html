@@ -1,20 +1,51 @@
 {% extends "_base.html" %}
 {% block title %}Loading...{% endblock %}
+{% block meta %}<meta http-equiv="refresh" content="30">{% endblock %}
 {% block body %}
 
-Please be patient while we collect the latest information on the following classes. You should only see this loading page once, and return visits to this page will be much snappier. Thanks for understanding!
+<div class="row">
+	<div class="col-sm-12">
+		<p>Please be patient while we collect the latest information on the following classes. You should only see this loading page once, and return visits to this page will be much snappier. Thanks for understanding!</p>
+	</div>
+</div>
 
-<ul>
-{% for class in classes %}
-	<li>
-		{{ class }}: <span id="{{ class|replace('.','') }}" class='loading'>Loading...</span>
-	</li>
-{% endfor %}
-</ul>
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="progress">
+			<div class="progress progress-striped active">
+			  <div class="progress-bar progress-bar-success" id='progress_bar' role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%">
+			    <span class="sr-only"><span id='progress_percent'>{{ percent }}</span>% Complete</span>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="row">
+		{% for class, status in classes.iteritems() %}
+		<div class="col-sm-2">
+			<div id="{{ class|replace('.','') }}_parent" class="panel panel-{% if status == True %}success{% else %}warning{% endif %} center">
+				<div class="panel-heading">
+					<h3 class="panel-title">{{ class }}</h3>
+				</div>
+				<div class="panel-body">
+					<span id="{{ class|replace('.','') }}" class='loading'>{% if status == True %}Done!{% else %}Loading...{% endif %}</span>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
 
 <script>
 var t;
 var s = JSON.parse('{{ classes|tojson|safe }}');
+var num_done = _.filter(s, function (val) {
+		return val == true
+	}).length;
 function check (argument) {
 	_.each(s, function (done, id) {
 		if(done != true){
@@ -23,22 +54,22 @@ function check (argument) {
 				s[id] = data.loaded;
 				if (data.loaded == true){
 					$("#"+id.replace('.','')).text('Done!');
-					$("#"+id.replace('.','')).toggleClass('loading loaded');
+					$("#"+id.replace('.','')+"_parent").toggleClass('panel-warning panel-success');
+					num_done += 1;
+					newval = (num_done/Object.keys(s).length) * 100;
+					$('#progress_bar').css('width', newval+'%').attr('aria-valuenow', newval);
+					$("#progress_percent").text(newval);
 				}
 			});
 		}
 	});
-	all_done = _.filter(s, function (val) {
-		return val == false
-	});
-
-	if (all_done.length == 0) {
+	if (num_done == s.length) {
 		window.clearInterval(t);
 		window.location = "{{ url }}";
 	};
 }
 
-t = window.setInterval(check, 1000);
+t = window.setInterval(check, 2000);
 
 </script>
 {% endblock %}

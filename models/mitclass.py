@@ -18,7 +18,6 @@ class MITClass():
 		self.class_site = tuple(class_info['class_site'])
 		self.evaluation = tuple(class_info['evaluation'])
 		self.textbooks = class_info['textbooks']
-		self.offers = None
 
 	def to_dict(self):
 		d = {}
@@ -46,7 +45,7 @@ class MITClass():
 
 	def safe_id(self):
 		return self.id.replace(".","")
-		
+
 	def display_name(self):
 		return '{id} {name}'.format(id=self.id, name=self.name)
 

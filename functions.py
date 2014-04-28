@@ -5,6 +5,7 @@ import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator
 from flask import g, flash
 from bs4 import BeautifulSoup
 from lxml import objectify
+from bson.objectid import ObjectId
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
 from models.mituser import MITUser
@@ -34,7 +35,7 @@ def sha(text):
 	return hashlib.sha256(text).hexdigest()
 
 def md5(s):
-	if not g.md5:
+	if md5 not in g:
 		g.md5 = {}
 	if s in g.md5:
 		return g.md5[s]
@@ -62,6 +63,8 @@ def get_class(class_id):
 		return class_objects[class_id]
 	class_info = classes.find_one({"class": class_id})
 	if class_info and (time.time() - class_info['dt']) < CACHE_FOR:
+		if 'error' in class_info:
+			return None
 		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
 			g = grequests.get(worker + url_for('update_textbooks_view', class_id=class_id))
 			grequests.send(g)
@@ -74,6 +77,7 @@ def get_class(class_id):
 		class_objects[class_id] = class_obj
 		classes.update({"class": class_obj.id}, {"$set": class_obj.to_dict()}, upsert=True)
 		return class_obj
+	classes.insert({"class": class_id, "error": 404, 'dt': time.time()})
 
 def update_textbooks(class_id):
 	class_info = classes.find_one({"class": class_id})
@@ -287,8 +291,8 @@ def get_amazon_info(isbn, title, author):
 	except AttributeError:
 		pass
 	try:
-		d['new'] = product.OfferSummary.LowestNewPrice.FormattedPrice.text
-		d['used'] = product.OfferSummary.LowestUsedPrice.FormattedPrice.text
+		d['new'] = (product.OfferSummary.LowestNewPrice.FormattedPrice.text).replace("$","")
+		d['used'] = (product.OfferSummary.LowestUsedPrice.FormattedPrice.text).replace("$","")
 		d['availability'] = product.Offers.Offer.OfferListing.Availability.text
 	except AttributeError:
 		pass
@@ -356,9 +360,9 @@ def save_group(group_obj, group_name):
 	return json.dumps({"error": False})
 
 def tb_id(textbook):
-	if 'asin' in textbook:
+	if textbook['asin']:
 		return textbook['asin']
-	elif 'isbn' in textbook:
+	elif textbook['isbn']:
 		return textbook['isbn']
 	else:
 		return md5(textbook['title'])
@@ -389,3 +393,8 @@ def sell_textbook(class_id, tb_id, form):
 		d['address'] = info[1]
 		d['year'] = info[2]
 	offers.insert(d)
+
+def remove_offer(offer_id):
+	offer = offers.find_one({"_id": ObjectId(offer_id)})
+	if g.user and g.user.get_id() == offer['email']:
+		offers.remove({"_id": ObjectId(offer_id)})

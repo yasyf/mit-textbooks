@@ -5,6 +5,7 @@
   <title>{% block title %}{% endblock %} - MIT Textbooks</title>
 
   <!-- Meta -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="description" content="{% block description %}{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -16,13 +17,21 @@
   {% block link %}{% endblock %}
 
   <!-- CSS -->
+  <link href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/simplex/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
   {% block css %}{% endblock %}
 
   <!-- JS -->
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
   <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js'></script>
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   {% block js %}{% endblock %}
 
 </head>
@@ -31,30 +40,35 @@
   <!-- Header -->
   {% include 'header.html' %}
 
-  {% block header %}{% endblock %}
+  <div class="container">
+    <div class="main">
+      {% block header %}{% endblock %}
 
-  <!-- Messages -->
-  <div id="messages">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-           <div class="alert alert-{{ category }} alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            {{ message }}
-          </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+      <!-- Messages -->
+      <div id="messages">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+               <div class="alert alert-{{ category }} alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                {{ message }}
+              </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+      </div>
+
+      
+      <!-- Body -->
+      {% block body %}{% endblock %}
+
+
+      <!-- Footer -->  
+      {% block footer %}{% endblock %}
+
+      {% include 'footer.html' %}
+    </div>
   </div>
-
-  <!-- Body -->
-  {% block body %}{% endblock %}
-
-
-  <!-- Footer -->  
-  {% block footer %}{% endblock %}
-
-  {% include 'footer.html' %}
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

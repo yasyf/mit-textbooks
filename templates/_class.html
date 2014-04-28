@@ -1,6 +1,6 @@
 <a id='{{ class_obj.id }}'></a>
 <h1>{{ class_obj.display_name() }}</h1>
-<p>{{ class_obj.description }}</p>
+<p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>
 	{% if class_obj.is_currently_available() %}
 	{{ class_obj.id }} is currrently being offered! This semester, it is taught by 
@@ -10,9 +10,11 @@
 	{% for instructor in class_obj.current_instructors() %}
 	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
 	{% endfor %}
-	This class counts for a total of {{ class_obj.units|sum }} credits, with {{ class_obj.units[0] }} for lecture and recitation, {{ class_obj.units[1] }} for lab and design work, and {{ class_obj.units[2] }} for problem sets and other preparation.
-
-	In the {{ class_obj.evaluation[2] }} Subject Evaluations, {{ class_obj.id }} was rated {{ class_obj.evaluation[0] }} ({{ class_obj.evaluation[1] }} of students submitted a response).
+	This class counts for a total of
+	<a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.units[0] }} lecture, {{ class_obj.units[1] }} lab, {{ class_obj.units[2] }} homework">{{ class_obj.units|sum }} credits</a>.
+</p>
+<p>
+	In the {{ class_obj.evaluation[2] }} Subject Evaluations, {{ class_obj.id }} was rated <a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.evaluation[1] }} response rate">{{ class_obj.evaluation[0] }}</a>.
 
 	You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
 	{% if class_obj.stellar_url %}
@@ -22,16 +24,23 @@
 	{% endif %}
 </p>
 
-<ul>
 	{% for title, section in class_obj.textbooks.sections.iteritems() %}
-	<li>{{ title }}</li>
-	<ul>
-		{% for textbook in section %}
-		<li>
-			<a href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal();"><i>{{ textbook.title }}</i> by {{ textbook.author }}</a></li>
-			{% include '_textbook_modal.html' %}
-			{% include '_sell_modal.html' %}
-		{% endfor %}
-	</ul>	
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ title }}</div>
+		<div class="panel-body">Save up to {{ section|section_saved }} by purchasing through MIT Textbooks!</div>
+		<div class="list-group">
+			{% for textbook in section %}
+				<a href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal();" class="list-group-item">
+					<h4 class="list-group-item-heading"><i>{{ textbook.title }}</i> by {{ textbook.author }}</h4>
+					<p class="list-group-item-text">...</p>
+				</a>
+				{% include '_textbook_modal.html' %}
+				{% include '_sell_modal.html' %}
+			{% endfor %}
+		</div>	
+	</div>
 	{% endfor %}
-</ul>
+
+<script>
+$('.popover_activate').popover();
+</script>

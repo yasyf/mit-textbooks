@@ -3,15 +3,18 @@
 {% block description %}{{ group_obj.display_description() }}{% endblock %}
 {% block body %}
 
-<span>
-	Class Group ({{ classes|sum_units }} Units):
+<p>
+	<h1>Class Group ({{ classes|sum_units }} Units)</h1>
 	{% for class_obj in classes %}
-	<strong><a href="#{{ class_obj.id }}">{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }})
+	<strong class='sub_heading'><a href="#{{ class_obj.id }}">{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }}){% if not loop.last %},{% endif %}
 	{% endfor %}
-</span>
-
+</p>
+<hr>
 {% for class_obj in classes %}
 {% include '_class.html' %}
+{% if not loop.last %}
+<hr>
+{% endif %}
 {% endfor %}
 
 {% endblock %}

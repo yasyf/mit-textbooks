@@ -3,14 +3,15 @@
 	<div class='modal-content'>
 	  <div class='modal-header'>
 		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'>Buy Locally</h4>
+		<h4 class='modal-title'>Locally Availble Copies</h4>
 	  </div>
 	  <div class='modal-body'>
-		<p>
+		<p class='center'>
 			{% for offer in class_obj.offers(textbook|tb_id) %}
 			<a href='javascript:$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_{{ offer._id }}").modal();' class='btn btn-info'>
-				${{ offer.price }} ({{ offer.condition }})
+				${{ offer.price }} ({{ offer.condition }} Condition)
 			</a>
+			{% endfor %}
 		</p>
 	  </div>
 	  <div class='modal-footer'>
