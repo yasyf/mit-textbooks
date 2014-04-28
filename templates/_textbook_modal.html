@@ -3,7 +3,7 @@
 	<div class='modal-content'>
 	  <div class='modal-header'>
 		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'>Purchase <i>{{ textbook.title }}</i></h4>
+		<h4 class='modal-title'><i>{{ textbook.title }}</i></h4>
 	  </div>
 	  <div class='modal-body'>
 		<p class='center'>
@@ -16,13 +16,13 @@
 			target='_blank'
 			data-toggle='modal'
 			class='btn btn-info'>
-				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Purchase on Amazon
+				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Buy on Amazon
 			</a>
 			{% if class_obj.has_local() %}
 			<a
 			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local').modal();"
 			class='btn btn-info'>
-				<span class='glyphicon glyphicon-home'></span> &nbsp; Purchase Locally
+				<span class='glyphicon glyphicon-home'></span> &nbsp; Buy Locally
 			</a>
 			{% endif %}
 			<a

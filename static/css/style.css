@@ -33,3 +33,12 @@ blockquote{
 .modal-footer {
 	margin-top: 0px;
 }
+
+.slash {
+	padding: 0 5px;
+	color: #cccccc;
+}
+
+.prime {
+	vertical-align: -1px;
+}

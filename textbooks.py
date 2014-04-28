@@ -49,7 +49,9 @@ def update_textbooks_view(class_id):
 	return redirect(url_for('json_class_view', class_id=class_id))
 
 @app.route('/loading/<class_ids>')
-def loading_view(class_ids):
+def loading_view(class_ids, override_url=None):
+	if request.args.get('override_url'):
+		override_url = request.args.get('override_url')
 	classes = class_ids.split(',')
 	if len(classes) == 1:
 		url = url_for('class_view', class_id=classes[0], _external=True)
@@ -59,7 +61,7 @@ def loading_view(class_ids):
 	statuses = {c:check_class(c) for c in classes}
 	percent = (len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100
 	g.search_val = class_ids
-	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=url, t=time.time())
+	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=time.time())
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
@@ -142,6 +144,23 @@ def remove_offer_view(class_id, offer_id):
 def account_view():
 	if not g.user:
 		return redirect(url_for('index_view'))
+	classes = [offer['class_id'] for offer in g.user.get_postings()]
+	if classes:
+		if len(classes) == 1:
+			class_id = classes[0]
+			if not check_class(class_id) and not is_worker:
+				fsession = FuturesSession()
+				url = url_for('account_view', _external=True)
+				fsession.get(worker + url_for('json_class_view', class_id=class_id))
+				return loading_view(class_id, override_url=url)
+		else:
+			group_id = prepare_class_hash(classes)
+			group_obj = get_group(group_id)
+			if not check_group(group_obj.class_ids) and not is_worker:
+				fsession = FuturesSession()
+				fsession.get(worker + url_for('group_view', group_id=group_id))
+				url = url_for('account_view', _external=True)
+				return loading_view(','.join(group_obj.class_ids), override_url=url)
 	return render_template('account.html')
 
 @app.route('/search', methods=['POST'])
@@ -206,9 +225,25 @@ def sum_units_filter(classes):
 def tb_id_filter(textbook):
 	return tb_id(textbook)
 
+@app.template_filter('tb_id_to_tb')
+def tb_id_to_tb_filter(class_id, textbook_id):
+	class_obj = get_class(class_id)
+	for section in class_obj.textbooks['sections'].values():
+		for book in section:
+			if tb_id(book) == textbook_id:
+				return book
+
 @app.template_filter('space_out')
 def space_out_filter(s):
 	return ', '.join(s.split(','))
+
+@app.template_filter('prices')
+def prices_filter(textbook):
+	prices = []
+	for x in ['used', 'new', 'retail']:
+		if x in textbook and textbook[x]:
+			prices.append((x,textbook[x]))
+	return prices
 
 @app.template_filter('year_from_i')
 def year_from_i_filter(i):
