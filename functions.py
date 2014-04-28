@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, grequests, urllib, re
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re
 from flask import g, flash
 from bs4 import BeautifulSoup
 from lxml import objectify
 from bson.objectid import ObjectId
+from requests_futures.sessions import FuturesSession
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
 from models.mituser import MITUser
@@ -66,8 +67,8 @@ def get_class(class_id):
 		if 'error' in class_info:
 			return None
 		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
-			g = grequests.get(worker + url_for('update_textbooks_view', class_id=class_id))
-			grequests.send(g)
+			fsession = FuturesSession()
+			fsession.get(worker + url_for('update_textbooks_view', class_id=class_id))
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		return class_obj
@@ -127,6 +128,7 @@ def fetch_class_info(class_id):
 		url = "http://coursews.mit.edu/coursews/?term={term}&courses={course_number}".format(term=TERM_LAST, course_number=class_id.split('.')[0])
 		class_info = check_json_for_class(url, class_id)
 	if class_info:
+		print "DONE1"
 		return clean_class_info(class_info)
 
 def clean_class_info(class_info):
@@ -140,7 +142,6 @@ def clean_class_info(class_info):
 	class_info_cleaned['semesters'] = class_info['semester']
 	class_info_cleaned['units'] = [int(x) for x in class_info['units'].split('-')]
 	class_info_cleaned['instructors'] = {'spring': class_info['spring_instructors'], 'fall': class_info['fall_instructors']}
-
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
@@ -160,13 +161,13 @@ def clean_class_info(class_info):
 
 	return class_info_cleaned
 
-def update_recents_with_class(class_id):
-	recent_entry = recents.find_one({'class': class_id})
+def update_recents_with_class(class_obj):
+	recent_entry = recents.find_one({'class': class_obj.id})
 	if recent_entry:
 		if (time.time() - recent_entry['dt']) > 600:
-			recents.update({'class': class_id}, {'$set':{'dt': int(time.time())}})
+			recents.update({'class': class_obj.id}, {'$set':{'dt': int(time.time())}})
 	else:
-		recents.insert({'class': class_id, 'dt': int(time.time())})
+		recents.insert({'class': class_obj.id, 'dt': int(time.time()), 'display_name': class_obj.display_name(), 'description': class_obj.summary()})
 
 def get_stellar_url(class_id):
 	url = "https://stellar.mit.edu/S/course/%s/%s/%s/" % (class_id.split('.')[0], STERM, class_id)
@@ -200,7 +201,10 @@ def get_class_site(class_id):
 		if google_guess:
 			r = requests.get(google_guess)
 	soup = BeautifulSoup(r.text)
-	title = soup.find('title').string
+	try:
+		title = soup.find('title').string
+	except AttributeError:
+		title = "{class_id} Class Site".format(class_id=class_id)
 	if 'MIT OpenCourseWare' in title:
 		title = title.split('|')[0]
 	return (title.strip(), r.url)
@@ -396,5 +400,11 @@ def sell_textbook(class_id, tb_id, form):
 
 def remove_offer(offer_id):
 	offer = offers.find_one({"_id": ObjectId(offer_id)})
-	if g.user and g.user.get_id() == offer['email']:
+	if offer and g.user and g.user.get_id() == offer['email']:
 		offers.remove({"_id": ObjectId(offer_id)})
+
+def delete_group(group_id):
+	group = groups.find_one({"name": group_id})
+	if group and g.user.get_id() == group['user_id']:
+		groups.remove({"name": group_id})
+

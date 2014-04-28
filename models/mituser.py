@@ -11,3 +11,6 @@ class MITUser():
 
 	def get_groups(self):
 		return groups.find({"named": True, "user_id": self.get_id()})
+
+	def get_postings(self):
+		return offers.find({"email": self.get_id()})

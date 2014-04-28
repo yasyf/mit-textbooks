@@ -3,13 +3,32 @@
 {% block body %}
 <h1>{{ g.user.name }}'s Account</h1>
 
-<h3>Postings</h3>
+<div class="panel panel-default">
+	<div class="panel-heading">Postings</div>
+	<div class="list-group">
+		{% for offer in g.user.get_postings() %}
+		<a href='javascript:$("#modal_{{ offer._id }}").modal();' class="list-group-item">
+			${{ offer.price }} ({{ offer.condition }} Condition)
+		</a>
+		{% endfor %}
+	</div>	
+</div>
 
-<h3>Saved Groups</h3>
-<ul>
-	{% for group in g.user.get_groups() %}
-	<li><a href="{{ url_for('group_view', group_id=group.name) }}">{{ group.name }}</a></li>
-	{% endfor %}
-</ul>
+<div class="panel panel-default">
+	<div class="panel-heading">Saved Class Groups</div>
+	<div class="list-group">
+		{% for group in g.user.get_groups() %}
+			<a href="{{ url_for('group_view', group_id=group.name) }}" class="list-group-item">
+				<h4 class="list-group-item-heading">{{ group.name }}</h4>
+				<p class="list-group-item-text">{{ group.class_ids|space_out }}</p>
+			</a>
+		{% endfor %}
+	</div>	
+</div>
+
+{% for offer in g.user.get_postings() %}
+{% set class_obj = offer.class_id|id_to_obj %}
+{% include '_offer_modal.html' %}
+{% endfor %}
 
 {% endblock %}

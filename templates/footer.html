@@ -2,7 +2,8 @@
 {% if g.user %}
 <p>You are logged in as {{ g.user.name }}</p>
 <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">My Account</a>
-{% if group_obj and not group_obj.named %}
+{% if group_obj %}
+{% if not group_obj.named %}
 <a href="#" class="btn btn-primary btn-sm" onclick="$('#save_modal').modal();">Name Group</a>
 <div class='modal fade' id='save_modal'>
 	<div class='modal-dialog'>
@@ -40,6 +41,9 @@ function save_group(){
 	});
 }
 </script>
+{% else %}
+<a href="{{ url_for('delete_group_view', group_id=group_obj.name) }}" class="btn btn-primary btn-sm btn-danger">Delete Group</a>
+{% endif %}
 {% endif %}
 {% endif %}
 <script>

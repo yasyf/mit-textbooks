@@ -49,6 +49,12 @@ class MITClass():
 	def display_name(self):
 		return '{id} {name}'.format(id=self.id, name=self.name)
 
+	def summary(self):
+		if len(self.description) < 150:
+			return self.description
+		else:
+			return self.description[:150] + "..."
+
 	def current_instructors(self):
 		if TERM[-2:] == 'SP' and 'Spring' in self.semesters:
 			return self.instructors['spring']

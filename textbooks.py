@@ -50,21 +50,22 @@ def loading_view(class_ids):
 		url = url_for('group_view', group_id=group_id, _external=True)
 	statuses = {c:check_class(c) for c in classes}
 	percent = (len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100
+	g.search_val = class_ids
 	return render_template('loading.html', classes=statuses, percent=percent, url=url)
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
 	if not check_class(class_id) and not is_worker:
-		gr = grequests.get(worker + url_for('json_class_view', class_id=class_id))
-		grequests.send(gr)
+		fsession = FuturesSession()
+		fsession.get(worker + url_for('json_class_view', class_id=class_id))
 		return loading_view(class_id)
-	c = get_class(class_id)
-	if c is None:
+	class_obj = get_class(class_id)
+	if class_obj is None:
 		session['404'] = [class_id]
 		return redirect(url_for('_404_view'))
-	update_recents_with_class(class_id)
+	update_recents_with_class(class_obj)
 	g.search_val = class_id
-	return render_template('class.html', class_obj=c)
+	return render_template('class.html', class_obj=class_obj)
 
 @app.route('/overview/<class_id>')
 def overview_view(class_id):
@@ -90,8 +91,8 @@ def json_group_view(group_id):
 def group_view(group_id):
 	group_obj = get_group(group_id)
 	if not check_group(group_obj.class_ids) and not is_worker:
-		gr = grequests.get(worker + url_for('group_view', group_id=group_id))
-		grequests.send(gr)
+		fsession = FuturesSession()
+		fsession.get(worker + url_for('group_view', group_id=group_id))
 		return loading_view(','.join(group_obj.class_ids))
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
 	g_filtered = [x for x in group if x != None]
@@ -110,6 +111,12 @@ def group_view(group_id):
 def name_group_view(group_id, group_name):
 	group_obj = get_group(group_id)
 	return Response(response=save_group(group_obj, group_name), status=200, mimetype="application/json")
+
+@app.route('/delete_group/<group_id>')
+def delete_group_view(group_id):
+	delete_group(group_id)
+	flash('{group} has been deleted.'.format(group=group_id), 'danger')
+	return redirect(url_for('index_view'))
 
 @app.route('/sell_textbook/<class_id>/<tb_id>', methods=['POST'])
 def sell_textbook_view(class_id, tb_id):
@@ -191,6 +198,10 @@ def sum_units_filter(classes):
 def tb_id_filter(textbook):
 	return tb_id(textbook)
 
+@app.template_filter('space_out')
+def space_out_filter(s):
+	return ', '.join(s.split(','))
+
 @app.template_filter('year_from_i')
 def year_from_i_filter(i):
 	d = {'1': 'Freshman', '2': 'Sophomore', '3': 'Junior', '4': 'Senior', 'G': 'Graduate'}
@@ -203,14 +214,14 @@ def section_saved_filter(section):
 	for book in section:
 		if 'retail' in book and book['retail']:
 			if 'used' in book and book['used']:
-				p = max(float(book['used'])/float(book['retail']), float(book['saved']))
+				p = max(float(book['used'])/float(book['retail']), float(book['saved']) if 'saved' in book else 0)
 			elif 'new' in book and book['new']:
-				p = max(float(book['new'])/float(book['retail']), float(book['saved']))
+				p = max(float(book['new'])/float(book['retail']), float(book['saved']) if 'saved' in book else 0)
 			else:
 				p = float(book['saved'])
 		elif 'saved' in book and book['saved']:
 			p = float(book['saved'])
-	return "up to {p}%".format(p=int(p)) if p else 'a ton'
+	return "up to {p}%".format(p=int(p)) if p and p > 20 else 'a ton'
 
 
 if __name__ == '__main__':

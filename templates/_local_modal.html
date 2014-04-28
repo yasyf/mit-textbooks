@@ -8,7 +8,7 @@
 	  <div class='modal-body'>
 		<p class='center'>
 			{% for offer in class_obj.offers(textbook|tb_id) %}
-			<a href='javascript:$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_{{ offer._id }}").modal();' class='btn btn-info'>
+			<a href='javascript:$("#modal_{{ offer._id }}").modal();' class='btn btn-info'>
 				${{ offer.price }} ({{ offer.condition }} Condition)
 			</a>
 			{% endfor %}

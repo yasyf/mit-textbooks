@@ -15,7 +15,7 @@ TERM_LAST = "2014FA"
 STERM = "sp14"
 STERM_LAST = "fa13"
 
-RECENTS = 5
+RECENTS = 20
 CACHE_FOR = 2419200
 
 host_secure = "https://tb.mit.edu" + ":444"
