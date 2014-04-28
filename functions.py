@@ -128,7 +128,6 @@ def fetch_class_info(class_id):
 		url = "http://coursews.mit.edu/coursews/?term={term}&courses={course_number}".format(term=TERM_LAST, course_number=class_id.split('.')[0])
 		class_info = check_json_for_class(url, class_id)
 	if class_info:
-		print "DONE1"
 		return clean_class_info(class_info)
 
 def clean_class_info(class_info):

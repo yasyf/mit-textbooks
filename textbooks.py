@@ -21,6 +21,14 @@ def preprocess_request():
 	else:
 		g.user = None
 
+@app.after_request
+def postprocess_request(response):
+	if request.endpoint == 'loading_view':
+		response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+		response.headers['Pragma'] = 'no-cache'
+		response.headers['Expires'] = '0'
+	return response
+
 @app.route('/')
 def index_view():
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
@@ -51,7 +59,7 @@ def loading_view(class_ids):
 	statuses = {c:check_class(c) for c in classes}
 	percent = (len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100
 	g.search_val = class_ids
-	return render_template('loading.html', classes=statuses, percent=percent, url=url)
+	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=url, t=time.time())
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
