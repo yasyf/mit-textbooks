@@ -2,7 +2,6 @@
 {% block title %}{{ group_obj.display_name() }}{% endblock %}
 {% block description %}{{ group_obj.display_description() }}{% endblock %}
 {% block body %}
-{% include '_search.html' %}
 
 <span>
 	Class Group ({{ classes|sum_units }} Units):

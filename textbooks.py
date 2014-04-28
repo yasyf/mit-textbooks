@@ -83,6 +83,11 @@ def name_group_view(group_id, group_name):
 	group_obj = get_group(group_id)
 	return Response(response=save_group(group_obj, group_name), status=200, mimetype="application/json")
 
+@app.route('/sell_textbook/<class_id>/<tb_id>', methods=['POST'])
+def sell_textbook_view(class_id, tb_id):
+	sell_textbook(class_id, tb_id, request.form)
+	return redirect(url_for('class_view', class_id=class_id))
+
 @app.route('/account')
 def account_view():
 	if not g.user:
@@ -146,6 +151,15 @@ def last_name_filter(name):
 @app.template_filter('sum_units')
 def sum_units_filter(classes):
 	return sum([sum(c.units) for c in classes])
+
+@app.template_filter('tb_id')
+def tb_id_filter(textbook):
+	return tb_id(textbook)
+
+@app.template_filter('year_from_i')
+def year_from_i_filter(i):
+	d = {'1': 'Freshman', '2': 'Sophomore', '3': 'Junior', '4': 'Senior', 'G': 'Graduate'}
+	return d[i] if i in d else i
 
 
 if __name__ == '__main__':

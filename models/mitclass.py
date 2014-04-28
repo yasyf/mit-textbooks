@@ -18,6 +18,7 @@ class MITClass():
 		self.class_site = tuple(class_info['class_site'])
 		self.evaluation = tuple(class_info['evaluation'])
 		self.textbooks = class_info['textbooks']
+		self.offers = None
 
 	def to_dict(self):
 		d = {}
@@ -43,6 +44,9 @@ class MITClass():
 		d['class_site'] = url_for('site_view', class_id=self.id, _external=True)
 		return json.dumps(d)
 
+	def safe_id(self):
+		return self.id.replace(".","")
+		
 	def display_name(self):
 		return '{id} {name}'.format(id=self.id, name=self.name)
 
@@ -85,3 +89,9 @@ class MITClass():
 
 	def ocw_site_url(self):
 		return self.class_site[1] if 'ocw.mit.edu' in self.class_site[1] else None
+
+	def offers(self, tb_id):
+		return offers.find({"class_id": self.id, "tb_id": tb_id}).limit(3)
+
+	def has_local(self):
+		return offers.find({"class_id": self.id}).count() > 0

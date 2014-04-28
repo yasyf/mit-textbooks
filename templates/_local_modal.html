@@ -1,0 +1,24 @@
+<div class='modal fade' id='modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local'>
+  <div class='modal-dialog'>
+	<div class='modal-content'>
+	  <div class='modal-header'>
+		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+		<h4 class='modal-title'>Buy Locally</h4>
+	  </div>
+	  <div class='modal-body'>
+		<p>
+			{% for offer in class_obj.offers(textbook|tb_id) %}
+			<a href='javascript:$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_{{ offer._id }}").modal();' class='btn btn-info'>
+				${{ offer.price }} ({{ offer.condition }})
+			</a>
+		</p>
+	  </div>
+	  <div class='modal-footer'>
+		<button type='button' onclick='$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local").modal("hide");' class='btn btn-primary'>Close</button>
+	  </div>
+	</div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% for offer in class_obj.offers(textbook|tb_id) %}
+{% include '_offer_modal.html' %}
+{% endfor %}

@@ -1,0 +1,43 @@
+<div class='modal fade' id='modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
+  <div class='modal-dialog'>
+	<div class='modal-content'>
+	  <div class='modal-header'>
+		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+		<h4 class='modal-title'>Purchase <i>{{ textbook.title }}</i></h4>
+	  </div>
+	  <div class='modal-body'>
+		<p>
+			<a 
+			{% if textbook.asin %}
+			href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
+			{% else %}
+			href="{{ url_for('amazon_search_view', title=textbook.title) }}"
+			{% endif %}
+			target='_blank'
+			data-toggle='modal'
+			class='btn btn-info'>
+				<span class='glyphicon glyphicon-credit-card'></span> Purchase on Amazon
+			</a>
+			{% if class_obj.has_local() %}
+			<a
+			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
+			class='btn btn-info'>
+				<span class='glyphicon glyphicon-home'></span> Purchase Locally
+			</a>
+			{% endif %}
+			<a
+			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
+			class='btn btn-info'>
+				<span class='glyphicon glyphicon-usd'></span> Sell Locally
+			</a>
+		</p>
+	  </div>
+	  <div class='modal-footer'>
+		<button type='button' onclick='$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}").modal("hide");' class='btn btn-primary'>Close</button>
+	  </div>
+	</div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% if class_obj.has_local() %}
+{% include '_local_modal.html' %}
+{% endif %}

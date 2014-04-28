@@ -27,15 +27,10 @@
 	<li>{{ title }}</li>
 	<ul>
 		{% for textbook in section %}
-		<li><a
-			{% if textbook.asin %}
-			href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
-			{% else %}
-			href="{{ url_for('amazon_search_view', title=textbook.title) }}"
-			{% endif %}
-			target='_blank'>
-			{{ textbook.title }} by {{ textbook.author }} {% if textbook.saved %}({{ textbook.saved }}% Off!){% endif %}
-		</a></li>
+		<li>
+			<a href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal();"><i>{{ textbook.title }}</i> by {{ textbook.author }}</a></li>
+			{% include '_textbook_modal.html' %}
+			{% include '_sell_modal.html' %}
 		{% endfor %}
 	</ul>	
 	{% endfor %}

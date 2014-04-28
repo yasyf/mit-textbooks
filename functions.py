@@ -34,7 +34,13 @@ def sha(text):
 	return hashlib.sha256(text).hexdigest()
 
 def md5(s):
-	return hashlib.md5(s).hexdigest()
+	if not g.md5:
+		g.md5 = {}
+	if s in g.md5:
+		return g.md5[s]
+	_hash = hashlib.md5(s).hexdigest()
+	g.md5[s] = _hash
+	return _hash
 
 def clean_html(html):
 	return html.strip().replace("\n"," ").encode('ascii','xmlcharrefreplace')
@@ -240,7 +246,7 @@ def get_textbook_info(class_id, semesters):
 			if 'Course Has No Materials' in book['title']:
 				continue
 			book['title'] = process_title(book['title'], book['author'], titles)
-			book['retail'] = book['price']
+			book['retail'] = book['price'].replace("$","")
 			del book['price']
 			amazon_info = get_amazon_info(book['isbn'], book['title'], book['author'])
 			book = dict(book.items() + amazon_info.items())
@@ -346,7 +352,40 @@ def save_group(group_obj, group_name):
 	named_group_obj = MITClassGroup(group_info)
 	group_objects[group_name] = named_group_obj
 	groups.insert(named_group_obj.to_dict())
-	flash('{name} was successfully created!'.format(name=group_name))
+	flash('{name} was successfully created!'.format(name=group_name), 'success')
 	return json.dumps({"error": False})
 
+def tb_id(textbook):
+	if 'asin' in textbook:
+		return textbook['asin']
+	elif 'isbn' in textbook:
+		return textbook['isbn']
+	else:
+		return md5(textbook['title'])
 
+def get_mit_info(email):
+		username = email[:email.find("@")]
+		url = "http://web.mit.edu/bin/cgicso?options=general&query=%s" % (username)
+		r = requests.get(url)
+		html = r.text
+		soup = BeautifulSoup(html)
+		pre = soup.find("pre")
+		if pre.text.find("No matches") == -1:
+			l = [x.split(":")[-1].strip() for x in pre.text.split("\n")]
+			return (l[0], l[2], l[3]) #name, dorm, year
+
+def sell_textbook(class_id, tb_id, form):
+	d = {}
+	d['tb_id'] = tb_id
+	d['price'] = int(form.get('price'))
+	d['class_id'] = class_id
+	d['location'] = form.get('location')
+	d['dt'] = datetime.datetime.utcnow()
+	d['email'] = form.get('email')
+	d['condition'] = form.get('condition')
+	info = get_mit_info(form.get('email'))
+	if info:
+		d['name'] = info[0]
+		d['address'] = info[1]
+		d['year'] = info[2]
+	offers.insert(d)
