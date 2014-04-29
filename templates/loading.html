@@ -67,12 +67,24 @@ function check (argument) {
 			});
 		}
 	});
-	if (num_done == Object.keys(s).length) {
-		window.clearInterval(timer);
-		window.location = "{{ url }}";
-	};
 	fakeVal = parseInt((((new Date().getTime() / 1000.0) - t) / Object.keys(s).length) * (10.0/{{ penalty }}));
 	curr = parseInt($('#progress_bar').attr('aria-valuenow'));
+	if (num_done == Object.keys(s).length) {
+		window.clearInterval(timer);
+		{% if can_blacklist %}
+		if(fakeVal < 75){
+			url = "{{ url_for('unblacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",not_done);
+			$.get(url, function (data) {
+				window.location = "{{ url }}";
+			});
+		}
+		else{
+			window.location = "{{ url }}";
+		}
+		{% else %}
+		window.location = "{{ url }}";
+		{% endif %}
+	};
 	if(fakeVal > curr){
 		$('#progress_bar').css('width', (fakeVal)+'%').attr('aria-valuenow', (fakeVal));
 		$("#progress_percent").text(fakeVal);

@@ -449,6 +449,8 @@ def delete_group(group_id):
 		groups.remove({"name": group_id})
 
 def blacklist_class(class_id):
+	if not workers:
+		return
 	b = blacklist.find_one({'class_id': class_id})
 	if b:
 		blacklist.update({'class_id': class_id}, {"$inc": {"counter": 1}})
@@ -456,6 +458,15 @@ def blacklist_class(class_id):
 			blacklist.update({'class_id': class_id}, {"$inc": {"delay": 1}, "$set": {"counter": 0}})
 	else:
 		blacklist.insert({'class_id': class_id, 'delay': 2, 'counter': 0})
+
+def unblacklist_class(class_id):
+	if not workers:
+		return
+	b = blacklist.find_one({'class_id': class_id})
+	if b:
+		blacklist.update({'class_id': class_id}, {"$inc": {"counter": -1}})
+		if b['counter'] - 1 < 0:
+			blacklist.update({'class_id': class_id}, {"$inc": {"delay": -1}, "$set": {"counter": 0}})
 
 def get_blacklist(classes):
 	penalty = 1

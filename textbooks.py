@@ -67,6 +67,17 @@ def blacklist_view(class_ids):
 			blacklist_class(c)
 	return jsonify({"error": False})
 
+@app.route('/unblacklist/<class_ids>')
+def unblacklist_view(class_ids):
+	id_list = class_ids.split(',')
+	if not session.get('blacklisted'):
+		session['blacklisted'] = []
+	for c in id_list:
+		if c not in session['blacklisted']:
+			session['blacklisted'] = session['blacklisted'] + id_list
+			unblacklist_class(c)
+	return jsonify({"error": False})
+
 @app.route('/loading/<class_ids>')
 def loading_view(class_ids, override_url=None):
 	t = session.get('loading')[0] if session.get('loading') and session.get('loading')[1] == class_ids else int(time.time())
