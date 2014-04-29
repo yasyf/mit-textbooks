@@ -38,6 +38,8 @@ def postprocess_request(response):
 
 @app.route('/')
 def index_view():
+	if is_worker:
+		return redirect(master + url_for('index_view'))
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
 	return render_template('index.html', recent=recent)
 

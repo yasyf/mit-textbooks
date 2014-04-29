@@ -23,3 +23,4 @@ host_secure = "https://tb.mit.edu" + ":444"
 host_unsecure = "http://textbooksearch.mit.edu"
 
 is_worker = os.getenv('is_worker', 'False') == 'True'
+master = os.getenv('master','http://textbooksearch.mit.edu')
