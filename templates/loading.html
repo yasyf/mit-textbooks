@@ -5,8 +5,9 @@
 
 <div class="row">
 	<div class="col-sm-12">
-		<p>Please be patient while we collect the latest information on the following classes.</p>
-		<p>You should only see this loading page once, and return visits to this page will be much snappier. Thanks for understanding!</p>
+		<p>Please be patient while we collect the latest information on your classes.</p>
+		<p>In order to keep our information fresh and relevant, we occasionaly have to re-visit all of our sources.</p>
+		<p>We only do this about once a month, so you should only see this loading page once, and return visits will be <i>much</i> snappier. Thanks for understanding!</p>
 	</div>
 </div>
 
@@ -73,7 +74,7 @@ function check (argument) {
 		window.clearInterval(timer);
 		{% if can_blacklist %}
 		if(fakeVal < 75){
-			url = "{{ url_for('unblacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",not_done);
+			url = "{{ url_for('unblacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",Object.keys(s).join());
 			$.get(url, function (data) {
 				window.location = "{{ url }}";
 			});
@@ -99,7 +100,7 @@ function check (argument) {
 			 }
 			 return false;
 		});
-		url = "{{ url_for('blacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",not_done);
+		url = "{{ url_for('blacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",not_done.join());
 		$.get(url, function (data) {
 			location.reload(true);
 		});
