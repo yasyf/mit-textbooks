@@ -7,6 +7,7 @@ bottlenose==0.6.0
 futures==2.1.6
 gevent==1.0
 greenlet==0.4.2
+gunicorn==18.0
 itsdangerous==0.24
 lxml==3.3.5
 mechanize==0.2.5
