@@ -6,7 +6,6 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
-dev = (os.getenv('dev','False') == 'True' or app.config['TESTING'] == True)
 
 init_auth_browser()
 
@@ -45,7 +44,14 @@ def index_view():
 @app.route('/404')
 def _404_view(e):
 	classes = session.get('404',[])
-	return render_template('404.html', classes=classes)
+	return render_template('404.html', classes=classes), 404
+
+@app.errorhandler(500)
+@app.route('/500')
+def _500_view(e):
+	if not dev:
+		error_mail(e)
+	return render_template('500.html', e=str(e)), 500
 
 @app.route('/check/<class_id>')
 def check_view(class_id):

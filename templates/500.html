@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+{% block title %}Internal Server Error{% endblock %}
+{% block body %}
+
+<div class="row">
+	<div class="col-sm-12">
+		<p>
+			Oops! Something went seriously wrong, and an internal error has occurred.
+			The administrators have already been notified, but if you have any further questions, please don't hesitate to
+			<a class="btn btn-success btn-xs" href='mailto:tb_support@mit.edu?subject=500%20Error%20'>
+				contact support
+			</a>.
+		</p>
+		<p>
+			For your reference, the error that lead you here is <code>{{ e }}</code>.
+		</p>
+	</div>
+</div>
+
+
+{% endblock %}

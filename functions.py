@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback
 from flask import g, flash, url_for
 from bs4 import BeautifulSoup
 from lxml import objectify
@@ -36,6 +36,20 @@ def send_to_worker(class_id, update=False, group=False):
 	if not queue.find_one(d):
 		d['time'] = time.time()
 		queue.insert(d)
+
+def error_mail(e):
+	message = sendgrid.Mail()
+	message.add_to(os.getenv('admin_email'))
+	message.set_subject('500 Internal Server Error @ MIT Textbooks')
+	trace = traceback.format_exc() 
+	message.set_html(e.message + '<br><br><pre>' + trace + '</pre>')
+	message.set_text(e.message + '\n\n' + trace)
+	message.set_from('MIT Textbooks <tb_support@mit.edu>')
+	try:
+		sg.send(message)
+	except Exception:
+		pass
+
 
 def sha(text):
 	return hashlib.sha256(text).hexdigest()
