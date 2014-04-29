@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+{% for url in disallows %}Disallow: {{ url|replace('//','/') }}
+{% endfor %}
+Sitemap: {{ url_for('sitemap_view', _external=True) }}

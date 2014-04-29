@@ -10,6 +10,13 @@ dev = (os.getenv('dev','False') == 'True' or app.config['TESTING'] == True)
 
 init_auth_browser()
 
+def request_wants_json():
+    best = request.accept_mimetypes \
+        .best_match(['application/json', 'text/html'])
+    return best == 'application/json' and \
+        request.accept_mimetypes[best] > \
+        request.accept_mimetypes['text/html']
+
 @app.before_request
 def preprocess_request():
 	email = request.cookies.get('id_email')
@@ -41,7 +48,7 @@ def _404_view():
 
 @app.route('/check/<class_id>')
 def check_view(class_id):
-	return Response(response=check_class_json(class_id), status=200, mimetype="application/json")
+	return jsonify(check_class_json(class_id))
 
 @app.route('/update/textbooks/<class_id>')
 def update_textbooks_view(class_id):
@@ -57,7 +64,7 @@ def blacklist_view(class_ids):
 		if c not in session['blacklisted']:
 			session['blacklisted'] = session['blacklisted'] + id_list
 			blacklist_class(c)
-	return Response(response=json.dumps({"error": False}), status=200, mimetype="application/json")
+	return jsonify({"error": False})
 
 @app.route('/loading/<class_ids>')
 def loading_view(class_ids, override_url=None):
@@ -107,8 +114,8 @@ def overview_view(class_id):
 def json_class_view(class_id):
 	class_obj = get_class(class_id)
 	if class_obj is None:
-		return Response(response=json.dumps({"error": "{c} not found".format(c=class_id)}), status=200, mimetype="application/json")
-	return Response(response=class_obj.json(), status=200, mimetype="application/json")
+		return jsonify({"error": "{c} not found".format(c=class_id)})
+	return jsonify(class_obj.json())
 
 @app.route('/json/group/<group_id>')
 def json_group_view(group_id):
@@ -116,8 +123,8 @@ def json_group_view(group_id):
 	group = {c:get_class(c).to_dict() for c in group_obj.class_ids}
 	g_filtered = [x for x in group.values() if x != None]
 	if not g_filtered:
-		return Response(response=json.dumps({"error": "{group} not found".format(group=group_id)}), status=200, mimetype="application/json")
-	return Response(response=json.dumps(), status=200, mimetype="application/json")
+		return jsonify({"error": "{group} not found".format(group=group_id)})
+	return jsonify({c:get_class(c).to_dict() for c in group_obj.class_ids})
 
 @app.route('/group/<group_id>')
 def group_view(group_id):
@@ -143,7 +150,7 @@ def group_view(group_id):
 @app.route('/name_group/<group_id>/<group_name>')
 def name_group_view(group_id, group_name):
 	group_obj = get_group(group_id)
-	return Response(response=save_group(group_obj, group_name), status=200, mimetype="application/json")
+	return jsonify(save_group(group_obj, group_name))
 
 @app.route('/delete_group/<group_id>')
 def delete_group_view(group_id):
@@ -192,13 +199,45 @@ def search_view():
 	search_term = request.form.get('search_term')
 	return go_view(search_term)
 
+@app.route('/opensearchdescription.xml')
+def opensearchdescription_view():
+	return Response(response=render_template('opensearchdescription.xml'), status=200, mimetype="application/xml")
+
+@app.route('/robots.txt')
+def robots_view():
+	disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
+	return Response(response=render_template('robots.txt', disallows=disallows), status=200, mimetype="text/plain;charset=UTF-8")
+
+@app.route('/sitemap.xml')
+def sitemap_view():
+	allows = [url_for('index_view', _external=True)]
+	for c in classes.find({}):
+		allows.append(url_for('class_view', class_id=c['class'], _external=True))
+		allows.append(url_for('overview_view', class_id=c['class'], _external=True))
+		if 'class_site' in c:
+			allows.append(url_for('site_view', class_id=c['class'], _external=True))
+		if 'stellar_url' in c:
+			allows.append(url_for('site_view', class_id=c['class'], _external=True))
+		allows.append(url_for('class_evaluation_view', class_id=c['class'], _external=True))
+		for section in c['textbooks']['sections'].values():
+			for book in section:
+				if 'asin' in book and book['asin']:
+					allows.append(url_for('amazon_product_view', asin=book['asin'], _external=True))
+	for gr in groups.find({}):
+		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
+	return render_template('sitemap.xml', allows=allows)
+
 @app.route('/go/<search_term>')
 def go_view(search_term):
 	classes = search_term.split(',')
 	if len(classes) == 1:
+		if request_wants_json():
+			return redirect(url_for('json_class_view', class_id=classes[0]))
 		return redirect(url_for('class_view', class_id=classes[0]))
 	else:
 		group_id = prepare_class_hash(classes)
+		if request_wants_json():
+			return redirect(url_for('json_group_view', group_id=group_id))
 		return redirect(url_for('group_view', group_id=group_id))
 
 @app.route('/site/<class_id>')

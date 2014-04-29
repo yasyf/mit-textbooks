@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+   <ShortName>MIT Textbooks</ShortName>
+   <Description>Use MIT Textbooks to search for class information and textbooks at MIT.</Description>
+   <Tags>mit textbook tb</Tags>
+   <Contact>tb_support@mit.edu</Contact>
+   <Url type="text/html" 
+        template="{{ url_for('go_view', search_term='', _external=True) }}{searchTerms}"/>
+   <Url type="application/json" 
+        template="{{ url_for('go_view', search_term='', _external=True) }}{searchTerms}"/>
+ </OpenSearchDescription>
