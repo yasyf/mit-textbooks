@@ -145,7 +145,8 @@ def group_view(group_id):
 	group_obj = get_group(group_id)
 	if not check_group(group_obj.class_ids) and not is_worker:
 		fsession = FuturesSession()
-		fsession.get(get_worker() + url_for('group_view', group_id=group_id))
+		for class_id in group_obj.class_ids:
+			fsession.get(get_worker() + url_for('json_class_view', class_id=class_id))
 		return loading_view(','.join(group_obj.class_ids))
 	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
