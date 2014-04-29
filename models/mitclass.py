@@ -41,7 +41,7 @@ class MITClass():
 		del d['dt']
 		d['stellar_url'] = url_for('stellar_view', class_id=self.id, _external=True)
 		d['class_site'] = url_for('site_view', class_id=self.id, _external=True)
-		return json.dumps(d)
+		return d
 
 	def safe_id(self):
 		return self.id.replace(".","")

@@ -134,11 +134,11 @@ def json_class_view(class_id):
 @app.route('/json/group/<group_id>')
 def json_group_view(group_id):
 	group_obj = get_group(group_obj)
-	group = {c:get_class(c).to_dict() for c in group_obj.class_ids}
+	group = {c:get_class(c).json() for c in group_obj.class_ids}
 	g_filtered = [x for x in group.values() if x != None]
 	if not g_filtered:
 		return jsonify({"error": "{group} not found".format(group=group_id)})
-	return jsonify({c:get_class(c).to_dict() for c in group_obj.class_ids})
+	return jsonify(group)
 
 @app.route('/group/<group_id>')
 def group_view(group_id):

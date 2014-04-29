@@ -99,7 +99,6 @@ function check (argument) {
 			 }
 			 return false;
 		});
-		console.log(not_done);
 		url = "{{ url_for('blacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",not_done);
 		$.get(url, function (data) {
 			location.reload(true);
