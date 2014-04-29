@@ -38,8 +38,6 @@ def postprocess_request(response):
 
 @app.route('/')
 def index_view():
-	if is_worker:
-		return redirect(master + url_for('index_view'))
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
 	return render_template('index.html', recent=recent)
 
@@ -107,9 +105,8 @@ def loading_view(class_ids, override_url=None):
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
-	if not check_class(class_id) and not is_worker:
-		fsession = FuturesSession()
-		fsession.get(get_worker() + url_for('json_class_view', class_id=class_id))
+	if not check_class(class_id):
+		send_to_worker(class_id)
 		return loading_view(class_id)
 	session['loading'] = None
 	class_obj = get_class(class_id)
@@ -133,7 +130,7 @@ def json_class_view(class_id):
 
 @app.route('/json/group/<group_id>')
 def json_group_view(group_id):
-	group_obj = get_group(group_obj)
+	group_obj = get_group(group_id)
 	group = {c:get_class(c).json() for c in group_obj.class_ids}
 	g_filtered = [x for x in group.values() if x != None]
 	if not g_filtered:
@@ -143,10 +140,9 @@ def json_group_view(group_id):
 @app.route('/group/<group_id>')
 def group_view(group_id):
 	group_obj = get_group(group_id)
-	if not check_group(group_obj.class_ids) and not is_worker:
-		fsession = FuturesSession()
+	if not check_group(group_obj.class_ids):
 		for class_id in group_obj.class_ids:
-			fsession.get(get_worker() + url_for('json_class_view', class_id=class_id))
+			send_to_worker(class_id)
 		return loading_view(','.join(group_obj.class_ids))
 	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
@@ -193,17 +189,15 @@ def account_view():
 	if classes:
 		if len(classes) == 1:
 			class_id = classes[0]
-			if not check_class(class_id) and not is_worker:
-				fsession = FuturesSession()
+			if not check_class(class_id):
 				url = url_for('account_view', _external=True)
-				fsession.get(get_worker() + url_for('json_class_view', class_id=class_id))
+				send_to_worker(class_id)
 				return loading_view(class_id, override_url=url)
 		else:
 			group_id = prepare_class_hash(classes)
 			group_obj = get_group(group_id)
-			if not check_group(group_obj.class_ids) and not is_worker:
-				fsession = FuturesSession()
-				fsession.get(get_worker() + url_for('group_view', group_id=group_id))
+			if not check_group(group_obj.class_ids):
+				send_to_worker(group_id, group=True)
 				url = url_for('account_view', _external=True)
 				return loading_view(','.join(group_obj.class_ids), override_url=url)
 	session['loading'] = None
@@ -216,28 +210,15 @@ def search_view():
 
 @app.route('/opensearchdescription.xml')
 def opensearchdescription_view():
-	if is_worker:
-		return redirect(url_for('_404_view'),code=404)
 	return Response(response=render_template('opensearchdescription.xml'), status=200, mimetype="application/xml")
-		
-@app.route('/worker/up')
-def worker_up_view():
-	if is_worker:
-		return jsonify({'url': request.url_root[:-1]})
-	return redirect(url_for('index_view'))
 
 @app.route('/robots.txt')
 def robots_view():
-	if not is_worker:
-		disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
-	else:
-		disallows = []
-	return Response(response=render_template('robots.txt', disallows=disallows, is_worker=is_worker), status=200, mimetype="text/plain;charset=UTF-8")
+	disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
+	return Response(response=render_template('robots.txt', disallows=disallows), status=200, mimetype="text/plain;charset=UTF-8")
 
 @app.route('/sitemap.xml')
 def sitemap_view():
-	if is_worker:
-		return redirect(url_for('_404_view'),code=404)
 	allows = [url_for('index_view', _external=True)]
 	for c in classes.find({}):
 		allows.append(url_for('class_view', class_id=c['class'], _external=True))

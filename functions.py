@@ -6,7 +6,6 @@ from flask import g, flash, url_for
 from bs4 import BeautifulSoup
 from lxml import objectify
 from bson.objectid import ObjectId
-from requests_futures.sessions import FuturesSession
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
 from models.mituser import MITUser
@@ -16,8 +15,6 @@ group_objects = {}
 user_objects = {}
 
 auth_browser = None
-
-workers = None
 
 def init_auth_browser():
 	global auth_browser
@@ -34,20 +31,11 @@ def init_auth_browser():
 	except Exception:
 		pass
 
-def init_workers():
-	global workers
-	workers = {}
-	fsession = FuturesSession()
-	def bg_cb(sess, resp):
-		try:
-			data = resp.json()
-			url = data['url']
-			workers[url] = time.time()
-		except TypeError,KeyError:
-			pass
-	for worker in os.getenv('workers').split(','):
-		fsession.get(worker + url_for('worker_up_view'), background_callback=bg_cb)
-
+def send_to_worker(class_id, update=False, group=False):
+	d = {'class_id': class_id, 'update': update, 'group': group}
+	if not queue.find_one(d):
+		d['time'] = time.time()
+		queue.insert(d)
 
 def sha(text):
 	return hashlib.sha256(text).hexdigest()
@@ -84,8 +72,7 @@ def get_class(class_id):
 		if 'error' in class_info:
 			return None
 		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
-			fsession = FuturesSession()
-			fsession.get(get_worker() + url_for('update_textbooks_view', class_id=class_id))
+			send_to_worker(class_id, update=True)
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		return class_obj
@@ -449,8 +436,6 @@ def delete_group(group_id):
 		groups.remove({"name": group_id})
 
 def blacklist_class(class_id):
-	if not workers:
-		return
 	b = blacklist.find_one({'class_id': class_id})
 	if b:
 		blacklist.update({'class_id': class_id}, {"$inc": {"counter": 1}})
@@ -460,8 +445,6 @@ def blacklist_class(class_id):
 		blacklist.insert({'class_id': class_id, 'delay': 2, 'counter': 0})
 
 def unblacklist_class(class_id):
-	if not workers:
-		return
 	b = blacklist.find_one({'class_id': class_id})
 	if b:
 		blacklist.update({'class_id': class_id}, {"$inc": {"counter": -1}})
@@ -475,11 +458,3 @@ def get_blacklist(classes):
 		if b:
 			penalty *= b['delay']
 	return 1 + (penalty-1)/2.5
-
-def get_worker():
-	if not workers:
-		init_workers()
-		return os.getenv('workers').split(',')[0]
-	worker = min(workers, key=workers.get)
-	workers[worker] = time.time()
-	return worker
