@@ -2,6 +2,8 @@ from functions import *
 
 init_auth_browser()
 
+task = None
+
 def do_get_class(class_id):
 	i = 1
 	while i <= 5:
@@ -14,6 +16,7 @@ def do_get_class(class_id):
 		except Exception:
 			time.sleep(1*i)
 			i += 1
+	queue.insert(task)
 
 while True:
 	task = queue.find_one(sort=[("time", 1)])
