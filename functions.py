@@ -2,7 +2,7 @@
 
 from setup import *
 import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re
-from flask import g, flash
+from flask import g, flash, url_for
 from bs4 import BeautifulSoup
 from lxml import objectify
 from bson.objectid import ObjectId
@@ -16,6 +16,8 @@ group_objects = {}
 user_objects = {}
 
 auth_browser = None
+
+workers = None
 
 def init_auth_browser():
 	global auth_browser
@@ -31,6 +33,21 @@ def init_auth_browser():
 		auth_browser.submit()
 	except Exception:
 		pass
+
+def init_workers():
+	global workers
+	workers = {}
+	fsession = FuturesSession()
+	def bg_cb(sess, resp):
+		try:
+			data = resp.json()
+			url = data['url']
+			workers[url] = time.time()
+		except TypeError,KeyError:
+			pass
+	for worker in os.getenv('workers').split(','):
+		fsession.get(worker + url_for('worker_up_view'), background_callback=bg_cb)
+
 
 def sha(text):
 	return hashlib.sha256(text).hexdigest()
@@ -68,7 +85,7 @@ def get_class(class_id):
 			return None
 		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
 			fsession = FuturesSession()
-			fsession.get(worker + url_for('update_textbooks_view', class_id=class_id))
+			fsession.get(get_worker() + url_for('update_textbooks_view', class_id=class_id))
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		return class_obj
@@ -356,7 +373,7 @@ def process_title(title, author, titles):
 
 def check_class_json(class_id):
 	loaded = classes.find_one({'class': class_id}) != None
-	return json.dumps({'loaded': loaded})
+	return {'loaded': loaded}
 
 def check_class(class_id):
 	loaded = classes.find_one({'class': class_id}) != None
@@ -369,12 +386,12 @@ def check_group(class_ids):
 def save_group(group_obj, group_name):
 	global group_objects
 	if not g.user:
-		return json.dumps({"error": True, "message": "You must be logged in to do that."})
+		return {"error": True, "message": "You must be logged in to do that."}
 	group_name = group_name.replace(' ','')
 	if not re.match('^[\w]+$', group_name):
-		return json.dumps({"error": True, "message": "The group name must be alphanumeric."})
+		return {"error": True, "message": "The group name must be alphanumeric."}
 	if groups.find_one({"name": group_name}):
-		return json.dumps({"error": True, "message": "That group name is already taken."})
+		return {"error": True, "message": "That group name is already taken."}
 	group_info = {}
 	group_info['named'] = True
 	group_info['name'] = group_name
@@ -384,7 +401,7 @@ def save_group(group_obj, group_name):
 	group_objects[group_name] = named_group_obj
 	groups.insert(named_group_obj.to_dict())
 	flash('{name} was successfully created!'.format(name=group_name), 'success')
-	return json.dumps({"error": False})
+	return {"error": False}
 
 def tb_id(textbook):
 	if textbook['asin']:
@@ -448,4 +465,10 @@ def get_blacklist(classes):
 			penalty *= b['delay']
 	return 1 + (penalty-1)/2.5
 
-
+def get_worker():
+	if not workers:
+		init_workers()
+		return os.getenv('workers').split(',')[0]
+	worker = min(workers, key=workers.get)
+	workers[worker] = time.time()
+	return worker

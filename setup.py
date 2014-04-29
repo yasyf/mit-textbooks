@@ -22,5 +22,4 @@ CACHE_FOR = 2419200
 host_secure = "https://tb.mit.edu" + ":444"
 host_unsecure = "http://textbooksearch.mit.edu"
 
-worker = os.getenv('worker')
 is_worker = os.getenv('is_worker', 'False') == 'True'
