@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 {% block title %}Loading...{% endblock %}
-{% block meta %}<meta http-equiv="refresh" content="10;url={{ url_for('loading_view', class_ids=class_ids) }}">{% endblock %}
+{% block meta %}<meta http-equiv="refresh" content="60;url={{ url_for('loading_view', class_ids=class_ids) }}">{% endblock %}
 {% block body %}
 
 <div class="row">
@@ -46,7 +46,7 @@ var t = {{ t }};
 var timer;
 var s = JSON.parse('{{ classes|tojson|safe }}');
 var num_done = _.filter(s, function (val) {
-		return val == true
+		return val == true;
 	}).length;
 function check (argument) {
 	_.each(s, function (done, id) {
@@ -71,11 +71,31 @@ function check (argument) {
 		window.clearInterval(timer);
 		window.location = "{{ url }}";
 	};
-	fakeVal = parseInt(((new Date().getTime() / 1000) - t) / Object.keys(s).length);
+	fakeVal = parseInt((((new Date().getTime() / 1000) - t) / Object.keys(s).length) * (5/{{ penalty }}));
 	curr = parseInt($('#progress_bar').attr('aria-valuenow'));
 	if(fakeVal > curr){
 		$('#progress_bar').css('width', (fakeVal)+'%').attr('aria-valuenow', (fakeVal));
 		$("#progress_percent").text(fakeVal);
+	}
+	if(fakeVal > 110){
+		{% if can_blacklist %}
+		var not_done = [];
+		_.filter(Object.keys(s), function (val) {
+			 if(s[val] == false){
+			 	not_done.push(val);
+			 	return true;
+			 }
+			 return false;
+		});
+		console.log(not_done);
+		url = "{{ url_for('blacklist_view', class_ids='CLASS_IDS') }}".replace("CLASS_IDS",not_done);
+		$.get(url, function (data) {
+			location.reload(true);
+		});
+		{% endif %}
+		if(fakeVal % 100 == 0){
+			location.reload(true);
+		}
 	}
 }
 

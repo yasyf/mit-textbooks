@@ -6,6 +6,7 @@ classes = db.classes
 recents = db.recents
 groups = db.groups
 offers = db.offers
+blacklist = db.blacklist
 
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 

@@ -265,27 +265,51 @@ def get_textbook_info(class_id, semesters):
 	textbooks["sections"] = sections
 	return textbooks
 
+def doItemSeach(Keywords,SearchIndex):
+	i = 1
+	while i <= 5:
+		try:
+			response = amazon.ItemSearch(Keywords=Keywords, SearchIndex=SearchIndex)
+			return response
+		except Exception:
+			time.sleep(.5*i)
+			i += 1
+
+def doItemLookup(ItemId,ResponseGroup):
+	i = 1
+	while i <= 5:
+		try:
+			response = amazon.ItemLookup(ItemId=ItemId, ResponseGroup=ResponseGroup)
+			return response
+		except Exception:
+			time.sleep(.5*i)
+			i += 1
+
 def get_amazon_info(isbn, title, author):
 	if '[Ebook]' in title:
 		title = title.replace("[Ebook]","")
 		title = "{title} ebook".format(title=title)
-	response = amazon.ItemSearch(Keywords=isbn, SearchIndex="Books")
+	d = {'asin': None}
+	response = doItemSeach(Keywords=isbn, SearchIndex="Books")
+	if not response:
+		return d
 	root = objectify.fromstring(response)
 	if root.Items.TotalResults == 0:
-		time.sleep(1)
-		response = amazon.ItemSearch(Keywords="{title} by {author}".format(title=title, author=author), SearchIndex='All')
+		response = doItemSeach(Keywords="{title} by {author}".format(title=title, author=author), SearchIndex='All')
+		if not response:
+			return d
 		root = objectify.fromstring(response)
 	if root.Items.TotalResults == 0:
-		time.sleep(1)
-		response = amazon.ItemSearch(Keywords=title, SearchIndex='All')
+		response = doItemSeach(Keywords=title, SearchIndex='All')
+		if not response:
+			return d
 		root = objectify.fromstring(response)
-	d = {}
 	try:
-		time.sleep(1)
-		response = amazon.ItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary')
+		response = doItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary')
+		if not response:
+			return d
 		product = objectify.fromstring(response).Items.Item
 	except AttributeError:
-		d['asin'] = None
 		return d
 	d['asin'] = product.ASIN.text
 	d['title'] = product.ItemAttributes.Title.text
@@ -406,4 +430,21 @@ def delete_group(group_id):
 	group = groups.find_one({"name": group_id})
 	if group and g.user.get_id() == group['user_id']:
 		groups.remove({"name": group_id})
+
+def blacklist_class(class_id):
+	b = blacklist.find_one({'class_id': class_id})
+	if b:
+		blacklist.update({'class_id': class_id}, {"$inc": {"counter": 1}})
+		if b['counter'] + 1 >= min(5, max(b['delay'], 2)):
+			blacklist.update({'class_id': class_id}, {"$inc": {"delay": 1}, "$set": {"counter": 0}})
+	else:
+		blacklist.insert({'class_id': class_id, 'delay': 2, 'counter': 0})
+
+def get_blacklist(classes):
+	penalty = 1
+	for c in classes:
+		b = blacklist.find_one({"class_id": c})
+		if b:
+			penalty *= b['delay']
+	return 1 + (penalty-1)/5.0
 

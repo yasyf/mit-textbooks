@@ -48,14 +48,24 @@ def update_textbooks_view(class_id):
 	update_textbooks(class_id)
 	return redirect(url_for('json_class_view', class_id=class_id))
 
+@app.route('/blacklist/<class_ids>')
+def blacklist_view(class_ids):
+	id_list = class_ids.split(',')
+	if not session.get('blacklisted'):
+		session['blacklisted'] = []
+	for c in id_list:
+		if c not in session['blacklisted']:
+			session['blacklisted'] = session['blacklisted'] + id_list
+			blacklist_class(c)
+	return Response(response=json.dumps({"error": False}), status=200, mimetype="application/json")
+
 @app.route('/loading/<class_ids>')
 def loading_view(class_ids, override_url=None):
-	t = session.get('loading_t') if session.get('loading_t') and session.get('loading_c') == class_ids else int(time.time())
+	t = session.get('loading')[0] if session.get('loading') and session.get('loading')[1] == class_ids else int(time.time())
 	if session.get('override_url'):
 		override_url = session.get('override_url')
 	session['override_url'] = override_url
-	session['loading_t'] = t
-	session['loading_c'] = class_ids
+	session['loading'] = (t, class_ids)
 	classes = class_ids.split(',')
 	if len(classes) == 1:
 		url = url_for('class_view', class_id=classes[0], _external=True)
@@ -63,9 +73,16 @@ def loading_view(class_ids, override_url=None):
 		group_id = prepare_class_hash(classes)
 		url = url_for('group_view', group_id=group_id, _external=True)
 	statuses = {c:check_class(c) for c in classes}
-	percent = max((len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100, (time.time() - t) /len(statuses.values()))
+	penalty = float(get_blacklist(classes))
+	percent = max((len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100, int((time.time() - t) /len(statuses.values()) * (5.0/penalty)))
 	g.search_val = class_ids
-	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=t)
+	can_blacklist = True
+	if session.get('blacklisted'):
+		can_blacklist = False in [(x in session.get('blacklisted')) for x in classes]
+		if not can_blacklist:
+			message = 'This is taking longer than normal. Please <a class="btn btn-danger btn-xs" href="mailto:tb_support@mit.edu?subject={class_ids}%20not%20loading!">contact support</a>!'.format(class_ids=class_ids)
+			flash(message, 'danger')
+	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=t, can_blacklist=can_blacklist, penalty=penalty)
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
@@ -73,7 +90,7 @@ def class_view(class_id):
 		fsession = FuturesSession()
 		fsession.get(worker + url_for('json_class_view', class_id=class_id))
 		return loading_view(class_id)
-	session['loading_t'] = None
+	session['loading'] = None
 	class_obj = get_class(class_id)
 	if class_obj is None:
 		session['404'] = [class_id]
@@ -109,7 +126,7 @@ def group_view(group_id):
 		fsession = FuturesSession()
 		fsession.get(worker + url_for('group_view', group_id=group_id))
 		return loading_view(','.join(group_obj.class_ids))
-	session['loading_t'] = None
+	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
 	g_filtered = [x for x in group if x != None]
 	g_filtered_ids = [x.id for x in g_filtered]
@@ -167,7 +184,7 @@ def account_view():
 				fsession.get(worker + url_for('group_view', group_id=group_id))
 				url = url_for('account_view', _external=True)
 				return loading_view(','.join(group_obj.class_ids), override_url=url)
-	session['loading_t'] = None
+	session['loading'] = None
 	return render_template('account.html')
 
 @app.route('/search', methods=['POST'])
@@ -268,7 +285,7 @@ def section_saved_filter(section):
 			elif 'new' in book and book['new']:
 				p = max(float(book['new'])/float(book['retail']), float(book['saved']) if 'saved' in book else 0)
 			else:
-				p = float(book['saved'])
+				p = float(book['saved'] if 'saved' in book else 0)
 		elif 'saved' in book and book['saved']:
 			p = float(book['saved'])
 	return "up to {p}%".format(p=int(p)) if p and p > 20 else 'a ton'
