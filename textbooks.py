@@ -41,6 +41,7 @@ def index_view():
 	recent = recents.find().sort('dt',-1).limit(RECENTS)
 	return render_template('index.html', recent=recent)
 
+@app.errorhandler(404)
 @app.route('/404')
 def _404_view():
 	classes = session.get('404',[])
@@ -201,18 +202,24 @@ def search_view():
 
 @app.route('/opensearchdescription.xml')
 def opensearchdescription_view():
+	if is_worker:
+		return redirect(url_for('_404_view'),code=404)
 	return Response(response=render_template('opensearchdescription.xml'), status=200, mimetype="application/xml")
+		
+
 
 @app.route('/robots.txt')
 def robots_view():
-	if not worker:
+	if not is_worker:
 		disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
 	else:
 		disallows = []
-	return Response(response=render_template('robots.txt', disallows=disallows, worker=worker), status=200, mimetype="text/plain;charset=UTF-8")
+	return Response(response=render_template('robots.txt', disallows=disallows, is_worker=is_worker), status=200, mimetype="text/plain;charset=UTF-8")
 
 @app.route('/sitemap.xml')
 def sitemap_view():
+	if is_worker:
+		return redirect(url_for('_404_view'),code=404)
 	allows = [url_for('index_view', _external=True)]
 	for c in classes.find({}):
 		allows.append(url_for('class_view', class_id=c['class'], _external=True))
