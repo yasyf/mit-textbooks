@@ -1,44 +1,74 @@
 <hr>
+<div class="col-xs-12">
+    <div class="col-xs-6">
+        <p>
+            {% if g.user %}
+            <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">My Account</a>
+            {% else %}
+            <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">Login</a>
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-xs-6 text-right">
+        <p>
+            <a href='mailto:tb_support@mit.edu' class="btn btn-primary btn-sm">Feedback</a>
+        </p>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <div class="col-xs-6">
+        <p>
+            {% if g.user %}
+            You are logged in as {{ g.user.name }}<br>
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-xs-6 text-right">
+        <p>
+            &copy; Copyright 2014 <a href='http://www.yasyf.com' target='_blank'>Yasyf Mohamedali</a>
+        </p>
+    </div>
+</div>
+
 {% if g.user %}
-<p>You are logged in as {{ g.user.name }}</p>
-<a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">My Account</a>
 {% if group_obj %}
 {% if not group_obj.named %}
 <a href="#" class="btn btn-primary btn-sm" onclick="$('#save_modal').modal();">Name Group</a>
 <div class='modal fade' id='save_modal'>
-	<div class='modal-dialog'>
-		<div class='modal-content'>
-		  <div class='modal-header'>
-			<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-			<h4 class='modal-title'>Name Class Group</h4>
-		  </div>
-		  <div class='modal-body'>
-			<form class='form-inline' role='form'>
-			  <div class='form-group'>
-					<p class='text-danger' id='save_error'></p>
-					https://tb.mit.edu/<input type='text' id='save_name' style='width:300px' class='form-control' name='course_name' pattern='[a-zA-Z0-9]+'>
-			  </div>
-			</form>
-		  </div>
-		  <div class='modal-footer'>
-			<button type='button'  data-dismiss='modal' class='btn btn-primary'>Close</button>
-			<button type='button'  onclick='save_group();' class='btn btn-primary'>Submit</button>
-		  </div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+          <div class='modal-header'>
+            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+            <h4 class='modal-title'>Name Class Group</h4>
+          </div>
+          <div class='modal-body'>
+            <form class='form-inline' role='form'>
+              <div class='form-group'>
+                    <p class='text-danger' id='save_error'></p>
+                    https://tb.mit.edu/<input type='text' id='save_name' style='width:300px' class='form-control' name='course_name' pattern='[a-zA-Z0-9]+'>
+              </div>
+            </form>
+          </div>
+          <div class='modal-footer'>
+            <button type='button'  data-dismiss='modal' class='btn btn-primary'>Close</button>
+            <button type='button'  onclick='save_group();' class='btn btn-primary'>Submit</button>
+          </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <script>
 function save_group(){
-	name = $('#save_name').val().replace(" ","");
-	url = "{{ url_for('name_group_view', group_id=group_obj.hash, group_name='GROUP_NAME') }}".replace("GROUP_NAME",name);
-	$.getJSON(url, function(data) {
-	  if (data.error == true){
-			$('#save_error').text(data.message);
-		}
-	  else{
-			window.location = "{{ url_for('group_view', group_id='GROUP_NAME') }}".replace("GROUP_NAME",name);
-	  	}
-	});
+    name = $('#save_name').val().replace(" ","");
+    url = "{{ url_for('name_group_view', group_id=group_obj.hash, group_name='GROUP_NAME') }}".replace("GROUP_NAME",name);
+    $.getJSON(url, function(data) {
+      if (data.error == true){
+            $('#save_error').text(data.message);
+        }
+      else{
+            window.location = "{{ url_for('group_view', group_id='GROUP_NAME') }}".replace("GROUP_NAME",name);
+        }
+    });
 }
 </script>
 {% else %}

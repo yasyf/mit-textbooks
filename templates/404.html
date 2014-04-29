@@ -7,7 +7,11 @@
 		<p>
 			Oops! We couldn't find {% if classes|length == 1 %}that class{% else %}those classes{% endif %}.
 			It could be that the class is not offered in the 2014 school year, or that the class number has changed.
-			Please verify the class number, and try again.
+		</p>
+		<p>
+			Please verify the class number, and try again. Note that you must enter the class number, and <strong>not</strong> its name.
+		</p>
+		<p>
 			If you are convinced that this class should exist, please
 			<a class="btn btn-success btn-xs" href='mailto:tb_support@mit.edu?subject=404%20Page%20({{ ", ".join(classes) }})'>
 				email support
@@ -15,7 +19,7 @@
 		</p>
 	</div>
 </div>
-
+<hr>
 <div class="row">
 	{% for class in classes %}
 	<div class="col-sm-2 {% if loop.first %}col-sm-offset-{{ ((6 - classes|length))|int  }}{% endif %}">

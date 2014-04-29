@@ -26,7 +26,7 @@ host_unsecure = "http://textbooksearch.mit.edu"
 
 is_worker = os.getenv('is_worker', 'False') == 'True'
 
-dev = (os.getenv('dev','False') == 'True' or app.config['TESTING'] == True)
+dev = (os.getenv('dev','False') == 'True')
 
 if not dev:
 	sg = sendgrid.SendGridClient(os.getenv('SENDGRID_USERNAME'), os.getenv('SENDGRID_PASSWORD'))

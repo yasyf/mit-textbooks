@@ -41,8 +41,11 @@ def index_view():
 	return render_template('index.html', recent=recent)
 
 @app.errorhandler(404)
+def _404_handler(e):
+	return _404_view()
+
 @app.route('/404')
-def _404_view(e):
+def _404_view():
 	classes = session.get('404',[])
 	return render_template('404.html', classes=classes), 404
 

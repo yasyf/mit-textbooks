@@ -10,12 +10,12 @@
       <a class="navbar-brand" href="{{ url_for('index_view') }}"><img src="{{ url_for('static', filename='images/mit.gif') }}" class='mit_logo' alt='MIT'> Textbooks</a>
     </div>
     <div class="collapse navbar-collapse">
-    	<form action="{{ url_for('search_view') }}" method="POST" class="navbar-form navbar-right" role="form">
+    	<form action="{{ url_for('search_view') }}" method="POST" class="navbar-form navbar-right has-error" role="search">
     		<div class="form-group">
-				<input type='search' name='search_term' placeholder='8.01' class="form-control" value='{{ g.search_val }}' autofocus>
-				<input type='submit' class="form-control" value="Go!">
-      		</div>
-      	</form>
+  				<input type='search' name='search_term' placeholder='8.01' class="form-control" value='{{ g.search_val }}' autofocus required>
+  				<input type='submit' class="form-control" value="Go!">
+      	</div>
+      </form>
     </div>
   </div>
 </div>
