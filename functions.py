@@ -435,7 +435,7 @@ def blacklist_class(class_id):
 	b = blacklist.find_one({'class_id': class_id})
 	if b:
 		blacklist.update({'class_id': class_id}, {"$inc": {"counter": 1}})
-		if b['counter'] + 1 >= min(5, max(b['delay'], 2)):
+		if b['counter'] + 1 >= min(3, b['delay']):
 			blacklist.update({'class_id': class_id}, {"$inc": {"delay": 1}, "$set": {"counter": 0}})
 	else:
 		blacklist.insert({'class_id': class_id, 'delay': 2, 'counter': 0})
@@ -446,5 +446,5 @@ def get_blacklist(classes):
 		b = blacklist.find_one({"class_id": c})
 		if b:
 			penalty *= b['delay']
-	return 1 + (penalty-1)/5.0
+	return 1 + (penalty-1)/2.5
 

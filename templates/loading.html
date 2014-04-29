@@ -71,13 +71,13 @@ function check (argument) {
 		window.clearInterval(timer);
 		window.location = "{{ url }}";
 	};
-	fakeVal = parseInt((((new Date().getTime() / 1000) - t) / Object.keys(s).length) * (5/{{ penalty }}));
+	fakeVal = parseInt((((new Date().getTime() / 1000.0) - t) / Object.keys(s).length) * (10.0/{{ penalty }}));
 	curr = parseInt($('#progress_bar').attr('aria-valuenow'));
 	if(fakeVal > curr){
 		$('#progress_bar').css('width', (fakeVal)+'%').attr('aria-valuenow', (fakeVal));
 		$("#progress_percent").text(fakeVal);
 	}
-	if(fakeVal > 110){
+	if(fakeVal > 125){
 		{% if can_blacklist %}
 		var not_done = [];
 		_.filter(Object.keys(s), function (val) {

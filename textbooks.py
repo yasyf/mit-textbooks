@@ -74,13 +74,13 @@ def loading_view(class_ids, override_url=None):
 		url = url_for('group_view', group_id=group_id, _external=True)
 	statuses = {c:check_class(c) for c in classes}
 	penalty = float(get_blacklist(classes))
-	percent = max((len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100, int((time.time() - t) /len(statuses.values()) * (5.0/penalty)))
+	percent = max((len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100, int((time.time() - t) /len(statuses.values()) * (10.0/penalty)))
 	g.search_val = class_ids
 	can_blacklist = True
 	if session.get('blacklisted'):
 		can_blacklist = False in [(x in session.get('blacklisted')) for x in classes]
 		if not can_blacklist:
-			message = 'This is taking longer than normal. Please <a class="btn btn-danger btn-xs" href="mailto:tb_support@mit.edu?subject={class_ids}%20not%20loading!">contact support</a>!'.format(class_ids=class_ids)
+			message = 'This is taking longer than normal. Please wait a while or <a class="btn btn-danger btn-xs" href="mailto:tb_support@mit.edu?subject={class_ids}%20not%20loading!">contact support</a>!'.format(class_ids=class_ids)
 			flash(message, 'danger')
 	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=t, can_blacklist=can_blacklist, penalty=penalty)
 
