@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 {% block title %}Loading...{% endblock %}
-{% block meta %}<meta http-equiv="refresh" content="10;url={{ url_for('loading_view', class_ids=class_ids, override_url=override_url, t=t) }}">{% endblock %}
+{% block meta %}<meta http-equiv="refresh" content="10;url={{ url_for('loading_view', class_ids=class_ids) }}">{% endblock %}
 {% block body %}
 
 <div class="row">
@@ -42,7 +42,8 @@
 </div>
 
 <script>
-var t;
+var t = {{ t }};
+var timer;
 var s = JSON.parse('{{ classes|tojson|safe }}');
 var num_done = _.filter(s, function (val) {
 		return val == true
@@ -58,19 +59,27 @@ function check (argument) {
 					$("#"+id.replace('.','')+"_parent").toggleClass('panel-warning panel-success');
 					num_done += 1;
 					newval = (num_done/Object.keys(s).length) * 100;
-					$('#progress_bar').css('width', newval+'%').attr('aria-valuenow', newval);
-					$("#progress_percent").text(newval);
+					if(newval > parseInt($('#progress_bar').attr('aria-valuenow'))){
+						$('#progress_bar').css('width', newval+'%').attr('aria-valuenow', newval);
+						$("#progress_percent").text(newval);
+					}
 				}
 			});
 		}
 	});
 	if (num_done == Object.keys(s).length) {
-		window.clearInterval(t);
+		window.clearInterval(timer);
 		window.location = "{{ url }}";
 	};
+	fakeVal = parseInt(((new Date().getTime() / 1000) - t) / Object.keys(s).length);
+	curr = parseInt($('#progress_bar').attr('aria-valuenow'));
+	if(fakeVal > curr){
+		$('#progress_bar').css('width', (fakeVal)+'%').attr('aria-valuenow', (fakeVal));
+		$("#progress_percent").text(fakeVal);
+	}
 }
 
-t = window.setInterval(check, 1000);
+timer = window.setInterval(check, 1000);
 
 </script>
 {% endblock %}

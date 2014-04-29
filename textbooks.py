@@ -23,7 +23,7 @@ def preprocess_request():
 
 @app.after_request
 def postprocess_request(response):
-	if request.endpoint == 'loading_view':
+	if request.endpoint in ['loading_view', 'check_view']:
 		response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
 		response.headers['Pragma'] = 'no-cache'
 		response.headers['Expires'] = '0'
@@ -50,8 +50,12 @@ def update_textbooks_view(class_id):
 
 @app.route('/loading/<class_ids>')
 def loading_view(class_ids, override_url=None):
-	if request.args.get('override_url'):
-		override_url = request.args.get('override_url')
+	t = session.get('loading_t') if session.get('loading_t') and session.get('loading_c') == class_ids else int(time.time())
+	if session.get('override_url'):
+		override_url = session.get('override_url')
+	session['override_url'] = override_url
+	session['loading_t'] = t
+	session['loading_c'] = class_ids
 	classes = class_ids.split(',')
 	if len(classes) == 1:
 		url = url_for('class_view', class_id=classes[0], _external=True)
@@ -59,9 +63,9 @@ def loading_view(class_ids, override_url=None):
 		group_id = prepare_class_hash(classes)
 		url = url_for('group_view', group_id=group_id, _external=True)
 	statuses = {c:check_class(c) for c in classes}
-	percent = (len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100
+	percent = max((len(filter(lambda x: x == True, statuses.values()))/float(len(statuses.values())))*100, (time.time() - t) /len(statuses.values()))
 	g.search_val = class_ids
-	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=time.time())
+	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=t)
 
 @app.route('/class/<class_id>')
 def class_view(class_id):
@@ -69,6 +73,7 @@ def class_view(class_id):
 		fsession = FuturesSession()
 		fsession.get(worker + url_for('json_class_view', class_id=class_id))
 		return loading_view(class_id)
+	session['loading_t'] = None
 	class_obj = get_class(class_id)
 	if class_obj is None:
 		session['404'] = [class_id]
@@ -104,6 +109,7 @@ def group_view(group_id):
 		fsession = FuturesSession()
 		fsession.get(worker + url_for('group_view', group_id=group_id))
 		return loading_view(','.join(group_obj.class_ids))
+	session['loading_t'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
 	g_filtered = [x for x in group if x != None]
 	g_filtered_ids = [x.id for x in g_filtered]
@@ -161,6 +167,7 @@ def account_view():
 				fsession.get(worker + url_for('group_view', group_id=group_id))
 				url = url_for('account_view', _external=True)
 				return loading_view(','.join(group_obj.class_ids), override_url=url)
+	session['loading_t'] = None
 	return render_template('account.html')
 
 @app.route('/search', methods=['POST'])
