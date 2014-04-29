@@ -1,5 +1,9 @@
 User-agent: *
+{% if worker %}
+Disallow: /
+{% else %}
 Allow: /
 {% for url in disallows %}Disallow: {{ url|replace('//','/') }}
 {% endfor %}
+{% endif %}
 Sitemap: {{ url_for('sitemap_view', _external=True) }}

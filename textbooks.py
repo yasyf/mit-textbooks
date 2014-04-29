@@ -205,8 +205,11 @@ def opensearchdescription_view():
 
 @app.route('/robots.txt')
 def robots_view():
-	disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
-	return Response(response=render_template('robots.txt', disallows=disallows), status=200, mimetype="text/plain;charset=UTF-8")
+	if not worker:
+		disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
+	else:
+		disallows = []
+	return Response(response=render_template('robots.txt', disallows=disallows, worker=worker), status=200, mimetype="text/plain;charset=UTF-8")
 
 @app.route('/sitemap.xml')
 def sitemap_view():
