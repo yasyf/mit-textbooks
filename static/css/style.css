@@ -5,14 +5,10 @@ body {
 	font-size: 110%;
 	padding: 40px 15px;
 }
+
 .mit_logo {
 	height: 25px;
 	vertical-align: -2px;
-}
-
-.navbar-brand {
-	font-size: 190%;
-	padding-top: 20px;
 }
 
 .glyphicon {
@@ -44,10 +40,19 @@ blockquote{
 	vertical-align: -1px;
 }
 
-.navbar {
-	min-height: 70px;
+@media only screen and (min-width : 769px) {
+	#search {
+		padding-top: 13px;
+		position: relative;
+		left: 47px;
+	}
+	
+	.navbar-brand {
+		font-size: 190%;
+		padding-top: 20px;
+	}
+	.navbar {
+		min-height: 70px;
+	}
 }
 
-#search {
-	padding-top: 12px;
-}
