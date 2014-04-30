@@ -18,6 +18,13 @@ def request_wants_json():
 
 @app.before_request
 def preprocess_request():
+	browser = request.user_agent.browser
+	version = request.user_agent.version and int(request.user_agent.version.split('.')[0])
+ 
+	if request.endpoint != 'static' and browser and version:
+		if (browser == 'msie' and version < 9):
+			return render_template('unsupported.html')
+
 	email = request.cookies.get('id_email')
 	if email:
 		email = urllib.unquote(email)
