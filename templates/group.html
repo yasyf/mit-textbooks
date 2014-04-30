@@ -81,9 +81,9 @@
       method: 'feed',
       link: "{{ url_for('group_view', group_id=group_obj.slug(), _external=True) }}",
       {% if group_obj.named %}
-      caption: 'Check out {{ class_obj.name }} on MIT Textbooks',
+      caption: 'Check out {{ class_obj.name }} on MIT Textbooks!',
       {% else %}
-      caption: 'Check out my classes on MIT Textbooks',
+      caption: 'Check out my classes on MIT Textbooks!',
       {% endif %}
     }, function(response){});
   }
