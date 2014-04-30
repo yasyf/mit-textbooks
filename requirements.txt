@@ -3,11 +3,13 @@ Jinja2==2.7.2
 MarkupSafe==0.21
 Werkzeug==0.9.4
 beautifulsoup4==4.3.2
+bleach==1.4
 bottlenose==0.6.0
 futures==2.1.6
 gevent==1.0
 greenlet==0.4.2
 gunicorn==18.0
+html5lib==0.999
 itsdangerous==0.24
 lxml==3.3.5
 mechanize==0.2.5
@@ -15,6 +17,7 @@ pymongo==2.7
 python-Levenshtein==0.11.2
 requests==2.2.1
 sendgrid==0.5.1
+six==1.6.1
 smtpapi==0.1.2
 unittest2==0.5.1
 wsgiref==0.1.2

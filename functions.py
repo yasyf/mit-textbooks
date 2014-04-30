@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach
 from flask import g, flash, url_for
 from bs4 import BeautifulSoup
 from lxml import objectify
@@ -63,7 +63,7 @@ def md5(s):
 	return _hash
 
 def clean_html(html):
-	return html.strip().replace("\n"," ").encode('ascii','xmlcharrefreplace')
+	return bleach.clean(html.strip().replace("\n"," ").encode('ascii','xmlcharrefreplace'), tags=[], strip=True)
 
 def get_user(email, name, phone):
 	global user_objects
@@ -166,13 +166,13 @@ def clean_class_info(class_info):
 	class_info_cleaned['dt'] = int(time.time())
 	class_info_cleaned['class'] = class_info['id']
 	class_info_cleaned['course'] = class_info['course']
-	class_info_cleaned['name'] = class_info['label']
-	class_info_cleaned['short_name'] = class_info['shortLabel']
-	class_info_cleaned['description'] = class_info['description']
+	class_info_cleaned['name'] = clean_html(class_info['label'])
+	class_info_cleaned['short_name'] = clean_html(class_info['shortLabel'])
+	class_info_cleaned['description'] = clean_html(class_info['description'])
 	class_info_cleaned['semesters'] = class_info['semester']
 	class_info_cleaned['hass'] = class_info['hass_attribute'][-1:]
 	class_info_cleaned['units'] = [int(x) for x in class_info['units'].split('-')]
-	class_info_cleaned['instructors'] = {'spring': class_info['spring_instructors'], 'fall': class_info['fall_instructors']}
+	class_info_cleaned['instructors'] = {'spring': [clean_html(i) for i in class_info['spring_instructors']], 'fall': [clean_html(i) for i in class_info['fall_instructors']]}
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
@@ -528,4 +528,3 @@ def sitemap_allows():
 	for gr in groups.find({}):
 		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
 	return allows
-
