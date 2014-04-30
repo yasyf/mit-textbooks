@@ -16,3 +16,6 @@ class MITUser():
 
 	def get_postings(self):
 		return offers.find({"email": self.get_id()})
+
+	def kerberos(self):
+		return self.email.split("@")[0]

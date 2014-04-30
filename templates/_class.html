@@ -14,6 +14,9 @@
 <p>
 	This class counts for a total of
 	<a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.units[0] }} lecture, {{ class_obj.units[1] }} lab, {{ class_obj.units[2] }} homework">{{ class_obj.units|sum }} credits</a>.
+	{% if class_obj.hass %}
+	This class counts as a HASS <strong>{{ class_obj.hass }}</strong>.
+	{% endif %}
 </p>
 <p>
 	In the {{ class_obj.evaluation[2] }} Subject Evaluations, {{ class_obj.id }} was rated <a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.evaluation[1] }} response rate">{{ class_obj.evaluation[0] }}</a>.

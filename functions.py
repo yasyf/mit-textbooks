@@ -163,6 +163,7 @@ def clean_class_info(class_info):
 	class_info_cleaned['short_name'] = class_info['shortLabel']
 	class_info_cleaned['description'] = class_info['description']
 	class_info_cleaned['semesters'] = class_info['semester']
+	class_info_cleaned['hass'] = class_info['hass_attribute'][-1:]
 	class_info_cleaned['units'] = [int(x) for x in class_info['units'].split('-')]
 	class_info_cleaned['instructors'] = {'spring': class_info['spring_instructors'], 'fall': class_info['fall_instructors']}
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])

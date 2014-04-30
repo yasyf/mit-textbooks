@@ -297,6 +297,17 @@ def professor_evaluation_view(class_id, professor):
 	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
 	return redirect(url)
 
+@app.route('/export/courseroad/<class_ids>', methods=['POST'])
+def courseroad_export_view(class_ids):
+	year = TERM[:4]
+	i = int(request.form.get('year'))
+	semester = int(request.form.get('semester'))
+	term = 4*(i-1) + semester
+	session['year'] = i
+	session['semester'] = semester
+	url = "https://courseroad.mit.edu/?hash={kerberos}&addclasses={class_ids}&year={year}&term={term}".format(kerberos=g.user.kerberos(), class_ids=class_ids, year=year, term=term)
+	return redirect(url)
+
 @app.template_filter('id_to_obj')
 def id_to_obj_filter(class_id):
 	return get_class(class_id)

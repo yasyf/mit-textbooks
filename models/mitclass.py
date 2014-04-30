@@ -11,6 +11,7 @@ class MITClass():
 		self.name = class_info['name']
 		self.short_name = class_info['short_name']
 		self.description = class_info['description']
+		self.hass = class_info['hass']
 		self.semesters = class_info['semesters']
 		self.units = class_info['units']
 		self.instructors = class_info['instructors']
@@ -27,6 +28,7 @@ class MITClass():
 		d['name'] = self.name
 		d['short_name'] = self.short_name
 		d['description'] = self.description
+		d['hass'] = self.hass
 		d['semesters'] = self.semesters
 		d['units'] = self.units
 		d['instructors'] = self.instructors
