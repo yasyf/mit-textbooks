@@ -46,7 +46,7 @@ def error_mail(e):
 	message.set_text(e.message + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
-		sg.send(message)
+		print sg.send(message)
 	except Exception:
 		pass
 
@@ -271,14 +271,26 @@ def get_textbook_info(class_id, semesters):
 	pairing = {'SP': 'Spring', 'FA': 'Fall'}
 	if pairing[TERM[-2:]] in semesters:
 		term = TERM
+		term_l = TERM_LAST
 	else:
 		term = TERM_LAST
-	url = "http://sisapp.mit.edu/textbook/books.html?Term={term}&Subject={class_id}".format(term=TERM, class_id=class_id)
-	soup = BeautifulSoup(requests.get(url).text)
+		term_l = TERM
+
 	textbooks = {'dt': time.time()}
 	sections = {}
 	titles = set()
 	asin = set()
+
+	url = "http://sisapp.mit.edu/textbook/books.html?Term={term}&Subject={class_id}".format(term=term, class_id=class_id)
+	html = requests.get(url).text
+	if 'No text books are recorded for your request.' in html:
+		url = "http://sisapp.mit.edu/textbook/books.html?Term={term}&Subject={class_id}".format(term=term_l, class_id=class_id)
+		html = requests.get(url).text
+	if 'No text books are recorded for your request.' in html:
+		textbooks["sections"] = sections
+		return textbooks
+	soup = BeautifulSoup(html)
+
 	for h2 in soup.findAll('h2'):
 		book_category = []
 		tbody = h2.next_sibling.next_sibling.contents[3]

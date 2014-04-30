@@ -12,11 +12,11 @@ users = db.users
 
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 
-TERM = "2014SP"
-TERM_LAST = "2014FA"
+TERM = "2015FA"
+TERM_LAST = "2014SP"
 
-STERM = "sp14"
-STERM_LAST = "fa13"
+STERM = "fa14"
+STERM_LAST = "sp14"
 
 RECENTS = 20
 CACHE_FOR = 2419200
