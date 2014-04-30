@@ -119,8 +119,15 @@ def format_class(c):
 		c = c[:-1]
 	return c
 
+def is_int(value):
+  try:
+    int(value)
+    return True
+  except ValueError:
+    return False
+
 def prepare_class_hash(classes):
-	classes = ','.join(list(sorted([format_class(clean_html(c)) for c in classes])))
+	classes = ','.join(list(sorted(set([format_class(clean_html(c)) for c in classes]), key=lambda x: int(x.split('.')[0]) if '.' in x and is_int(x.split('.')[0]) else x)))
 	_hash = md5(classes)
 	if groups.find_one({"hash": _hash}):
 		return _hash

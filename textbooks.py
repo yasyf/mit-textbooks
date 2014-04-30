@@ -156,6 +156,9 @@ def json_group_view(group_id):
 @app.route('/group/<group_id>')
 def group_view(group_id):
 	group_obj = get_group(group_id)
+	if not group_obj:
+		session.pop('404')
+		return redirect(url_for('_404_view'))
 	if not check_group(group_obj.class_ids):
 		for class_id in group_obj.class_ids:
 			send_to_worker(class_id)

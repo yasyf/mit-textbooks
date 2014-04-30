@@ -21,6 +21,7 @@
 		</p>
 	</div>
 </div>
+{% if classes|length  %}
 <hr>
 <div class="row">
 	{% for class in classes %}
@@ -39,5 +40,6 @@
 	</div>
 	{% endfor %}
 </div>
+{% endif %}
 
 {% endblock %}
