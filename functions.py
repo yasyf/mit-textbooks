@@ -352,7 +352,7 @@ def get_amazon_info(isbn, title, author):
 	d['title'] = product.ItemAttributes.Title.text
 
 	try:
-		d['image'] = product.LargeImage.URL
+		d['image'] = product.LargeImage.URL.text
 	except AttributeError:
 		pass
 	try:
