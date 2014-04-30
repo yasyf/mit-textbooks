@@ -9,9 +9,9 @@
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>
 	{% if class_obj.is_currently_available() %}
-	{{ class_obj.id }} is currrently being offered! This semester, it is taught by 
+	{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}). This semester, it is instructed by 
 	{% else %}
-	{{ class_obj.id }} is not currently being offered. It will be available in the {{ class_obj.formatted_availability() }}, and will be taught by
+	{{ class_obj.id }} will not be offered this semester. It will be available in the {{ class_obj.formatted_availability() }}, and will be instructed by
 	{% endif %}
 	{% for instructor in class_obj.current_instructors() %}
 	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}

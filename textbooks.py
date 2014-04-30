@@ -348,6 +348,10 @@ def image_filter(classes):
 		if c.image():
 			return c.image()
 
+@app.template_filter('current_term')
+def current_term_filter(n):
+	return CURRENT_TERM
+
 @app.template_filter('section_saved')
 def section_saved_filter(section):
 	percentages = []

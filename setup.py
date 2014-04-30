@@ -15,6 +15,8 @@ amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.
 TERM = "2015FA"
 TERM_LAST = "2014SP"
 
+CURRENT_TERM = 'Fall 2014'
+
 STERM = "fa14"
 STERM_LAST = "sp14"
 
