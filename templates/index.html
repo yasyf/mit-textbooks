@@ -3,6 +3,10 @@
 {% block og_title %}Textbook Search{% endblock %}
 {% block description %}A simple search engine to identify and purchase the textbooks required for your MIT classes at the lowest prices available.{% endblock %}
 {% block og_description %}A simple search engine to identify and purchase the textbooks required for your MIT classes at the lowest prices available.{% endblock %}
+{% block meta %}
+<link rel='canonical' href="{{ url_for('index_view', _external=True) }}">
+<meta property="og:url" content="{{ url_for('index_view', _external=True) }}">
+{% endblock %}
 {% block js %}<script src="{{ url_for('static', filename='js/jquery.easy-ticker.min.js') }}"></script>{% endblock %}
 {% block body %}
 <p>
