@@ -9,7 +9,7 @@
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>
 	{% if class_obj.is_currently_available() %}
-	{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}). This semester, it is instructed by 
+	{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}). It is instructed by 
 	{% else %}
 	{{ class_obj.id }} will not be offered this semester. It will be available in the {{ class_obj.formatted_availability() }}, and will be instructed by
 	{% endif %}
