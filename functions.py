@@ -160,6 +160,67 @@ def fetch_class_info(class_id):
 		class_info = check_json_for_class(url, class_id)
 	if class_info:
 		return clean_class_info(class_info)
+	else:
+		return manual_class_scrape(class_id)
+
+def custom_parse_instructors(instructors):
+	new_intructors = []
+	for i in instructors:
+		new_intructors.extend([x.split(':')[-1] for x in i.split('<br>')])
+	return new_intructors
+
+def manual_class_scrape(class_id):
+	try:
+		class_info = {}
+		class_info['dt'] = int(time.time())
+		url = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim".format(class_id=class_id)
+		html = requests.get(url).text
+		if 'No matching subjects found.' in html:
+			return
+		soup = BeautifulSoup(html)
+		name = clean_html(soup.find("h3").text).split(' ')
+		class_info['class'], class_info['name'] = name[0], ' '.join(name[1:])
+		class_info['short_name'] = class_info['name']
+		class_info['course'] = class_info['class'].split('.')[0]
+		for img in soup.find_all('img'):
+			if img.get('src') == "/icns/grad.gif":
+				class_info['grad'] = True
+			if img.get("src") == "/icns/hr.gif":
+				nextTag = img.findNext()
+				if nextTag.name == "br":
+					text = ""
+					while nextTag.nextSibling.name != "br":
+						text += clean_html(nextTag.nextSibling)
+						nextTag = nextTag.nextSibling
+					instructors = nextTag.findNext().findNext().text
+					all_instructors = []
+					for professor in instructors.split(", "):
+						prof = professor.split(". ")
+						if professor not in ["Jr.","Sr."]:
+							all_instructors.append(professor)
+					class_info['instructors'] = {'spring': [clean_html(i) for i in custom_parse_instructors(all_instructors)], 'fall': [clean_html(i) for i in custom_parse_instructors(all_instructors)]}
+		when = []
+		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring"}.iteritems():
+			when_img_src = "/icns/%s.gif" % (when_img)
+			if soup.find("img",src=when_img_src) != None:
+				when.append(when_when)
+		class_info['semesters'] = when
+		unit_index_start = str(soup).find("Units: ") + 7
+		unit_index_end = str(soup).find("<br/>",unit_index_start)-1
+		units_info = clean_html(str(soup)[unit_index_start:unit_index_end])
+		class_info['units'] = [int(x) for x in units_info.split('-')]
+		class_info['description'] = text
+		class_info['hass'] = None
+		class_info['stellar_url'] = get_stellar_url(class_id)
+		class_info['class_site'] = get_class_site(class_id)
+		class_info['evaluation'] = get_subject_evauluation(class_id)
+		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
+		return class_info
+	except Exception:
+		return
+
+
+
 
 def clean_class_info(class_info):
 	class_info_cleaned = {}
@@ -172,7 +233,7 @@ def clean_class_info(class_info):
 	class_info_cleaned['semesters'] = class_info['semester']
 	class_info_cleaned['hass'] = class_info['hass_attribute'][-1:]
 	class_info_cleaned['units'] = [int(x) for x in class_info['units'].split('-')]
-	class_info_cleaned['instructors'] = {'spring': [clean_html(i) for i in class_info['spring_instructors']], 'fall': [clean_html(i) for i in class_info['fall_instructors']]}
+	class_info_cleaned['instructors'] = {'spring': [clean_html(i) for i in custom_parse_instructors(class_info['spring_instructors'])], 'fall': [clean_html(i) for i in custom_parse_instructors(class_info['fall_instructors'])]}
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
@@ -236,11 +297,13 @@ def get_class_site(class_id):
 	soup = BeautifulSoup(r.text)
 	try:
 		title = soup.find('title').string
+		if 'no title' in title.lower():
+			title = "{class_id} Class Site".format(class_id=class_id)
 	except AttributeError:
 		title = "{class_id} Class Site".format(class_id=class_id)
 	if 'MIT OpenCourseWare' in title:
 		title = title.split('|')[0]
-	return (title.strip(), r.url)
+	return (clean_html(title), r.url)
 
 def get_subject_evauluation(class_id):
 	try:
@@ -263,7 +326,7 @@ def get_subject_evauluation(class_id):
 		soup = BeautifulSoup(response.read())
 		rating = soup.find('strong', text='Overall rating of subject: ')
 		percentage = soup.find('strong', text='Response rate:')
-		return (str(rating.next_sibling).strip(), str(percentage.next_sibling).strip(), date)
+		return (clean_html(str(rating.next_sibling)), clean_html(str(percentage.next_sibling)), date)
 	except AttributeError:
 		return (None,)
 
@@ -528,3 +591,15 @@ def sitemap_allows():
 	for gr in groups.find({}):
 		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
 	return allows
+
+def reset_class_db(verify=False):
+	if not verify:
+		return
+	all_classes = set()
+	for c in classes.find():
+		classes.remove(c["_id"])
+		all_classes.add(c["class"])
+	time.sleep(5)
+	for c in all_classes:
+		send_to_worker(c)
+

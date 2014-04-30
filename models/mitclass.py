@@ -19,6 +19,7 @@ class MITClass():
 		self.class_site = tuple(class_info['class_site'])
 		self.evaluation = tuple(class_info['evaluation'])
 		self.textbooks = class_info['textbooks']
+		self.grad = class_info['grad'] if 'grad' in class_info else False
 		self._image = None
 
 	def to_dict(self):
@@ -37,6 +38,7 @@ class MITClass():
 		d['class_site'] = self.class_site
 		d['evaluation'] = self.evaluation
 		d['textbooks'] = self.textbooks
+		d['grad'] = self.grad
 		return d
 
 	def json(self):
