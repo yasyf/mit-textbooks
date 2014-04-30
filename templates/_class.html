@@ -42,15 +42,26 @@
 		<div class="panel-body">Save up to {{ section|section_saved }} by purchasing through MIT Textbooks!</div>
 		<div class="list-group">
 			{% for textbook in section %}
-				<a href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal();" class="list-group-item">
-					<h4 class="list-group-item-heading"><i>{{ textbook.title }}</i> by {{ textbook.author }}</h4>
-					<p class="list-group-item-text">
-						{% for label, price in (textbook|prices) %}
-						${{ price }} {{ label }} {% if not loop.last %} <span class='slash'>/</span> {% endif %}
-						{% endfor %}
-						{% if textbook.availability %}<br> {{ textbook.availability }} {% if textbook.prime %} <img class='prime' src="{{ url_for('static', filename='images/prime.png') }}" alt='Amazon Prime'> {% endif %}{% endif %}
-					</p>
-				</a>
+				<span itemscope itemtype='http://schema.org/Product'>
+					<a
+					itemprop='url'
+					href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal();"
+					class="list-group-item" >
+						<h4 class="list-group-item-heading" itemprop='description'>
+							<i itemprop='name'>{{ textbook.title }}</i> by <span itemprop='brand'>{{ textbook.author }}</span>
+						</h4>
+						<p class="list-group-item-text">
+							{% for label, price in (textbook|prices) %}
+							<span itemprop='offers' itemscope itemtype='http://schema.org/Offer'>
+								<span itemprop='price'>${{ price }}</span>
+								<span itemprop='itemCondition'>{{ label }}</span>
+								{% if not loop.last %} <span class='slash'>/</span> {% endif %}
+							</span>
+							{% endfor %}
+							{% if textbook.availability %}<br> <span itemprop='releaseDate'>{{ textbook.availability }}</span> {% if textbook.prime %} <img class='prime' src="{{ url_for('static', filename='images/prime.png') }}" alt='Amazon Prime'> {% endif %}{% endif %}
+						</p>
+					</a>
+				</span>
 				{% include '_textbook_modal.html' %}
 				{% include '_sell_modal.html' %}
 			{% endfor %}

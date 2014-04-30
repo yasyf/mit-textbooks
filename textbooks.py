@@ -238,24 +238,11 @@ def robots_view():
 
 @app.route('/sitemap.xml')
 def sitemap_view():
-	allows = [url_for('index_view', _external=True)]
-	for c in classes.find({}):
-		if 'textbooks' not in c:
-			continue
-		allows.append(url_for('class_view', class_id=c['class'], _external=True))
-		allows.append(url_for('overview_view', class_id=c['class'], _external=True))
-		if 'class_site' in c:
-			allows.append(url_for('site_view', class_id=c['class'], _external=True))
-		if 'stellar_url' in c:
-			allows.append(url_for('site_view', class_id=c['class'], _external=True))
-		allows.append(url_for('class_evaluation_view', class_id=c['class'], _external=True))
-		for section in c['textbooks']['sections'].values():
-			for book in section:
-				if 'asin' in book and book['asin']:
-					allows.append(url_for('amazon_product_view', asin=book['asin'], _external=True))
-	for gr in groups.find({}):
-		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
-	return render_template('sitemap.xml', allows=allows)
+	return Response(response=render_template('sitemap.xml', allows=sitemap_allows()), status=200, mimetype="application/xml")
+
+@app.route('/urllist.txt')
+def urllist_view():
+	return Response(response=render_template('urllist.txt', allows=sitemap_allows()), status=200, mimetype="text/plain;charset=UTF-8")
 
 @app.route('/go/<search_term>')
 def go_view(search_term):

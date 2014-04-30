@@ -342,7 +342,7 @@ def get_amazon_info(isbn, title, author):
 			return d
 		root = objectify.fromstring(response)
 	try:
-		response = doItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary')
+		response = doItemLookup(ItemId=root.Items.Item.ASIN.text, ResponseGroup='ItemAttributes,Offers,OfferSummary,Images')
 		if not response:
 			return d
 		product = objectify.fromstring(response).Items.Item
@@ -350,6 +350,11 @@ def get_amazon_info(isbn, title, author):
 		return d
 	d['asin'] = product.ASIN.text
 	d['title'] = product.ItemAttributes.Title.text
+
+	try:
+		d['image'] = product.LargeImage.URL
+	except AttributeError:
+		pass
 	try:
 		d['author'] = product.ItemAttributes.Author.text
 	except AttributeError:
@@ -491,3 +496,23 @@ def get_blacklist(classes):
 		if b:
 			penalty *= b['delay']
 	return 1 + (penalty-1)/2.5
+
+def sitemap_allows():
+	allows = [url_for('index_view', _external=True)]
+	for c in classes.find({}):
+		if 'textbooks' not in c:
+			continue
+		allows.append(url_for('class_view', class_id=c['class'], _external=True))
+		allows.append(url_for('overview_view', class_id=c['class'], _external=True))
+		if 'class_site' in c:
+			allows.append(url_for('site_view', class_id=c['class'], _external=True))
+		if 'stellar_url' in c:
+			allows.append(url_for('site_view', class_id=c['class'], _external=True))
+		allows.append(url_for('class_evaluation_view', class_id=c['class'], _external=True))
+		for section in c['textbooks']['sections'].values():
+			for book in section:
+				if 'asin' in book and book['asin']:
+					allows.append(url_for('amazon_product_view', asin=book['asin'], _external=True))
+	for gr in groups.find({}):
+		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
+	return allows

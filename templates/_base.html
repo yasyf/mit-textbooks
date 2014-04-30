@@ -13,10 +13,11 @@
   <meta property="og:site_name" content="MIT Textbooks">
   <meta property="og:description" content="{% block og_description %}{% endblock %}">
   <meta property="fb:app_id" content="1497643403780485">
-  <meta property="og:image" content="{{ url_for('static', filename='images/seal.gif', _external=True) }}">
   <meta property="og:type" content="website">
 
   {% block meta %}{% endblock %}
+
+  {% block img %}<meta property="og:image" content="{{ url_for('static', filename='images/seal.gif', _external=True) }}">{% endblock %}
   
   <!-- Link -->
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">

@@ -7,6 +7,15 @@
 <meta property="og:url" content="{{ url_for('class_view', class_id=class_obj.id, _external=True) }}">
 {% endblock %}
 
+ 
+{% block img %}
+{% if class_obj.image %}
+<meta property="og:image" content="{{ class_obj.image }}">
+{% else %}
+<meta property="og:image" content="{{ url_for('static', filename='images/seal.gif', _external=True) }}">
+{% endif %}
+{% endblock %}
+
 {% block body %}
 
 {% include '_class.html' %}

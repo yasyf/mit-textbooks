@@ -1,0 +1,2 @@
+{% for url in allows %}{{ url }}
+{% endfor %}
