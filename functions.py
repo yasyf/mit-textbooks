@@ -120,7 +120,7 @@ def format_class(c):
 	return c
 
 def prepare_class_hash(classes):
-	classes = ','.join([format_class(clean_html(c)) for c in classes])
+	classes = ','.join(list(sorted([format_class(clean_html(c)) for c in classes])))
 	_hash = md5(classes)
 	if groups.find_one({"hash": _hash}):
 		return _hash
