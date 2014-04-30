@@ -237,6 +237,8 @@ def robots_view():
 def sitemap_view():
 	allows = [url_for('index_view', _external=True)]
 	for c in classes.find({}):
+		if 'textbooks' not in c:
+			continue
 		allows.append(url_for('class_view', class_id=c['class'], _external=True))
 		allows.append(url_for('overview_view', class_id=c['class'], _external=True))
 		if 'class_site' in c:
