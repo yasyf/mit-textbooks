@@ -147,7 +147,7 @@ def create_group_info(classes, _hash):
 
 def check_json_for_class(url, class_id):
 	response = requests.get(url)
-	json_data = response.json()["items"]
+	json_data = response.json(strict=False)["items"]
 	for element in json_data:
 		if 'id' in element and element['id'] == clean_html(class_id):
 			return element
@@ -528,3 +528,4 @@ def sitemap_allows():
 	for gr in groups.find({}):
 		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
 	return allows
+
