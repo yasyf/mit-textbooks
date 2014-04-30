@@ -50,7 +50,6 @@ def error_mail(e):
 	except Exception:
 		pass
 
-
 def sha(text):
 	return hashlib.sha256(text).hexdigest()
 

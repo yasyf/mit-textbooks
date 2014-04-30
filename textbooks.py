@@ -22,7 +22,7 @@ def preprocess_request():
 	version = request.user_agent.version and int(request.user_agent.version.split('.')[0])
  
 	if request.endpoint != 'static' and browser and version:
-		if (browser == 'msie' and version < 9):
+		if (browser == 'msie' and version < 10):
 			return render_template('unsupported.html')
 
 	email = request.cookies.get('id_email')
