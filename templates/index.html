@@ -1,11 +1,23 @@
 {% extends "_base.html" %}
 {% block title %}Textbook Search{% endblock %}
+{% block og_title %}Textbook Search{% endblock %}
+{% block description %}A simple search engine to identify and purchase the textbooks required for your MIT classes at the lowest prices available.{% endblock %}
+{% block og_description %}A simple search engine to identify and purchase the textbooks required for your MIT classes at the lowest prices available.{% endblock %}
 {% block js %}<script src="{{ url_for('static', filename='js/jquery.easy-ticker.min.js') }}"></script>{% endblock %}
 {% block body %}
-<p>MIT Textbooks is a search engine for all your classes, as well as a marketplace for buying and selling new and used textbooks from other MIT students and online vendors. We try to find you the best price, as well as the most convenient delivery options.</p>
-<p>To begin, use search bar above to find a class, or search for multiple classes by separating them with a comma.</p>
-
-<hr>
+<p>
+	MIT Textbooks is a search engine for all your classes, as well as a marketplace for buying and selling new and used textbooks from other MIT students and online vendors.
+</p>
+<p>
+	We try to find you the best price, as well as the most convenient delivery options.
+</p>
+<p>Use search bar above to find a class. You can search for multiple classes by separating them with a comma. Class groups can then be saved and exported to CourseRoad.
+</p>
+<p>
+	If you find the site useful, be sure to tell your friends and give us a like on Facebook!
+</p>
+<div class="fb-like" data-send="true" data-width="450" data-show-faces="true" data-share="false"></div>
+<hr style="margin-top: 15px;">
 
 <div class="panel panel-default">
 	<div class="panel-heading"></span><b>Recent Searches</b></div>

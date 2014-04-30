@@ -1,6 +1,14 @@
 {% extends "_base.html" %}
 {% block title %}{{ group_obj.display_name() }}{% endblock %}
+{% block og_title %}{{ group_obj.display_name() }}{% endblock %}
 {% block description %}{{ group_obj.display_description() }}{% endblock %}
+{% block og_description %}{{ group_obj.display_description() }}{% endblock %}
+
+{% block meta %}
+<link rel='canonical' href="{{ url_for('group_view', group_id=group_obj.slug(), _external=True) }}">
+<meta property="og:url" content="{{ url_for('group_view', group_id=group_obj.slug(), _external=True) }}">
+{% endblock %}
+
 {% block body %}
 
 <p>
@@ -17,6 +25,7 @@
 		Export to CourseRoad
 	</a>
 	{% endif %}
+	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
 </p>
 <hr>
 {% for class_obj in classes %}
@@ -34,7 +43,7 @@
 		<h4 class='modal-title'>Export To CourseRoad</h4>
 	  </div>
 	  <div class='modal-body'>
-		<form class='form-horizontal' role='form' method="POST" action="{{ url_for('courseroad_export_view', class_ids=group_obj.class_ids|join(',')) }}" id="courseroad_form">
+		<form class='form-horizontal' role='form' method="POST" target="_blank" action="{{ url_for('courseroad_export_view', class_ids=group_obj.class_ids|join(',')) }}" id="courseroad_form">
 			<div class='form-group'>
 				<label for='year' class='col-lg-2 control-label'>Year</label>
 				<div class='col-lg-10'>
@@ -65,5 +74,19 @@
 	</div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+  <script>
+  function share() {
+    FB.ui({
+      method: 'feed',
+      link: "{{ url_for('group_view', group_id=group_obj.slug(), _external=True) }}",
+      {% if group_obj.named %}
+      caption: 'Check out {{ class_obj.name }} on MIT Textbooks',
+      {% else %}
+      caption: 'Check out my classes on MIT Textbooks',
+      {% endif %}
+    }, function(response){});
+  }
+  </script>
 
 {% endblock %}

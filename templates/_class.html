@@ -1,5 +1,11 @@
 <a id='{{ class_obj.id }}'></a>
 <h1>{{ class_obj.display_name() }}</h1>
+{% if not group_obj %}
+<p>
+	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
+</p>
+<hr>
+{% endif %}
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>
 	{% if class_obj.is_currently_available() %}

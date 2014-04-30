@@ -41,6 +41,10 @@ blockquote{
 }
 
 @media only screen and (min-width : 769px) {
+	.mit_logo {
+		height: 35px;
+		vertical-align: -5px;
+	}
 	#search {
 		padding-top: 13px;
 		position: relative;
@@ -48,8 +52,8 @@ blockquote{
 	}
 	
 	.navbar-brand {
-		font-size: 190%;
-		padding-top: 20px;
+		font-size: 250%;
+		padding-top: 16px;
 	}
 	.navbar {
 		min-height: 70px;

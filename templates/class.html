@@ -1,8 +1,25 @@
 {% extends "_base.html" %}
 {% block title %}{{ class_obj.name }}{% endblock %}
 {% block description %}Buy and sell both new and used textbooks for {{ class_obj.display_name() }} at MIT Textbooks.{% endblock %}
+
+{% block meta %}
+<link rel='canonical' href="{{ url_for('class_view', class_id=class_obj.id, _external=True) }}">
+<meta property="og:url" content="{{ url_for('class_view', class_id=class_obj.id, _external=True) }}">
+{% endblock %}
+
 {% block body %}
 
 {% include '_class.html' %}
+
+
+<script>
+function share() {
+FB.ui({
+  method: 'feed',
+  link: "{{ url_for('class_view', class_id=class_obj.id, _external=True) }}",
+  caption: 'Check out my {{ class_obj.display_name() }} on MIT Textbooks',
+}, function(response){});
+}
+</script>
 
 {% endblock %}
