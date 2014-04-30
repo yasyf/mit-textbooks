@@ -245,9 +245,9 @@ def get_subject_evauluation(class_id):
 		response = auth_browser.open(url)
 		response_text = response.read()
 	soup = BeautifulSoup(response_text)
-	for link in auth_browser.links():
+	for i,link in enumerate(auth_browser.links()):
 		if 'subjectEvaluationReport' in link.url:
-			date = str(soup.find('a', text=link.text).next_sibling).replace("End of Term","").strip()
+			date = str(soup.findAll('a')[i].next_sibling).replace("End of Term","").strip()
 			response = auth_browser.follow_link(link)
 			break
 	soup = BeautifulSoup(response.read())
@@ -479,4 +479,6 @@ def get_blacklist(classes):
 		if b:
 			penalty *= b['delay']
 	return 1 + (penalty-1)/2.5
-
+if __name__ == '__main__':
+	init_auth_browser()
+	print get_class('15.501')
