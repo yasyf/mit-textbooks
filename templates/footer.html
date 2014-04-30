@@ -12,13 +12,13 @@
             {% endif %}
             {% endif %}
             {% else %}
-            <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">Login</a>
+            <a class="btn btn-primary btn-sm" onclick="$('#login_modal').modal();">Login</a>
             {% endif %}
         </p>
     </div>
     <div class="col-xs-6 text-right">
         <p>
-            <a href='mailto:tb_support@mit.edu' class="btn btn-primary btn-sm">Feedback</a>
+            <a onclick="$('#feedback_modal').modal();" class="btn btn-primary btn-sm">Feedback</a>
         </p>
     </div>
 </div>
@@ -79,7 +79,62 @@ function save_group(){
 </script>
 {% endif %}
 {% endif %}
+{% else %}
+<div class='modal fade' id='login_modal'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+          <div class='modal-header'>
+            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+            <h4 class='modal-title'>Login To MIT Textbooks</h4>
+          </div>
+          <div class='modal-body'>
+            <p>In order to login to MIT Textbooks, you must have your personal certificates installed in your browser. You can also use all of the site without logging in.</p>
+            <p>To install your certificates, visit the <a href="http://kb.mit.edu/confluence/display/istcontrib/Certificates+at+MIT" target="_blank">Certificates at MIT</a> page on the IS&amp;T Knowledge Base. To verify you have installed them correctly, use the <a href="http://web.mit.edu/certificates/test/" target='_blank'>Certificate Test Page</a>.</p>
+            <p>If you are seeing this message and have already installed your certificates, it's possible that you clicked 'Cancel' when your browser requested which certificate to present. If this is the case, you will have to restart your browser before it will prompt you to login again.</p>
+          </div>
+          <div class='modal-footer'>
+            <button type='button'  data-dismiss='modal'  class='btn btn-primary'>Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endif %}
+<div class='modal fade' id='feedback_modal'>
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+        <h4 class='modal-title'>Feedback on MIT Textbooks</h4>
+      </div>
+      <div class='modal-body'>
+        <p class='center'>
+            <a data-toggle='modal' href='mailto:tb_support@mit.edu?subject=Feedback' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Email Support</a>
+            <a data-toggle='modal' target='_blank' href='https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=tb_support@mit.edu&amp;su=Feedback' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Gmail Support</a>
+            <a data-toggle='modal' onclick='$("#feedback_info_modal").modal();' class='btn btn-info'><span class='glyphicon glyphicon-envelope'></span> &nbsp; Contact Support</a>
+        </p>
+      </div>
+      <div class='modal-footer'>
+        <button type='button'  data-dismiss='modal' class='btn btn-primary'>Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class='modal fade' id='feedback_info_modal'>
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+        <h4 class='modal-title'>Support Contact Information</h4>
+      </div>
+      <div class='modal-body'>
+        <p>Email: tb_support@mit.edu</p>
+      </div>
+      <div class='modal-footer'>
+        <button type='button'   data-dismiss='modal'  class='btn btn-primary'>Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <script>
     function check_sell(id) {
         var passing = true;
