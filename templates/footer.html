@@ -136,6 +136,14 @@ function save_group(){
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <script>
+    $(document).ready(function() {
+        $( "#search_input" ).focus(function() {
+          $( "#gobtn" ).fadeTo( 400, 1, "swing" );
+        });
+        $( "#search_input" ).focusout(function() {
+          $( "#gobtn" ).fadeTo( 400, 0, "swing" );
+        });
+    });
     function check_sell(id) {
         var passing = true;
         $('#error'+id).html('');

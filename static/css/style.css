@@ -12,6 +12,7 @@ body {
 
 .navbar-brand {
 	font-size: 190%;
+	padding-top: 20px;
 }
 
 .glyphicon {
@@ -41,4 +42,12 @@ blockquote{
 
 .prime {
 	vertical-align: -1px;
+}
+
+.navbar {
+	min-height: 70px;
+}
+
+#search {
+	padding-top: 12px;
 }
