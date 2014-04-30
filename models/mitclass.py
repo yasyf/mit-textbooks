@@ -19,6 +19,7 @@ class MITClass():
 		self.class_site = tuple(class_info['class_site'])
 		self.evaluation = tuple(class_info['evaluation'])
 		self.textbooks = class_info['textbooks']
+		self._image = None
 
 	def to_dict(self):
 		d = {}
@@ -44,6 +45,15 @@ class MITClass():
 		d['stellar_url'] = url_for('stellar_view', class_id=self.id, _external=True)
 		d['class_site'] = url_for('site_view', class_id=self.id, _external=True)
 		return d
+
+	def image(self):
+		if self._image:
+			return self._image
+		for section in self.textbooks['sections'].values():
+			for book in section:
+				if 'image' in book:
+					self._image = book['image']
+					return self._image
 
 	def safe_id(self):
 		return self.id.replace(".","")

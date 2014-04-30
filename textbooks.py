@@ -341,6 +341,12 @@ def year_from_i_filter(i):
 	d = {'1': 'Freshman', '2': 'Sophomore', '3': 'Junior', '4': 'Senior', 'G': 'Graduate'}
 	return d[i] if i in d else i
 
+@app.template_filter('image')
+def image_filter(classes):
+	for c in classes:
+		if c.image():
+			return c.image()
+
 @app.template_filter('section_saved')
 def section_saved_filter(section):
 	percentages = []

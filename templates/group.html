@@ -9,6 +9,14 @@
 <meta property="og:url" content="{{ url_for('group_view', group_id=group_obj.slug(), _external=True) }}">
 {% endblock %}
 
+{% block img %}
+{% if classes|image %}
+<meta property="og:image" content="{{ classes|image }}">
+{% else %}
+<meta property="og:image" content="{{ url_for('static', filename='images/seal.gif', _external=True) }}">
+{% endif %}
+{% endblock %}
+
 {% block body %}
 
 <p>
