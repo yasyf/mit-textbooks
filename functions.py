@@ -79,6 +79,7 @@ def get_user(email, name, phone):
 
 def get_class(class_id):
 	global class_objects
+	class_id = format_class(class_id)
 	if class_id in class_objects:
 		return class_objects[class_id]
 	class_info = classes.find_one({"class": class_id})
@@ -113,8 +114,14 @@ def get_group(group_id):
 		group_objects[group_id] = group_obj
 		return group_obj
 
+def format_class(c):
+	c = c.upper()
+	if c[-1] == 'J':
+		c = c[:-1]
+	return c
+
 def prepare_class_hash(classes):
-	classes = ','.join([clean_html(c) for c in classes])
+	classes = ','.join([format_class(clean_html(c)) for c in classes])
 	_hash = md5(classes)
 	if groups.find_one({"hash": _hash}):
 		return _hash

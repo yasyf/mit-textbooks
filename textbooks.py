@@ -247,7 +247,7 @@ def sitemap_view():
 
 @app.route('/go/<search_term>')
 def go_view(search_term):
-	classes = search_term.split(',')
+	classes = [format_class(c) for c in search_term.split(',')]
 	if len(classes) == 1:
 		if request_wants_json():
 			return redirect(url_for('json_class_view', class_id=classes[0]))

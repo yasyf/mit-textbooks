@@ -4,6 +4,13 @@
         <p>
             {% if g.user %}
             <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">My Account</a>
+            {% if group_obj %}
+            {% if not group_obj.named %}
+            <a href="#" class="btn btn-primary btn-sm" onclick="$('#save_modal').modal();">Name Group</a>
+            {% else %}
+            <a href="{{ url_for('delete_group_view', group_id=group_obj.name) }}" class="btn btn-primary btn-sm btn-danger">Delete Group</a>
+            {% endif %}
+            {% endif %}
             {% else %}
             <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">Login</a>
             {% endif %}
@@ -34,7 +41,6 @@
 {% if g.user %}
 {% if group_obj %}
 {% if not group_obj.named %}
-<a href="#" class="btn btn-primary btn-sm" onclick="$('#save_modal').modal();">Name Group</a>
 <div class='modal fade' id='save_modal'>
     <div class='modal-dialog'>
         <div class='modal-content'>
@@ -71,8 +77,6 @@ function save_group(){
     });
 }
 </script>
-{% else %}
-<a href="{{ url_for('delete_group_view', group_id=group_obj.name) }}" class="btn btn-primary btn-sm btn-danger">Delete Group</a>
 {% endif %}
 {% endif %}
 {% endif %}
