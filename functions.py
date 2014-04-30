@@ -117,7 +117,7 @@ def format_class(c):
 	c = c.upper()
 	if c[-1] == 'J':
 		c = c[:-1]
-	return c
+	return c.strip()
 
 def is_int(value):
   try:
