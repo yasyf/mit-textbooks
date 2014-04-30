@@ -227,7 +227,9 @@ def get_class_site(class_id):
 		r = requests.get(url)
 	except requests.exceptions.SSLError:
 		r = requests.get(url, verify=False, cert='cert.pem')
-	if 'stellar' in r.url or 'course.mit.edu' in r.url:
+	except requests.exceptions.TooManyRedirects:
+		r = None
+	if r is None or 'stellar' in r.url or 'course.mit.edu' in r.url:
 		google_guess = get_google_site_guess(class_id)
 		if google_guess:
 			r = requests.get(google_guess)
@@ -241,26 +243,29 @@ def get_class_site(class_id):
 	return (title.strip(), r.url)
 
 def get_subject_evauluation(class_id):
-	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
 	try:
-		response = auth_browser.open(url)
-	except Exception:
-		response = auth_browser.open(url)
-	response_text = response.read()
-	if 'Welcome, please identify yourself to access MIT services.' in response_text:
-		init_auth_browser()
-		response = auth_browser.open(url)
+		url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
+		try:
+			response = auth_browser.open(url)
+		except Exception:
+			response = auth_browser.open(url)
 		response_text = response.read()
-	soup = BeautifulSoup(response_text)
-	for i,link in enumerate(auth_browser.links()):
-		if 'subjectEvaluationReport' in link.url:
-			date = str(soup.findAll('a')[i].next_sibling).replace("End of Term","").strip()
-			response = auth_browser.follow_link(link)
-			break
-	soup = BeautifulSoup(response.read())
-	rating = soup.find('strong', text='Overall rating of subject: ')
-	percentage = soup.find('strong', text='Response rate:')
-	return (str(rating.next_sibling).strip(), str(percentage.next_sibling).strip(), date)
+		if 'Welcome, please identify yourself to access MIT services.' in response_text:
+			init_auth_browser()
+			response = auth_browser.open(url)
+			response_text = response.read()
+		soup = BeautifulSoup(response_text)
+		for i,link in enumerate(auth_browser.links()):
+			if 'subjectEvaluationReport' in link.url:
+				date = str(soup.findAll('a')[i].next_sibling).replace("End of Term","").strip()
+				response = auth_browser.follow_link(link)
+				break
+		soup = BeautifulSoup(response.read())
+		rating = soup.find('strong', text='Overall rating of subject: ')
+		percentage = soup.find('strong', text='Response rate:')
+		return (str(rating.next_sibling).strip(), str(percentage.next_sibling).strip(), date)
+	except AttributeError:
+		return (None,)
 
 def get_textbook_info(class_id, semesters):
 	pairing = {'SP': 'Spring', 'FA': 'Fall'}
@@ -486,6 +491,3 @@ def get_blacklist(classes):
 		if b:
 			penalty *= b['delay']
 	return 1 + (penalty-1)/2.5
-if __name__ == '__main__':
-	init_auth_browser()
-	print get_class('15.501')
