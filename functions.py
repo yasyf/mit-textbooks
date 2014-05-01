@@ -288,26 +288,14 @@ def clean_class_info(class_info, lecture_info):
 
 def process_prereqs(prereqs):
 	if not prereqs:
-		return '',''
-	coreqs = ''
-	for coreq in re.findall(re.compile(r'\[([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})\]'), prereqs):
-		coreqs  = coreqs + '; ' + coreq
-	prereqs = re.sub(re.compile(r'\[[\w]{1,3}\.[0-9]{2,3}[\w]{0,1}\]'), '', prereqs)
+		return [],[]
 	d = {'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.012 or equivalent', 'GIR:CHEM': '5.111 or equivalent'}
 	for k,v in d.iteritems():
 		prereqs = prereqs.replace(k, v)
-	prereqs, coreqs = prereqs.strip(), coreqs.strip()
-	if prereqs:
-		if prereqs[-1] in [',',';']:
-			prereqs = prereqs[:-1]
-		if prereqs[0] in [',',';']:
-			prereqs = prereqs[1:]
-	if coreqs:
-		if coreqs[-1] in [',',';']:
-			coreqs = coreqs[:-1]
-		if coreqs[0] in [',',';']:
-			coreqs = coreqs[1:]
-	prereqs, coreqs = prereqs.strip(), coreqs.strip()
+	coreqs = re.findall(re.compile(r'\[([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})\]'), prereqs)
+	prereqs = re.sub(re.compile(r'\[[\w]{1,3}\.[0-9]{2,3}[\w]{0,1}\]'), '', prereqs)
+	prereqs = re.findall(re.compile(r'([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})'), prereqs)
+	prereqs, coreqs = [x.strip() for x in prereqs], [x.strip() for x in coreqs]
 	return prereqs, coreqs
 
 def update_recents_with_class(class_obj):
@@ -724,5 +712,5 @@ def check_all_times(classes):
 							ovelap.add(tuple(free[day][current]))
 						current += 0.5
 	return ovelap
-
-
+if __name__ == '__main__':
+	reset_class_db(verify=True)
