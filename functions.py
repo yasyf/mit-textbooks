@@ -148,9 +148,14 @@ def create_group_info(classes, _hash):
 def check_json_for_class(url, class_id):
 	response = requests.get(url)
 	json_data = response.json(strict=False)["items"]
+	relevant = {}
+	_id = clean_html(class_id)
 	for element in json_data:
-		if 'id' in element and element['id'] == clean_html(class_id):
-			return element
+		if element['type'] == 'Class' and element['id'] == _id:
+			relevant['class'] = element
+		elif element['type'] == 'LectureSession' and element['section-of'] == _id:
+			relevant['lecture'] = element
+	return relevant
 
 def fetch_class_info(class_id):
 	url = "http://coursews.mit.edu/coursews/?term={term}&courses={course_number}".format(term=TERM, course_number=class_id.split('.')[0])
@@ -159,7 +164,7 @@ def fetch_class_info(class_id):
 		url = "http://coursews.mit.edu/coursews/?term={term}&courses={course_number}".format(term=TERM_LAST, course_number=class_id.split('.')[0])
 		class_info = check_json_for_class(url, class_id)
 	if class_info:
-		return clean_class_info(class_info)
+		return clean_class_info(class_info['class'], class_info['lecture'] if 'lecture' in class_info else None)
 	else:
 		return manual_class_scrape(class_id)
 
@@ -178,14 +183,29 @@ def manual_class_scrape(class_id):
 		if 'No matching subjects found.' in html:
 			return
 		soup = BeautifulSoup(html)
+		ssoup = str(soup)
 		name = clean_html(soup.find("h3").text).split(' ')
 		class_info['class'], class_info['name'] = name[0], ' '.join(name[1:])
 		class_info['short_name'] = class_info['name']
+		class_info['master_subject_id'] = class_info['class']
 		class_info['course'] = class_info['class'].split('.')[0]
+		when = []
+		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring"}.iteritems():
+			when_img_src = "/icns/%s.gif" % (when_img)
+			if soup.find("img",src=when_img_src) != None:
+				when.append(when_when)
+		class_info['semesters'] = when
+		class_info['hass'] = ''
 		for img in soup.find_all('img'):
-			if img.get('src') == "/icns/grad.gif":
+			if img.get('src') == "/icns/hassS.gif":
+				class_info['hass'] = 'S'
+			elif img.get('src') == "/icns/hassA.gif":
+				class_info['hass'] = 'A'
+			elif img.get('src') == "/icns/hassH.gif":
+				class_info['hass'] = 'H'
+			elif img.get('src') == "/icns/grad.gif":
 				class_info['grad'] = True
-			if img.get("src") == "/icns/hr.gif":
+			elif img.get("src") == "/icns/hr.gif":
 				nextTag = img.findNext()
 				if nextTag.name == "br":
 					text = ""
@@ -198,19 +218,28 @@ def manual_class_scrape(class_id):
 						prof = professor.split(". ")
 						if professor not in ["Jr.","Sr."]:
 							all_instructors.append(professor)
-					class_info['instructors'] = {'spring': [clean_html(i) for i in custom_parse_instructors(all_instructors)], 'fall': [clean_html(i) for i in custom_parse_instructors(all_instructors)]}
-		when = []
-		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring"}.iteritems():
-			when_img_src = "/icns/%s.gif" % (when_img)
-			if soup.find("img",src=when_img_src) != None:
-				when.append(when_when)
-		class_info['semesters'] = when
-		unit_index_start = str(soup).find("Units: ") + 7
-		unit_index_end = str(soup).find("<br/>",unit_index_start)-1
-		units_info = clean_html(str(soup)[unit_index_start:unit_index_end])
+					final_instructors = [clean_html(i) for i in custom_parse_instructors(all_instructors)]
+					class_info['instructors'] = {k.lower():(final_instructors if k in when else []) for k in ['Fall', 'Spring']}
+		
+		prereq_index_start = ssoup.find("Prereq: ") + 8
+		if prereq_index_start:
+			prereq_index_end = ssoup.find("<br/>",prereq_index_start)-1
+			prereq_info = clean_html(ssoup[prereq_index_start:prereq_index_end])
+		else:
+			prereq_info = ''
+		class_info['prereqs'] = prereq_info
+		unit_index_start = ssoup.find("Units: ") + 7
+		unit_index_end = ssoup.find("<br/>",unit_index_start)-1
+		units_info = clean_html(ssoup[unit_index_start:unit_index_end])
 		class_info['units'] = [int(x) for x in units_info.split('-')]
+		lecture_node = soup.find('b', text='Lecture:')
+		if lecture_node:
+			class_info['lecture'] = clean_html(lecture_node.nextSibling.nextSibling.text)
+			class_info['location'] = clean_html(lecture_node.nextSibling.nextSibling.nextSibling.nextSibling.text)
+		else:
+			class_info['lecture'] = None
+			class_info['location'] = None
 		class_info['description'] = text
-		class_info['hass'] = None
 		class_info['stellar_url'] = get_stellar_url(class_id)
 		class_info['class_site'] = get_class_site(class_id)
 		class_info['evaluation'] = get_subject_evauluation(class_id)
@@ -219,15 +248,14 @@ def manual_class_scrape(class_id):
 	except Exception:
 		return
 
-
-
-
-def clean_class_info(class_info):
+def clean_class_info(class_info, lecture_info):
 	class_info_cleaned = {}
 	class_info_cleaned['dt'] = int(time.time())
 	class_info_cleaned['class'] = class_info['id']
+	class_info_cleaned['master_subject_id'] = class_info['master_subject_id'] if 'master_subject_id' in class_info else class_info['id']
 	class_info_cleaned['course'] = class_info['course']
 	class_info_cleaned['name'] = clean_html(class_info['label'])
+	class_info_cleaned['prereqs'] = clean_html(class_info['prereqs'])
 	class_info_cleaned['short_name'] = clean_html(class_info['shortLabel'])
 	class_info_cleaned['description'] = clean_html(class_info['description'])
 	class_info_cleaned['semesters'] = class_info['semester']
@@ -238,6 +266,11 @@ def clean_class_info(class_info):
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
+	if lecture_info:
+		data = lecture_info['timeAndPlace'].split(' ')
+		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(data[0]), clean_html(' '.join(data[1:]))
+	else:
+		class_info_cleaned['lecture'], class_info_cleaned['location'] = None, None
 
 	excludes = ['staff']
 	def test_instructor(instructor):
@@ -592,6 +625,7 @@ def sitemap_allows():
 		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
 	return allows
 
+
 def reset_class_db(verify=False):
 	if not verify:
 		return
@@ -602,4 +636,35 @@ def reset_class_db(verify=False):
 	time.sleep(5)
 	for c in all_classes:
 		send_to_worker(c)
+
+def check_all_times(classes):
+	free = {}
+	for j in list('MTWRF'):
+		free[j] = {}
+		for i in range(7,18):
+			free[j][i] = []
+			free[j][i+0.5] = []
+	ovelap = set()
+	for c in classes:
+		lecture = c.lecture.split(',')
+		for group in lecture:
+			m = re.match(re.compile(r'([A-Z]{1,5})([0-9]{1,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})'), group)
+			for day in list(m.group(1)):
+				start_hour = int(m.group(2))
+				if start_hour < 7:
+					start_hour += 12
+				if m.group(3) == '30':
+					start_hour += 0.5
+				end_hour = int(m.group(4)) if m.group(4) else start_hour + 1
+				if end_hour < 7:
+					end_hour += 12
+				if m.group(5) == '30':
+					end_hour += 0.5
+				current = start_hour
+				while current < end_hour:
+					free[day][current].append(c.id)
+					if len(free[day][current]) > 1:
+						ovelap.add(tuple(free[day][current]))
+					current += 0.5
+	return ovelap
 

@@ -7,6 +7,11 @@
 <hr>
 {% endif %}
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
+{% if class_obj.prereqs %}
+<p>
+	This class has the following prerequisites: {{ class_obj.formatted_prereqs()|safe }}.
+</p>
+{% endif %}
 <p>
 	{% if class_obj.is_currently_available() %}
 	{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}). It is instructed by 
@@ -17,6 +22,11 @@
 	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
 	{% endfor %}
 </p>
+{% if class_obj.lecture %}
+<p>
+	Lecture occurs from {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}. 
+</p>
+{% endif %}
 <p>
 	This class counts for a total of
 	<a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.units[0] }} lecture, {{ class_obj.units[1] }} lab, {{ class_obj.units[2] }} homework">{{ class_obj.units|sum }} credits</a>.

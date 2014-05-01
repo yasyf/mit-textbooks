@@ -1,5 +1,5 @@
 from setup import *
-import datetime, calendar, json
+import datetime, calendar, json, re
 from flask import url_for
 
 class MITClass():
@@ -7,10 +7,14 @@ class MITClass():
 	def __init__(self, class_info):
 		self.dt = datetime.datetime.fromtimestamp(class_info['dt'])
 		self.id = class_info['class']
+		self.master_subject_id = class_info['master_subject_id']
 		self.course = class_info['course']
 		self.name = class_info['name']
 		self.short_name = class_info['short_name']
 		self.description = class_info['description']
+		self.prereqs = class_info['prereqs']
+		self.lecture = class_info['lecture']
+		self.location = class_info['location']
 		self.hass = class_info['hass']
 		self.semesters = class_info['semesters']
 		self.units = class_info['units']
@@ -26,10 +30,14 @@ class MITClass():
 		d = {}
 		d['dt'] = calendar.timegm(self.dt.utctimetuple())
 		d['class'] = self.id
+		d['master_subject_id'] = self.master_subject_id
 		d['course'] = self.course
 		d['name'] = self.name
 		d['short_name'] = self.short_name
 		d['description'] = self.description
+		d['prereqs'] = self.prereqs
+		d['lecture'] = self.lecture
+		d['location'] = self.location
 		d['hass'] = self.hass
 		d['semesters'] = self.semesters
 		d['units'] = self.units
@@ -114,3 +122,23 @@ class MITClass():
 
 	def has_local(self):
 		return offers.find({"class_id": self.id}).count() > 0
+
+	def formatted_prereqs(self):
+		return re.sub(re.compile(r'([a-zA-z0-9]{1,3}\.[0-9]{2,3}[a-zA-z0-9]{0,1})'),r'<a href="http://textbooksearch.mit.edu/class/\1">\1</a>', self.prereqs)
+
+	def formatted_lecture(self):
+		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}
+		times = []
+		for group in self.lecture.split(','):
+			m = re.match(re.compile(r'([A-Z]{1,5})([0-9]{1,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})'), group)
+			days = [d[x] for x in list(m.group(1))]
+			days = ', '.join(days[:-1]) + ' and ' + days[-1] if len(days) > 1 else days[0]
+			start_hour = m.group(2)
+			start_minute = m.group(3) or '00'
+			start_a = 'AM' if (int(start_hour) < 12 and int(start_hour) > 8) else 'PM'
+			end_hour = m.group(4) or int(start_hour) + 1
+			end_minute = m.group(5) or '00'
+			end_a = 'AM' if (int(end_hour) < 12 and int(end_hour) > 8) else 'PM'
+			time = "{0}:{1} {2} to {3}:{4} {5}".format(start_hour, start_minute, start_a, end_hour, end_minute, end_a)
+			times.append(time + ' on ' + days)
+		return ', '.join(times[:-1]) + ' and ' + times[-1] if len(times) > 1 else times[0]

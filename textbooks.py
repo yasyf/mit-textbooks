@@ -129,6 +129,8 @@ def class_view(class_id):
 	if class_obj is None:
 		session['404'] = [class_id]
 		return redirect(url_for('_404_view'))
+	if class_obj.master_subject_id != class_obj.id:
+		return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
 	update_recents_with_class(class_obj)
 	g.search_val = class_id
 	return render_template('class.html', class_obj=class_obj)
@@ -167,14 +169,19 @@ def group_view(group_id):
 	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
 	g_filtered = [x for x in group if x != None]
-	g_filtered_ids = [x.id for x in g_filtered]
+	g_filtered_ids = [x.master_subject_id for x in g_filtered]
 	if not g_filtered:
 		session['404'] = group_obj.class_ids
 		return redirect(url_for('_404_view'))
+	if not set(g_filtered_ids).issubset(set(group_obj.class_ids)):
+		return redirect(url_for('go_view', search_term=','.join(g_filtered_ids)))
 	if len(group) != len(g_filtered):
 		for x in set(group_obj.class_ids) - set(g_filtered_ids):
 			s = "{c} could not be found!".format(c=x)
 			flash(s, 'danger')
+	for overlaps in check_all_times(g_filtered):
+		classes = ', '.join(overlaps[:-1]) + ' and ' + overlaps[-1] if len(overlaps) > 1 else overlaps[0]
+		flash(classes + ' have conflicting lecture times!', 'warning')
 	g.search_val = ', '.join(g_filtered_ids)
 	return render_template('group.html', classes=g_filtered, group_obj=group_obj)
 
