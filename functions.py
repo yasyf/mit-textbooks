@@ -237,8 +237,8 @@ def manual_class_scrape(class_id):
 			class_info['lecture'] = clean_html(lecture_node.nextSibling.nextSibling.text)
 			class_info['location'] = clean_html(lecture_node.nextSibling.nextSibling.nextSibling.nextSibling.text)
 		else:
-			class_info['lecture'] = None
-			class_info['location'] = None
+			class_info['lecture'] = ''
+			class_info['location'] = ''
 		class_info['description'] = text
 		class_info['stellar_url'] = get_stellar_url(class_id)
 		class_info['class_site'] = get_class_site(class_id)
@@ -270,7 +270,7 @@ def clean_class_info(class_info, lecture_info):
 		data = lecture_info['timeAndPlace'].split(' ')
 		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(data[0]), clean_html(' '.join(data[1:]))
 	else:
-		class_info_cleaned['lecture'], class_info_cleaned['location'] = None, None
+		class_info_cleaned['lecture'], class_info_cleaned['location'] = '', ''
 
 	excludes = ['staff']
 	def test_instructor(instructor):
@@ -649,22 +649,24 @@ def check_all_times(classes):
 		lecture = c.lecture.split(',')
 		for group in lecture:
 			m = re.match(re.compile(r'([A-Z]{1,5})([0-9]{1,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})'), group)
-			for day in list(m.group(1)):
-				start_hour = int(m.group(2))
-				if start_hour < 7:
-					start_hour += 12
-				if m.group(3) == '30':
-					start_hour += 0.5
-				end_hour = int(m.group(4)) if m.group(4) else start_hour + 1
-				if end_hour < 7:
-					end_hour += 12
-				if m.group(5) == '30':
-					end_hour += 0.5
-				current = start_hour
-				while current < end_hour:
-					free[day][current].append(c.id)
-					if len(free[day][current]) > 1:
-						ovelap.add(tuple(free[day][current]))
-					current += 0.5
+			if m.group(0):
+				for day in list(m.group(1)):
+					start_hour = int(m.group(2))
+					if start_hour < 7:
+						start_hour += 12
+					if m.group(3) == '30':
+						start_hour += 0.5
+					end_hour = int(m.group(4)) if m.group(4) else start_hour + 1
+					if end_hour < 7:
+						end_hour += 12
+					if m.group(5) == '30':
+						end_hour += 0.5
+					current = start_hour
+					while current < end_hour:
+						free[day][current].append(c.id)
+						if len(free[day][current]) > 1:
+							ovelap.add(tuple(free[day][current]))
+						current += 0.5
 	return ovelap
+
 
