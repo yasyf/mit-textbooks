@@ -13,6 +13,7 @@ class MITClass():
 		self.short_name = class_info['short_name']
 		self.description = class_info['description']
 		self.prereqs = class_info['prereqs']
+		self.coreqs = class_info['coreqs']
 		self.lecture = class_info['lecture']
 		self.location = class_info['location']
 		self.hass = class_info['hass']
@@ -36,6 +37,7 @@ class MITClass():
 		d['short_name'] = self.short_name
 		d['description'] = self.description
 		d['prereqs'] = self.prereqs
+		d['coreqs'] = self.coreqs
 		d['lecture'] = self.lecture
 		d['location'] = self.location
 		d['hass'] = self.hass
@@ -125,6 +127,9 @@ class MITClass():
 
 	def formatted_prereqs(self):
 		return re.sub(re.compile(r'([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})'),r'<a href="http://textbooksearch.mit.edu/class/\1">\1</a>', self.prereqs)
+
+	def formatted_coreqs(self):
+		return re.sub(re.compile(r'([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})'),r'<a href="http://textbooksearch.mit.edu/class/\1">\1</a>', self.coreqs)
 
 	def formatted_lecture(self):
 		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}

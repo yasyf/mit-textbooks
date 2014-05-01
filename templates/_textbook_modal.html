@@ -7,6 +7,15 @@
 	  </div>
 	  <div class='modal-body'>
 		<p class='center'>
+			{% if textbook.purchase %}
+			<a 
+			href="{{ textbook.purchase[1] }}"
+			target='_blank'
+			data-toggle='modal'
+			class='btn btn-success'>
+				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; {{ textbook.purchase[0] }}
+			</a>
+			{% endif %}
 			<a 
 			{% if textbook.asin %}
 			href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
@@ -15,19 +24,19 @@
 			{% endif %}
 			target='_blank'
 			data-toggle='modal'
-			class='btn btn-info'>
-				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Buy on Amazon
+			class='btn btn-{% if textbook.purchase %}info{% else %}success{% endif %}'>
+				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Amazon
 			</a>
 			{% if class_obj.has_local() %}
 			<a
 			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local').modal();"
 			class='btn btn-info'>
-				<span class='glyphicon glyphicon-home'></span> &nbsp; Buy Locally
+				<span class='glyphicon glyphicon-home'></span> &nbsp; Local
 			</a>
 			{% endif %}
 			<a
 			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
-			class='btn btn-info'>
+			class='btn btn-danger'>
 				<span class='glyphicon glyphicon-usd'></span> &nbsp; Sell Locally
 			</a>
 		</p>

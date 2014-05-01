@@ -366,9 +366,9 @@ def section_saved_filter(section):
 	for book in section:
 		if 'retail' in book and book['retail']:
 			if 'used' in book and book['used']:
-				p = max(float(book['used'])/float(book['retail']), float(book['saved']) if 'saved' in book else 0)
+				p = max(100 * (1 - float(book['used'])/float(book['retail'])), float(book['saved']) if 'saved' in book else 0)
 			elif 'new' in book and book['new']:
-				p = max(float(book['new'])/float(book['retail']), float(book['saved']) if 'saved' in book else 0)
+				p = max(100 * (1 - float(book['new'])/float(book['retail'])), float(book['saved']) if 'saved' in book else 0)
 			else:
 				p = float(book['saved'] if 'saved' in book else 0)
 		elif 'saved' in book and book['saved']:

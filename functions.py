@@ -42,8 +42,8 @@ def error_mail(e):
 	message.add_to(os.getenv('admin_email'))
 	message.set_subject('500 Internal Server Error @ MIT Textbooks')
 	trace = traceback.format_exc() 
-	message.set_html(e.message + '<br><br><pre>' + trace + '</pre>')
-	message.set_text(e.message + '\n\n' + trace)
+	message.set_html(request.url + '<br><br>' + e.message + '<br><br><pre>' + trace + '</pre>')
+	message.set_text(request.url + '\n\n' + e.message + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
 		print sg.send(message)
@@ -63,7 +63,7 @@ def md5(s):
 	return _hash
 
 def clean_html(html):
-	return bleach.clean(html.strip().replace("\n"," ").encode('ascii','xmlcharrefreplace'), tags=[], strip=True)
+	return bleach.clean(html.replace("\n"," ").replace("\t"," ").encode('ascii','xmlcharrefreplace'), tags=[], strip=True).strip()
 
 def get_user(email, name, phone):
 	global user_objects
@@ -227,7 +227,7 @@ def manual_class_scrape(class_id):
 			prereq_info = clean_html(ssoup[prereq_index_start:prereq_index_end])
 		else:
 			prereq_info = ''
-		class_info['prereqs'] = process_prereqs(prereq_info)
+		class_info['prereqs'], class_info['coreqs']  = process_prereqs(prereq_info)
 		unit_index_start = ssoup.find("Units: ") + 7
 		unit_index_end = ssoup.find("<br/>",unit_index_start)-1
 		units_info = clean_html(ssoup[unit_index_start:unit_index_end])
@@ -255,7 +255,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['master_subject_id'] = class_info['master_subject_id'] if 'master_subject_id' in class_info else class_info['id']
 	class_info_cleaned['course'] = class_info['course']
 	class_info_cleaned['name'] = clean_html(class_info['label'])
-	class_info_cleaned['prereqs'] = process_prereqs(clean_html(class_info['prereqs']))
+	class_info_cleaned['prereqs'], class_info_cleaned['coreqs'] = process_prereqs(clean_html(class_info['prereqs']))
 	class_info_cleaned['short_name'] = clean_html(class_info['shortLabel'])
 	class_info_cleaned['description'] = clean_html(class_info['description'])
 	class_info_cleaned['semesters'] = class_info['semester']
@@ -268,7 +268,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
 	if lecture_info:
 		data = lecture_info['timeAndPlace'].split(' ')
-		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(data[:-1]), clean_html(' '.join(data[-1]))
+		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(' '.join(data[:-1])), clean_html(data[-1])
 	else:
 		class_info_cleaned['lecture'], class_info_cleaned['location'] = '', ''
 
@@ -287,10 +287,28 @@ def clean_class_info(class_info, lecture_info):
 	return class_info_cleaned
 
 def process_prereqs(prereqs):
-	d = {'[':'', ']':'', 'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.012 or equivalent', 'GIR:CHEM': '5.111 or equivalent'}
+	if not prereqs:
+		return '',''
+	coreqs = ''
+	for coreq in re.findall(re.compile(r'\[([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})\]'), prereqs):
+		coreqs  = coreqs + '; ' + coreq
+	prereqs = re.sub(re.compile(r'\[[\w]{1,3}\.[0-9]{2,3}[\w]{0,1}\]'), '', prereqs)
+	d = {'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.012 or equivalent', 'GIR:CHEM': '5.111 or equivalent'}
 	for k,v in d.iteritems():
 		prereqs = prereqs.replace(k, v)
-	return prereqs
+	prereqs, coreqs = prereqs.strip(), coreqs.strip()
+	if prereqs:
+		if prereqs[-1] in [',',';']:
+			prereqs = prereqs[:-1]
+		if prereqs[0] in [',',';']:
+			prereqs = prereqs[1:]
+	if coreqs:
+		if coreqs[-1] in [',',';']:
+			coreqs = coreqs[:-1]
+		if coreqs[0] in [',',';']:
+			coreqs = coreqs[1:]
+	prereqs, coreqs = prereqs.strip(), coreqs.strip()
+	return prereqs, coreqs
 
 def update_recents_with_class(class_obj):
 	recent_entry = recents.find_one({'class': class_obj.id})
@@ -408,6 +426,8 @@ def get_textbook_info(class_id, semesters):
 			del book['price']
 			amazon_info = get_amazon_info(book['isbn'], book['title'], book['author'])
 			book = dict(book.items() + amazon_info.items())
+			abe_info = get_abe_info(book['isbn'])
+			update_new_prices(book, abe_info)
 			if book['asin'] not in asin:
 				book_category.append(book)
 				asin.add(book['asin'])
@@ -415,6 +435,36 @@ def get_textbook_info(class_id, semesters):
 			sections[clean_html(h2.string)] = book_category
 	textbooks["sections"] = sections
 	return textbooks
+
+def get_abe_info(isbn):
+	d = {}
+	try:
+		url = "http://search2.abebooks.com/search?clientkey={key}&outputsize=short&isbn={isbn}&bookcondition=newonly".format(key=os.getenv('abe_key'), isbn=isbn)
+		response = str(requests.get(url).text)
+		root = objectify.fromstring(response)
+		d['new'] = root.Book.listingPrice.text
+		listing_url = urllib.quote_plus('http://'+root.Book.listingUrl.text)
+		d['purchase'] = ('AbeBooks', "http://affiliates.abebooks.com/c/92729/77416/2029?u={u}".format(u=listing_url))
+	except Exception:
+		pass
+	try:
+		url = "http://search2.abebooks.com/search?clientkey={key}&outputsize=short&isbn={isbn}&bookcondition=usedonly".format(key=os.getenv('abe_key'), isbn=isbn)
+		response = str(requests.get(url).text)
+		root = objectify.fromstring(response)
+		d['used'] = root.Book.listingPrice.text
+		listing_url = urllib.quote_plus('http://'+root.Book.listingUrl.text)
+		d['purchase'] = ('AbeBooks', "http://affiliates.abebooks.com/c/92729/77416/2029?u={u}".format(u=listing_url))
+	except Exception:
+		pass
+	return d
+
+def update_new_prices(book, info):
+	for kind in ['new', 'used']:
+		if kind in info:
+			if not kind in book or float(info[kind]) < float(book[kind]):
+				book[kind] = info[kind]
+				book['purchase'] = info['purchase']
+	return book
 
 def doItemSeach(Keywords,SearchIndex):
 	i = 1
