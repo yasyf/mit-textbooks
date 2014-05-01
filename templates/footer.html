@@ -7,7 +7,7 @@
             {% if group_obj %}
             {% if not group_obj.named %}
             <a href="#" class="btn btn-primary btn-sm" onclick="$('#save_modal').modal();">Name Group</a>
-            {% else %}
+            {% elif group_obj.user_id == g.user.get_id() %}
             <a href="{{ url_for('delete_group_view', group_id=group_obj.name) }}" class="btn btn-primary btn-sm btn-danger">Delete Group</a>
             {% endif %}
             {% endif %}
