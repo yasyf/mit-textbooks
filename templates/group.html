@@ -20,7 +20,7 @@
 {% block body %}
 
 <p>
-	<h1>Class Group ({{ classes|sum_units }} Units)</h1>
+	<h1>{% if group_obj.named %} {{ group_obj.name }} {% else %} Class Group {% endif %} ({{ classes|sum_units }} Units)</h1>
 	{% for class_obj in classes %}
 	<strong class='sub_heading'><a href="#{{ class_obj.id }}">{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }}){% if not loop.last %},{% endif %}
 	{% endfor %}
@@ -88,11 +88,7 @@
     FB.ui({
       method: 'feed',
       link: "{{ url_for('group_view', group_id=group_obj.slug(), _external=True) }}",
-      {% if group_obj.named %}
-      caption: 'Check out {{ class_obj.name }} on MIT Textbooks!',
-      {% else %}
-      caption: 'Check out my classes on MIT Textbooks!',
-      {% endif %}
+      caption: 'Check out {{ group_obj.display_name() }} on MIT Textbooks!',
     }, function(response){});
   }
   </script>
