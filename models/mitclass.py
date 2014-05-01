@@ -131,7 +131,7 @@ class MITClass():
 		times = []
 		for group in self.lecture.split(','):
 			m = re.match(re.compile(r'([A-Z]{1,5})([0-9]{1,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})'), group)
-			if m.group(0):
+			if m:
 				days = [d[x] for x in list(m.group(1))]
 				days = ', '.join(days[:-1]) + ' and ' + days[-1] if len(days) > 1 else days[0]
 				start_hour = m.group(2)

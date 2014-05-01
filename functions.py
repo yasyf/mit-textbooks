@@ -655,7 +655,7 @@ def check_all_times(classes):
 		lecture = c.lecture.split(',')
 		for group in lecture:
 			m = re.match(re.compile(r'([A-Z]{1,5})([0-9]{1,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})'), group)
-			if m.group(0):
+			if m:
 				for day in list(m.group(1)):
 					start_hour = int(m.group(2))
 					if start_hour < 7:
