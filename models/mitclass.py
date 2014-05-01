@@ -124,7 +124,7 @@ class MITClass():
 		return offers.find({"class_id": self.id}).count() > 0
 
 	def formatted_prereqs(self):
-		return re.sub(re.compile(r'([a-zA-z0-9]{1,3}\.[0-9]{2,3}[a-zA-z0-9]{0,1})'),r'<a href="http://textbooksearch.mit.edu/class/\1">\1</a>', self.prereqs)
+		return re.sub(re.compile(r'([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})'),r'<a href="http://textbooksearch.mit.edu/class/\1">\1</a>', self.prereqs)
 
 	def formatted_lecture(self):
 		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}

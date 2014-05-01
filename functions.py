@@ -227,7 +227,7 @@ def manual_class_scrape(class_id):
 			prereq_info = clean_html(ssoup[prereq_index_start:prereq_index_end])
 		else:
 			prereq_info = ''
-		class_info['prereqs'] = prereq_info
+		class_info['prereqs'] = process_prereqs(prereq_info)
 		unit_index_start = ssoup.find("Units: ") + 7
 		unit_index_end = ssoup.find("<br/>",unit_index_start)-1
 		units_info = clean_html(ssoup[unit_index_start:unit_index_end])
@@ -255,7 +255,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['master_subject_id'] = class_info['master_subject_id'] if 'master_subject_id' in class_info else class_info['id']
 	class_info_cleaned['course'] = class_info['course']
 	class_info_cleaned['name'] = clean_html(class_info['label'])
-	class_info_cleaned['prereqs'] = clean_html(class_info['prereqs'])
+	class_info_cleaned['prereqs'] = process_prereqs(clean_html(class_info['prereqs']))
 	class_info_cleaned['short_name'] = clean_html(class_info['shortLabel'])
 	class_info_cleaned['description'] = clean_html(class_info['description'])
 	class_info_cleaned['semesters'] = class_info['semester']
@@ -285,6 +285,12 @@ def clean_class_info(class_info, lecture_info):
 			
 
 	return class_info_cleaned
+
+def process_prereqs(prereqs):
+	d = {'[':'', ']':'', 'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.012 or equivalent', 'GIR:CHEM': '5.111 or equivalent'}
+	for k,v in d.iteritems():
+		prereqs = prereqs.replace(k, v)
+	return prereqs
 
 def update_recents_with_class(class_obj):
 	recent_entry = recents.find_one({'class': class_obj.id})
