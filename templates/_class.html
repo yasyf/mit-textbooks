@@ -24,7 +24,7 @@
 </p>
 {% if class_obj.lecture %}
 <p>
-	Lecture occurs from {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}. 
+	Lecture occurs {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}. 
 </p>
 {% endif %}
 <p>

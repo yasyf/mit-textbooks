@@ -130,18 +130,22 @@ class MITClass():
 		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}
 		times = []
 		for group in self.lecture.split(','):
-			m = re.match(re.compile(r'([A-Z]{1,5})([0-9]{1,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})'), group)
+			m = re.match(re.compile(r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'), group)
 			if m:
 				days = [d[x] for x in list(m.group(1))]
 				days = ', '.join(days[:-1]) + ' and ' + days[-1] if len(days) > 1 else days[0]
 				start_hour = m.group(2)
 				start_minute = m.group(3) or '00'
-				start_a = 'AM' if (int(start_hour) < 12 and int(start_hour) > 8) else 'PM'
 				end_hour = m.group(4) or int(start_hour) + 1
 				end_minute = m.group(5) or '00'
-				end_a = 'AM' if (int(end_hour) < 12 and int(end_hour) > 8) else 'PM'
+				if m.group(6):
+					start_a = m.group(6)
+					end_a = m.group(6)
+				else:
+					start_a = 'AM' if (int(start_hour) < 12 and int(start_hour) > 8) else 'PM'
+					end_a = 'AM' if (int(end_hour) < 12 and int(end_hour) > 8) else 'PM'
 				time = "{0}:{1} {2} to {3}:{4} {5}".format(start_hour, start_minute, start_a, end_hour, end_minute, end_a)
 				times.append(time + ' on ' + days)
-				return ', '.join(times[:-1]) + ' and ' + times[-1] if len(times) > 1 else times[0]
+				return 'from ' + ', '.join(times[:-1]) + ' and ' + times[-1] if len(times) > 1 else times[0]
 			else:
-				return self.lecture
+				return 'at ' + self.lecture

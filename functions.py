@@ -268,7 +268,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
 	if lecture_info:
 		data = lecture_info['timeAndPlace'].split(' ')
-		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(data[0]), clean_html(' '.join(data[1:]))
+		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(data[:-1]), clean_html(' '.join(data[-1]))
 	else:
 		class_info_cleaned['lecture'], class_info_cleaned['location'] = '', ''
 
