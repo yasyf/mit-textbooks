@@ -2,6 +2,29 @@ from setup import *
 import datetime, calendar, json, re, random
 from flask import url_for
 
+def event_to_start_end(day, m):
+	day_to_i = dict(zip(list('MTWRF'),range(5)))
+	today = datetime.datetime.today()
+	base = datetime.datetime(today.year, today.month, today.day) - datetime.timedelta(days=today.weekday())
+	date = base + datetime.timedelta(days=day_to_i[day])
+	start_hour = int(m.group(2))
+	start_minute = int(m.group(3) or 0)
+	end_hour = int(m.group(4) or start_hour + 1)
+	end_minute = int(m.group(5) or 0)
+	start = date + datetime.timedelta(hours=start_hour, minutes=start_minute)
+	end = date + datetime.timedelta(hours=end_hour, minutes=end_minute)
+	if m.group(6):
+		if m.group(6) == "PM":
+			start += datetime.timedelta(hours=12)
+			end += datetime.timedelta(hours=12)
+	else:
+		if start_hour < 8:
+			start += datetime.timedelta(hours=12)
+		if end_hour < 8:
+			end += datetime.timedelta(hours=12)
+	return start, end
+
+
 class MITClass():
 	"""MIT Class Object"""
 	def __init__(self, class_info):
@@ -156,11 +179,8 @@ class MITClass():
 				return 'from ' + ', '.join(times[:-1]) + ' and ' + times[-1] if len(times) > 1 else times[0]
 			else:
 				return 'at ' + self.lecture
-	
+
 	def events(self):
-		day_to_i = dict(zip(list('MTWRF'),range(5)))
-		today = datetime.datetime.today()
-		base = datetime.datetime(today.year, today.month, today.day) - datetime.timedelta(days=today.weekday())
 		events = []
 		colors = ["#e72510", "#02a5de", "#cb5c10", "#4653de", "#8a02de", "#e08b27", "#3c5fde", "#02d5de", "#4BAD00", "##3366FF", "#6633FF", "#CC33FF", "#FF33CC", "#33CCFF", "#003DF5", "#FF3366", "#FF6633"]
 		color = random.choice(colors)
@@ -171,25 +191,45 @@ class MITClass():
 				for day in m.group(1):
 					d = {'id':"{id}#{i}".format(id=self.id, i=i), 'text': self.id, 'color': color}
 					i += 1
-					date = base + datetime.timedelta(days=day_to_i[day])
-					start_hour = int(m.group(2))
-					start_minute = int(m.group(3) or 0)
-					end_hour = int(m.group(4) or start_hour + 1)
-					end_minute = int(m.group(5) or 0)
-					start = date + datetime.timedelta(hours=start_hour, minutes=start_minute)
-					end = date + datetime.timedelta(hours=end_hour, minutes=end_minute)
-					if m.group(6):
-						if m.group(6) == "PM":
-							start += datetime.timedelta(hours=12)
-							end += datetime.timedelta(hours=12)
-					else:
-						if start_hour < 8:
-							start += datetime.timedelta(hours=12)
-						if end_hour < 8:
-							end += datetime.timedelta(hours=12)
+					start, end = event_to_start_end(day, m)
 					if end - start > datetime.timedelta(hours=1):
 						d['text'] += '<br>' + self.short_name
 					d['start_date'] = start.strftime('%m/%d/%Y %H:%M')
 					d['end_date'] = end.strftime('%m/%d/%Y %H:%M')
 					events.append(d)
 		return events
+
+	def events_raw(self):
+		events = []
+		for group in self.lecture.split(','):
+			m = re.match(re.compile(r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'), group)
+			if m:
+				days = m.group(1)
+				d = {}
+				start, end = event_to_start_end(days[0], m)
+				d['days'] = days
+				d['start'] = start
+				d['end'] = end
+				events.append(d)
+		return events
+
+	def gcal_events(self):
+		d_to_d = {'M': 'MO', 'T': 'TU', 'W': 'WE', 'R': 'TH', 'F': 'FR'}
+		events = []
+		for e in self.events_raw():
+			d = {}
+			d['summary'] = "{c} ({short})".format(c=self.id, short=self.short_name)
+			d['description'] = self.description
+			start = datetime.datetime(TERM_START.year, TERM_START.month, TERM_START.day, e['start'].hour, e['start'].minute)
+			end = datetime.datetime(TERM_START.year, TERM_START.month, TERM_START.day, e['end'].hour, e['end'].minute)
+			d['start'] = {'dateTime': start.isoformat('T'), 'timeZone': 'America/New_York'}
+			d['end'] = {'dateTime': end.isoformat('T'), 'timeZone': 'America/New_York'}
+			days = [d_to_d[day] for day in e['days']]
+			d['recurrence'] = ["RRULE:FREQ=WEEKLY;BYDAY={days};UNTIL={until}".format(until=TERM_END.strftime("%Y%m%dT%H%M%SZ"), days=','.join(days))]
+			d['location'] = self.location
+			d['source'] = url_for('class_view', class_id=self.id, _external=True)
+			events.append(d)
+		return events
+
+
+

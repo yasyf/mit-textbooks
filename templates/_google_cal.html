@@ -1,0 +1,121 @@
+<div class='modal fade' data-backdrop='static' data-keyboard='true' tabindex='-1' id='gcal_modal'>
+  <div class='modal-dialog'>
+  <div class='modal-content'>
+    <div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+    <h4 class='modal-title'>Select Calendar</h4>
+    </div>
+    <div class='modal-body'>
+    <form class='form-horizontal' role='form' method="POST" target="_blank" action="{{ url_for('courseroad_export_view', class_ids=group_obj.class_ids|join(',')) }}" id="courseroad_form">
+      <div class='form-group'>
+        <label for='year' class='col-lg-2 control-label'>Calendar</label>
+        <div class='col-lg-10'>
+          <select name='calendar' id="calendar_choices" class='form-control'>
+          </select>
+        </div>
+      </div>
+      <div class='form-group'>
+        <div class='col-lg-10'>
+          <p id="gcal_message" style="color: #469408;"></p>
+        </div>
+      </div>
+    </form>
+    </div>
+    <div class='modal-footer'>
+    <button type='button' id="gcal_btn" onclick="handleGoClick($('#calendar_choices').val());" class='btn btn-primary'>Submit</button>
+    </div>
+  </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+
+  var clientId = '822985175941-3bpj4hdfidarnvoomqclji9pff15ehif.apps.googleusercontent.com';
+
+  var apiKey = 'AIzaSyA8suueSVCtKCEYnnMn0f70QGkzsO3JSnA';
+
+  var scopes = ['https://www.googleapis.com/auth/calendar'];
+
+  var resources = {{ classes|gcal_events|tojson|safe }};
+
+  function handleClientLoad() {
+    gapi.client.setApiKey(apiKey);
+  }
+
+  function handleAuthResult(authResult) {
+    if (authResult && !authResult.error) {
+      makeApiCall();
+    }
+  }
+
+  function handleAuthClick() {
+    gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
+    return false;
+  }
+
+  function makeApiCall() {
+    gapi.client.load('calendar', 'v3', function() {
+      var request = gapi.client.calendar.calendarList.list();
+      request.execute(function(resp) {
+        $.each(resp.items, function(i, obj) {  
+          if (obj.primary){
+            $('#calendar_choices')
+             .append($("<option></option>")
+             .attr("value", obj.id)
+             .attr("selected", "selected")
+             .text(obj.summary)); 
+           } 
+           else {
+            $('#calendar_choices')
+             .append($("<option></option>")
+             .attr("value",obj.id)
+             .text(obj.summary)); 
+           }
+          
+        });
+        $("#gcal_modal").modal();
+      });
+    });
+  }
+
+  function makeApiCall2 (calendarId) {
+    $("#gcal_btn").attr("disabled", "disabled")
+    var left = Object.keys(resources).length;
+    gapi.client.load('calendar', 'v3', function() {
+      $.each(resources, function(i, resource) {
+        $("#gcal_message").text("Adding " + resource.summary);
+        var request = gapi.client.calendar.events.insert({
+          'calendarId': calendarId,
+          'resource': resource
+        });
+        request.execute(function(resp) {
+          left --;
+          if (left == 0){
+            $("#gcal_message").text("Finished adding " + Object.keys(resources).length + "classes starting on {{ ''|term_start_formatted }}!");
+            $("#gcal_btn").text("Close");
+            $("#gcal_btn").removeAttr("disabled");
+          }
+        });
+      });
+    });
+  }
+
+  function handleGoClick (calendarId) {
+    if($("#gcal_btn").text() == "Submit") {
+        $("#gcal_message").text("Adding " + resources[0].summary);
+        makeApiCall2(calendarId);
+    }
+    else{
+       $("#gcal_modal").modal("hide");
+       $("#gcal_btn").text("Submit");
+    }
+  }
+</script>
+
+<script>
+$("#gcal").click(function () {
+   handleAuthClick();
+});
+</script>
+
+<script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>

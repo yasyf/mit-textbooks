@@ -1,4 +1,4 @@
-import pymongo, os, bottlenose, sendgrid
+import pymongo, os, bottlenose, sendgrid, datetime
 
 client = pymongo.MongoClient(os.environ['db'])
 db = client.mit_textbooks
@@ -19,6 +19,9 @@ CURRENT_TERM = 'Fall 2014'
 
 STERM = "fa14"
 STERM_LAST = "sp14"
+
+TERM_START = datetime.datetime(2014, 9, 4)
+TERM_END = datetime.datetime(2014, 12, 11)
 
 RECENTS = 20
 CACHE_FOR = 2419200

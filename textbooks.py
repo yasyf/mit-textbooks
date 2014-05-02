@@ -368,6 +368,17 @@ def image_filter(classes):
 def current_term_filter(n):
 	return CURRENT_TERM
 
+@app.template_filter('term_start_formatted')
+def term_start_formatted_filter(n):
+	return TERM_START.strftime("%B %d, %Y")
+
+@app.template_filter('gcal_events')
+def gcal_events_filter(classes):
+	events = []
+	for c in classes:
+		events.extend(c.gcal_events())
+	return events
+
 @app.template_filter('section_saved')
 def section_saved_filter(section):
 	percentages = []
