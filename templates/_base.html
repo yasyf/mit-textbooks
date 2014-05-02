@@ -99,11 +99,10 @@
   </script>
   <script>
   {% if not g.user %}
-    if (!$.cookie('id_email')) {
-        $.get( "https://tb.mit.edu:444/auth/auth.py", function(data) {
+    if ($.cookie('id_email') == undefined) {
+        $.get( "https://tb.mit.edu:444/auth/auth.php", function(data) {
           $.cookie('id_email', data.email);
           $.cookie('id_name', data.name);
-          $.cookie('id_phone', data.phone);
           ga('send', 'event', 'view', 'user', data.email);
           ga('set', '&uid', data.email);
           location.reload();

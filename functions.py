@@ -65,14 +65,14 @@ def md5(s):
 def clean_html(html):
 	return bleach.clean(html.replace("\n"," ").replace("\t"," ").encode('ascii','xmlcharrefreplace'), tags=[], strip=True).strip()
 
-def get_user(email, name, phone):
+def get_user(email, name):
 	global user_objects
 	if not email:
 		return None
 	if email in user_objects:
 		return user_objects[email]
 	else:
-		u = MITUser(email, name, phone)
+		u = MITUser(email, name)
 		user_objects[email] = u
 		return u
 

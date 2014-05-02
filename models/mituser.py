@@ -1,12 +1,11 @@
 from setup import *
 
 class MITUser():
-	def __init__(self, email, name, phone):
+	def __init__(self, email, name):
 		self.email = email
 		self.name = name
-		self.phone = phone
 		if users.find_one({"email": self.email}) == None:
-			users.insert({"name": self.name, "email": self.email, "phone": self.phone})
+			users.insert({"name": self.name, "email": self.email})
 
 	def get_id(self):
 		return self.email

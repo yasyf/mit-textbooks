@@ -29,8 +29,7 @@ def preprocess_request():
 	if email:
 		email = urllib.unquote(email)
 		name = urllib.unquote(request.cookies.get('id_name',''))
-		phone = urllib.unquote(request.cookies.get('id_phone',''))
-		g.user = get_user(email, name, phone)
+		g.user = get_user(email, name)
 	else:
 		g.user = None
 
