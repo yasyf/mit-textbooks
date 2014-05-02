@@ -12,7 +12,7 @@
     <div class="collapse navbar-collapse">
     	<form action="{{ url_for('search_view') }}" method="POST" class="navbar-form navbar-right has-error" id="search" role="search">
     		<div class="form-group">
-  				<input type='search' name='search_term' placeholder='8.01' class="form-control" value='{{ g.search_val }}' id="search_input" autofocus required>
+  				<input type='search' name='search_term' placeholder='8.01, 18.06, 6.01' class="form-control" value='{{ g.search_val }}' id="search_input" autofocus required>
   				<input type='submit' class="form-control" id="gobtn" value="Go!">
       	</div>
       </form>
