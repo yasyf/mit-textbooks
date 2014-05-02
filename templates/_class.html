@@ -48,7 +48,7 @@
 	{% if class_obj.evaluation[0] %}
 	In the {{ class_obj.evaluation[2] }} Subject Evaluations, {{ class_obj.id }} was rated <a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.evaluation[1] }} response rate">{{ class_obj.evaluation[0] }}</a>.
 	{% endif %}
-	You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at the <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a> site{% if class_obj.stellar_url %} or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar site</a>. {% else %}.{% endif %}
+	You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at the <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a> site{% if class_obj.stellar_url %} or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar</a> site. {% else %}.{% endif %}
 </p>
 
 	{% for title, section in class_obj.textbooks.sections.iteritems() %}
