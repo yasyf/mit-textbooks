@@ -27,13 +27,12 @@
 </p>
 <p>
 	{% if g.user %}
-	<a class="btn btn-primary btn-sm" 
-		onclick="$('#courseroad_modal').modal();"
-		target="_blank">
+	<a class="btn btn-primary btn-sm" onclick="$('#courseroad_modal').modal();">
 		Export to CourseRoad
 	</a>
 	{% endif %}
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
+	<button type="button" class="btn btn-primary btn-sm" onclick="$('#calendar_modal').modal();">View On Calendar</button>
 </p>
 <hr>
 {% for class_obj in classes %}
@@ -43,7 +42,7 @@
 {% endif %}
 {% endfor %}
 
-<div class='modal fade'  data-backdrop='static' data-keyboard='true' tabindex='-1' id='courseroad_modal'>
+<div class='modal fade' data-backdrop='static' data-keyboard='true' tabindex='-1' id='courseroad_modal'>
   <div class='modal-dialog'>
 	<div class='modal-content'>
 	  <div class='modal-header'>
@@ -78,6 +77,23 @@
 	  </div>
 	  <div class='modal-footer'>
 		<button type='button' onclick="$('#courseroad_form').submit();" class='btn btn-primary'>Submit</button>
+	  </div>
+	</div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class='modal fade'  data-backdrop='static' data-keyboard='true' tabindex='-1' id='calendar_modal'>
+  <div class='modal-dialog' style='width:80%;'>
+	<div class='modal-content'>
+	  <div class='modal-header'>
+		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+		<h4 class='modal-title'>View On Calendar</h4>
+	  </div>
+	  <div class='modal-body'>
+		<iframe src="{{ url_for('calendar_view', group_id=group_obj.slug()) }}" style="width:100%; height: 500px;" frameborder="0"></iframe>
+	  </div>
+	  <div class='modal-footer'>
+		<button type='button' data-dismiss='modal'  class='btn btn-primary'>Close</button>
 	  </div>
 	</div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

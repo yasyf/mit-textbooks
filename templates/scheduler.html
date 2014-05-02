@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="{{ url_for('static', filename='scheduler/dhtmlxscheduler.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='scheduler/dhtmlxscheduler.css') }}" />
+    <style>
+    html, body{
+        margin:0px;
+        padding:0px;
+        height:100%;
+        overflow:hidden;
+    }
+    #scheduler{
+        width:100%;
+        height:100%;
+        padding:10px;
+    }
+    .dhx_cal_navline{
+        display:none;
+    }
+    .dhx_cal_event {
+        text-align: center;
+    }
+    .dhx_scale_holder_now {
+        background-image: url({{ url_for('static', filename='scheduler/imgs_dhx_terrace/databg.png') }});
+    }
+    </style>
+</head>
+<body>
+    <div id="scheduler" class="dhx_cal_container">
+        <div class="dhx_cal_navline">
+            <div class="dhx_cal_date"></div>
+        </div>
+        <div class="dhx_cal_header"></div>
+        <div class="dhx_cal_data"></div>       
+    </div>
+
+    <script>
+    $(function(){
+        scheduler.xy.nav_height=0;
+        scheduler.config.hour_date="%h:%i";
+        scheduler.ignore_week = function(date){
+            if (date.getDay() == 6 || date.getDay() == 0){
+                return true;
+            }
+        };
+        $("#scheduler").dhx_scheduler({
+            mode: "week",
+            readonly: true,
+            first_hour: 8,
+            last_hour: 20,
+        });
+        events = {{ events|tojson|safe }};
+        scheduler.parse("events", "json");
+     });
+    </script>
+</body>

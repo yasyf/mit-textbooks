@@ -712,5 +712,3 @@ def check_all_times(classes):
 							ovelap.add(tuple(free[day][current]))
 						current += 0.5
 	return ovelap
-if __name__ == '__main__':
-	reset_class_db(verify=True)

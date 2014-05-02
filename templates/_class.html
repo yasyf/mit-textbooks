@@ -9,11 +9,11 @@
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>
 	{% if class_obj.prereqs %}
-	This class has {{ class_obj.formatted_prereqs()|safe }} as prerequisites.
+	This class has {{ class_obj.formatted_prereqs()|safe }}.
 	{% else %}
 	{% endif %}
 	{% if class_obj.coreqs %}
-	This class {{ class_obj.formatted_coreqs()|safe }} as corequisites.
+	This class has {{ class_obj.formatted_coreqs()|safe }}.
 	{% endif %}
 	{% if not class_obj.prereqs and not class_obj.coreqs %}
 	This class has no prerequisites.

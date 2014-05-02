@@ -1,5 +1,5 @@
 from setup import *
-import datetime, calendar, json, re
+import datetime, calendar, json, re, random
 from flask import url_for
 
 class MITClass():
@@ -126,10 +126,12 @@ class MITClass():
 		return offers.find({"class_id": self.id}).count() > 0
 
 	def formatted_prereqs(self):
-		return ','.join(["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.prereqs])
+		formatted = ["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.prereqs]
+		return ', '.join(formatted[:-1]) + ', and ' + formatted[-1] + ' as prerequisites' if len(formatted) > 1 else formatted[0] + ' as a prerequisite'
 
 	def formatted_coreqs(self):
-		return ','.join(["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.coreqs])
+		formatted = ["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.coreqs]
+		return ', '.join(formatted[:-1]) + ', and ' + formatted[-1] + ' as corequisites' if len(formatted) > 1 else formatted[0] + ' as a corequisite'
 
 	def formatted_lecture(self):
 		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}
@@ -154,3 +156,40 @@ class MITClass():
 				return 'from ' + ', '.join(times[:-1]) + ' and ' + times[-1] if len(times) > 1 else times[0]
 			else:
 				return 'at ' + self.lecture
+	
+	def events(self):
+		day_to_i = dict(zip(list('MTWRF'),range(5)))
+		today = datetime.datetime.today()
+		base = datetime.datetime(today.year, today.month, today.day) - datetime.timedelta(days=today.weekday())
+		events = []
+		colors = ["#e72510", "#02a5de", "#cb5c10", "#4653de", "#8a02de", "#e08b27", "#3c5fde", "#02d5de", "#4BAD00", "##3366FF", "#6633FF", "#CC33FF", "#FF33CC", "#33CCFF", "#003DF5", "#FF3366", "#FF6633"]
+		color = random.choice(colors)
+		i = 0
+		for group in self.lecture.split(','):
+			m = re.match(re.compile(r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'), group)
+			if m:
+				for day in m.group(1):
+					d = {'id':"{id}#{i}".format(id=self.id, i=i), 'text': self.id, 'color': color}
+					i += 1
+					date = base + datetime.timedelta(days=day_to_i[day])
+					start_hour = int(m.group(2))
+					start_minute = int(m.group(3) or 0)
+					end_hour = int(m.group(4) or start_hour + 1)
+					end_minute = int(m.group(5) or 0)
+					start = date + datetime.timedelta(hours=start_hour, minutes=start_minute)
+					end = date + datetime.timedelta(hours=end_hour, minutes=end_minute)
+					if m.group(6):
+						if m.group(6) == "PM":
+							start += datetime.timedelta(hours=12)
+							end += datetime.timedelta(hours=12)
+					else:
+						if start_hour < 8:
+							start += datetime.timedelta(hours=12)
+						if end_hour < 8:
+							end += datetime.timedelta(hours=12)
+					if end - start > datetime.timedelta(hours=1):
+						d['text'] += '<br>' + self.short_name
+					d['start_date'] = start.strftime('%m/%d/%Y %H:%M')
+					d['end_date'] = end.strftime('%m/%d/%Y %H:%M')
+					events.append(d)
+		return events

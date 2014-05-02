@@ -135,6 +135,16 @@ def class_view(class_id):
 	g.search_val = class_id
 	return render_template('class.html', class_obj=class_obj)
 
+@app.route('/calendar/<group_id>')
+def calendar_view(group_id):
+	group_obj = get_group(group_id)
+	if not group_obj:
+		if '404' in session:
+			session.pop('404')
+		return redirect(url_for('_404_view'))
+	events = reduce(lambda x,y: x + get_class(y).events(), group_obj.class_ids, [])
+	return render_template('scheduler.html', events=events)
+
 @app.route('/overview/<class_id>')
 def overview_view(class_id):
 	return render_template('overview.html', class_obj=get_class(class_id))
