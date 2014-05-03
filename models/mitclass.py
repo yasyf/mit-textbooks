@@ -220,8 +220,8 @@ class MITClass():
 			d = {}
 			d['summary'] = "{c} ({short})".format(c=self.id, short=self.short_name)
 			d['description'] = self.description
-			start = datetime.datetime(TERM_START.year, TERM_START.month, TERM_START.day, e['start'].hour, e['start'].minute)
-			end = datetime.datetime(TERM_START.year, TERM_START.month, TERM_START.day, e['end'].hour, e['end'].minute)
+			start = datetime.datetime(TERM_START.year, TERM_START.month, TERM_START.day, e['start'].hour, e['start'].minute) + datetime.timedelta(days=e['start'].weekday() - TERM_START.weekday())
+			end = datetime.datetime(TERM_START.year, TERM_START.month, TERM_START.day, e['end'].hour, e['end'].minute) + datetime.timedelta(days=e['start'].weekday() - TERM_START.weekday())
 			d['start'] = {'dateTime': start.isoformat('T'), 'timeZone': 'America/New_York'}
 			d['end'] = {'dateTime': end.isoformat('T'), 'timeZone': 'America/New_York'}
 			days = [d_to_d[day] for day in e['days']]

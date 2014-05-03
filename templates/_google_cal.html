@@ -38,6 +38,11 @@
 
   var resources = {{ classes|gcal_events|tojson|safe }};
 
+  function unescapeHtml(unsafe) {
+    return unsafe
+        .replace(/&amp;/g, "and");
+  }
+
   function handleClientLoad() {
     gapi.client.setApiKey(apiKey);
   }
@@ -83,15 +88,16 @@
     var left = Object.keys(resources).length;
     gapi.client.load('calendar', 'v3', function() {
       $.each(resources, function(i, resource) {
-        $("#gcal_message").text("Adding " + resource.summary);
         var request = gapi.client.calendar.events.insert({
           'calendarId': calendarId,
           'resource': resource
         });
         request.execute(function(resp) {
+          resource.summary = unescapeHtml(resource.summary);
+          $("#gcal_message").text("Adding " + resource.summary);
           left --;
           if (left == 0){
-            $("#gcal_message").text("Finished adding " + Object.keys(resources).length + "classes starting on {{ ''|term_start_formatted }}!");
+            $("#gcal_message").text("Finished adding {{ group_obj.class_ids|length }} classes starting on {{ ''|term_start_formatted }}!");
             $("#gcal_btn").text("Close");
             $("#gcal_btn").removeAttr("disabled");
           }
@@ -102,7 +108,7 @@
 
   function handleGoClick (calendarId) {
     if($("#gcal_btn").text() == "Submit") {
-        $("#gcal_message").text("Adding " + resources[0].summary);
+        $("#gcal_message").text("Adding " + unescapeHtml(resources[0].summary));
         makeApiCall2(calendarId);
     }
     else{
