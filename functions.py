@@ -317,6 +317,14 @@ def get_stellar_url(class_id):
 	else:
 		return r.url
 
+def try_url(url):
+	try:
+		return requests.get(url)
+	except requests.exceptions.SSLError:
+		return requests.get(url, verify=False, cert='cert.pem')
+	except requests.exceptions.TooManyRedirects:
+		return None
+
 def get_google_site_guess(class_id):
 		br = mechanize.Browser()
 		br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0 (compatible;)'),('Accept', '*/*')]
@@ -324,25 +332,16 @@ def get_google_site_guess(class_id):
 		br.open("http://www.google.com/search?&q=MIT+{q}&btnG=Google+Search&inurl=https".format(q=class_id.replace(' ', '+')))
 		for link in br.links():
 			url = link.url
-			if 'mit.edu' in url and 'stellar' not in url and 'google' not in url and 'http' in url:
-				return url
+			if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url and 'google' not in url and 'http' in url:
+				get = try_url(url)
+				if get:
+					return get
 
 def get_class_site(class_id):
-	def try_url(url):
-		try:
-			return requests.get(url)
-		except requests.exceptions.SSLError:
-			return requests.get(url, verify=False, cert='cert.pem')
-		except requests.exceptions.TooManyRedirects:
-			return None
 	url = "http://course.mit.edu/{class_id}".format(class_id=class_id)
 	r = try_url(url)
 	if r is None or 'stellar' in r.url or 'course.mit.edu' in r.url:
-		google_guess = get_google_site_guess(class_id)
-		if google_guess:
-			r = try_url(google_guess)
-			if r is None or 'stellar' in r.url or 'course.mit.edu' in r.url or 'textbooksearch' in r.url:
-				return None
+		r = get_google_site_guess(class_id)
 	soup = BeautifulSoup(r.text)
 	try:
 		title = soup.find('title').string
@@ -716,3 +715,4 @@ def check_all_times(classes):
 							ovelap.add(tuple(free[day][current]))
 						current += 0.5
 	return ovelap
+
