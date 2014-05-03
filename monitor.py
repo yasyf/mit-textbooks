@@ -37,7 +37,7 @@ def error_mail():
 while True:
 	last_task = task
 	task = queue.find_one(sort=[("time", 1)])
-	if task == last_task and not mailed:
+	if task and last_task and task == last_task and not mailed:
 		mailed = True
 		error_mail()
 	if task:
