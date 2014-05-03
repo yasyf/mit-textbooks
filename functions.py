@@ -328,17 +328,21 @@ def get_google_site_guess(class_id):
 				return url
 
 def get_class_site(class_id):
+	def try_url(url):
+		try:
+			return requests.get(url)
+		except requests.exceptions.SSLError:
+			return requests.get(url, verify=False, cert='cert.pem')
+		except requests.exceptions.TooManyRedirects:
+			return None
 	url = "http://course.mit.edu/{class_id}".format(class_id=class_id)
-	try:
-		r = requests.get(url)
-	except requests.exceptions.SSLError:
-		r = requests.get(url, verify=False, cert='cert.pem')
-	except requests.exceptions.TooManyRedirects:
-		r = None
+	r = try_url(url)
 	if r is None or 'stellar' in r.url or 'course.mit.edu' in r.url:
 		google_guess = get_google_site_guess(class_id)
 		if google_guess:
-			r = requests.get(google_guess)
+			r = try_url(google_guess)
+			if r is None:
+				return None
 	soup = BeautifulSoup(r.text)
 	try:
 		title = soup.find('title').string
