@@ -30,17 +30,17 @@
 </p>
 <p>
 	{% if class_obj.hass %}
-	HASS: <strong>{{ class_obj.hass }}</strong>.
+	HASS: <strong>{{ class_obj.hass }}</strong>
 	{% endif %}
 	{% if class_obj.grad %}
 	Grad: <strong>Y</strong>
 	{% endif %}
 </p>
 <p>
-	Units: {{ class_obj.formatted_units() }} ({{ class_obj.units[0] }} lecture, {{ class_obj.units[1] }} lab, {{ class_obj.units[2] }} homework)
+	Units: {{ class_obj.formatted_units() }} ({{ class_obj.units_detail() }})
 </p>
 <p>
-	{% if class_obj.evaluation %}
+	{% if class_obj.evaluation[0] %}
 	Evaluation: {{ class_obj.evaluation[0] }} ({{ class_obj.evaluation[1] }} response from {{ class_obj.evaluation[2] }})
 	{% endif %}
 </p>
@@ -54,5 +54,7 @@
 	{% endif %}
 </p>
 <p>
+	{% if class_obj.textbooks|tb_len %}
 	Textbooks: {{ class_obj.textbooks|tb_len }} at <a href="{{ url_for('class_view', class_id=class_obj.id) }}">{{ class_obj.display_name() }} on MIT Textbooks</a>
+	{% endif %}
 </p>

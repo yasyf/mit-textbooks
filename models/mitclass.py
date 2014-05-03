@@ -133,6 +133,13 @@ class MITClass():
 	def formatted_units(self):
 		return '-'.join([str(x) for x in self.units])
 
+	def units_detail(self):
+		l = []
+		for i, d in enumerate(['lecture', 'lab', 'homework']):
+			if self.units[i]:
+				l.append("{u} {d}".format(u=self.units[i], d=d))
+		return ', '.join(l)
+
 	def class_site_url(self):
 		return self.class_site[1]
 
