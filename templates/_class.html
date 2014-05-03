@@ -10,7 +10,6 @@
 <p>
 	{% if class_obj.prereqs %}
 	This class has {{ class_obj.formatted_prereqs()|safe }}.
-	{% else %}
 	{% endif %}
 	{% if class_obj.coreqs %}
 	This class has {{ class_obj.formatted_coreqs()|safe }}.

@@ -341,7 +341,7 @@ def get_class_site(class_id):
 		google_guess = get_google_site_guess(class_id)
 		if google_guess:
 			r = try_url(google_guess)
-			if r is None:
+			if r is None or 'stellar' in r.url or 'course.mit.edu' in r.url or 'textbooksearch' in r.url:
 				return None
 	soup = BeautifulSoup(r.text)
 	try:

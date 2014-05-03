@@ -7,23 +7,52 @@
 	Availablity: {{ class_obj.formatted_summarized_availability()|safe }}
 </p>
 <p>
+	{% if class_obj.prereqs %}
+	Prereqs: {{ class_obj.formatted_prereqs_summary()|safe }}.
+	{% endif %}
+	{% if class_obj.coreqs %}
+	Coreqs: {{ class_obj.formatted_coreqs_summary()|safe }}.
+	{% endif %}
+</p>
+<p>
+	Lecture: {{ class_obj.formatted_lecture() }}
+</p>
+<p>
+	{% if class_obj.location %}
+	Location: <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>
+	{% endif %}
+</p>
+<p>
 	Instructors: 
 	{% for instructor in class_obj.current_instructors() %}
 	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last %}, {% endif %}
 	{% endfor %}
 </p>
 <p>
-	Units: {{ class_obj.formatted_units() }}
+	{% if class_obj.hass %}
+	HASS: <strong>{{ class_obj.hass }}</strong>.
+	{% endif %}
+	{% if class_obj.grad %}
+	Grad: <strong>Y</strong>
+	{% endif %}
 </p>
 <p>
+	Units: {{ class_obj.formatted_units() }} ({{ class_obj.units[0] }} lecture, {{ class_obj.units[1] }} lab, {{ class_obj.units[2] }} homework)
+</p>
+<p>
+	{% if class_obj.evaluation %}
 	Evaluation: {{ class_obj.evaluation[0] }} ({{ class_obj.evaluation[1] }} response from {{ class_obj.evaluation[2] }})
+	{% endif %}
 </p>
 <p>
 	{% if class_obj.ocw_site_url() %}OCW{% else %}Class Site{% endif %}:
 	<a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
 </p>
-{% if class_obj.stellar_url %}
 <p>
+	{% if class_obj.stellar_url %}
 	Stellar: <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar site</a>
+	{% endif %}
 </p>
-{% endif %}
+<p>
+	Textbooks: {{ class_obj.textbooks|tb_len }} at <a href="{{ url_for('class_view', class_id=class_obj.id) }}">{{ class_obj.display_name() }} on MIT Textbooks</a>
+</p>

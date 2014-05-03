@@ -156,6 +156,14 @@ class MITClass():
 		formatted = ["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.coreqs]
 		return ', '.join(formatted[:-1]) + ', and ' + formatted[-1] + ' as corequisites' if len(formatted) > 1 else formatted[0] + ' as a corequisite'
 
+	def formatted_prereqs_summary(self):
+		formatted = ["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.prereqs]
+		return ', '.join(formatted[:-1]) + ', and ' + formatted[-1] if len(formatted) > 1 else formatted[0]
+
+	def formatted_coreqs_summary(self):
+		formatted = ["<a href='http://textbooksearch.mit.edu/class/{c}'>{c}</a>".format(c=c) for c in self.coreqs]
+		return ', '.join(formatted[:-1]) + ', and ' + formatted[-1] if len(formatted) > 1 else formatted[0]
+
 	def formatted_lecture(self):
 		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}
 		times = []

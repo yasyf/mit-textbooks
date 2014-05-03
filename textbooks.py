@@ -395,6 +395,12 @@ def section_saved_filter(section):
 			p = float(book['saved'])
 	return "up to {p}%".format(p=int(p)) if p and p > 20 else 'a ton'
 
+@app.template_filter('tb_len')
+def tb_len_filter(textbooks):
+	s = 0
+	for section in textbooks['sections'].values():
+		s += len(section)
+	return s
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):
