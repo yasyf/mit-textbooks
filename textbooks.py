@@ -62,6 +62,11 @@ def _500_view(e):
 		error_mail(e)
 	return render_template('500.html', e=str(e)), 500
 
+@app.route('/textbooks')
+def textbooks_vuew():
+	recent = recents.find().sort('dt',-1).limit(RECENTS)
+	return render_template('index.html', recent=recent)
+
 @app.route('/check/<class_id>')
 def check_view(class_id):
 	return jsonify(check_class_json(class_id))
@@ -189,7 +194,7 @@ def group_view(group_id):
 			s = "{c} could not be found!".format(c=x)
 			flash(s, 'danger')
 	for overlaps in check_all_times(g_filtered):
-		classes = ', '.join(overlaps[:-1]) + ' and ' + overlaps[-1] if len(overlaps) > 1 else overlaps[0]
+		classes = ', '.join(overlaps[:-1]) + ' and ' + overlaps[-1] if len(overlaps) > 1 else ' and '.join(overlaps) if len(overlaps) == 2 else overlaps[0]
 		flash(classes + ' have conflicting lecture times!', 'warning')
 	g.search_val = ', '.join(g_filtered_ids)
 	return render_template('group.html', classes=g_filtered, group_obj=group_obj)

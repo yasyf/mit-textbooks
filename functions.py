@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach, csv, StringIO
 from flask import g, flash, url_for
 from bs4 import BeautifulSoup
 from lxml import objectify
@@ -272,6 +272,11 @@ def clean_class_info(class_info, lecture_info):
 	else:
 		class_info_cleaned['lecture'], class_info_cleaned['location'] = '', ''
 
+	if class_info_cleaned['course'] == '6':
+		eecs_staff = get_eecs_staff(class_info_cleaned['class'])
+		class_info_cleaned['instructors']['spring'] = eecs_staff or class_info_cleaned['instructors']['spring']
+		class_info_cleaned['instructors']['fall'] = eecs_staff or class_info_cleaned['instructors']['fall']
+
 	excludes = ['staff']
 	def test_instructor(instructor):
 		instructor = instructor.lower()
@@ -283,8 +288,19 @@ def clean_class_info(class_info, lecture_info):
 	for key, instructor_set in class_info_cleaned['instructors'].iteritems():
 		class_info_cleaned['instructors'][key] = [instructor for instructor in instructor_set if test_instructor(instructor)]
 			
-
 	return class_info_cleaned
+
+def get_eecs_staff(c):
+	data = requests.get('https://eecs.scripts.mit.edu/eduportal/who_is_teaching_what_data_out/F/{y}/'.format(y=datetime.date.today().year)).text
+	reader = csv.DictReader(StringIO.StringIO(data), fieldnames=['class','name','first_name','last_name','title'])
+	instructors = []
+	for row in reader:
+		if row['class'] == c and 'Lecturer' in row['title']:
+			instructors.append(row['first_name'] + ' ' + row['last_name'])
+	def initialize(instructor):
+		l = instructor.split(' ') 
+		return ' '.join([x[0] + '.' for x in l[:-1]]) + ' ' + l[-1]
+	return [initialize(x) for x in instructors]
 
 def process_prereqs(prereqs):
 	if not prereqs:
@@ -691,7 +707,7 @@ def check_all_times(classes):
 		for i in range(7,18):
 			free[j][i] = []
 			free[j][i+0.5] = []
-	ovelap = set()
+	overlap = set()
 	for c in classes:
 		lecture = c.lecture.split(',')
 		for group in lecture:
@@ -712,7 +728,6 @@ def check_all_times(classes):
 					while current < end_hour:
 						free[day][current].append(c.id)
 						if len(free[day][current]) > 1:
-							ovelap.add(tuple(free[day][current]))
+							overlap.add(tuple(free[day][current]))
 						current += 0.5
-	return ovelap
-
+	return overlap
