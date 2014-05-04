@@ -12,7 +12,7 @@
             {% endif %}
             {% endif %}
             {% else %}
-            <a class="btn btn-primary btn-sm" onclick="$('#login_modal').modal();">Login</a>
+            <a class="btn btn-primary btn-sm" onclick="resetCookies();$('#login_modal').modal();">Login</a>
             {% endif %}
         </p>
     </div>
@@ -137,6 +137,10 @@ function save_group(){
 </div><!-- /.modal -->
 
 <script>
+    function resetCookies () {
+        $.removeCookie("id_email");
+        $.removeCookie("id_name");
+    }
     $(document).ready(function() {
         $( "#search_input" ).focus(function() {
             if(window.innerWidth >= 769){
