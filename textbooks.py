@@ -64,6 +64,7 @@ def _500_view(e):
 
 @app.route('/textbooks')
 def textbooks_view():
+	session.pop('override_url')
 	all_offers = list(offers.find().sort('class_id', 1))
 	classes = [offer['class_id'] for offer in all_offers]
 	group_id = prepare_class_hash(classes)
@@ -237,6 +238,7 @@ def remove_offer_view(class_id, offer_id):
 
 @app.route('/account')
 def account_view():
+	session.pop('override_url')
 	if not g.user:
 		return redirect(url_for('index_view'))
 	classes = [offer['class_id'] for offer in g.user.get_postings()]
