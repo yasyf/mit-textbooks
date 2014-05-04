@@ -28,7 +28,7 @@ def error_mail():
 	message.set_text(repr(task))
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
-		print sg.send(message)
+		sg.send(message)
 	except Exception, e:
 		print str(e)
 		print 'Stuck Worker'

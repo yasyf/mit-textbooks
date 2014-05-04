@@ -298,7 +298,7 @@ def get_eecs_staff(c):
 		if row['class'] == c and 'Lecturer' in row['title']:
 			instructors.append(row['first_name'] + ' ' + row['last_name'])
 	def initialize(instructor):
-		l = instructor.split(' ') 
+		l = clean_html(instructor).split(' ') 
 		return ' '.join([x[0] + '.' for x in l[:-1]]) + ' ' + l[-1]
 	return [initialize(x) for x in instructors]
 
