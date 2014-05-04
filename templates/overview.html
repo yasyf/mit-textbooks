@@ -1,6 +1,21 @@
 {% extends "_base.html" %}
-{% block title %}{{ class_obj.name }}{% endblock %}
-{% block description %}Buy and sell both new and used textbooks for {{ class_obj.display_name() }} at MIT Textbooks.{% endblock %}
+{% block title %}{{ class_obj.name }} Overview{% endblock %}
+{% block description %}Overview of {{ class_obj.display_name() }} at MIT Textbooks. {{ class_obj.summary() }}{% endblock %}
+{% block og_description %}Overview of {{ class_obj.display_name() }} at MIT Textbooks. {{ class_obj.summary() }}{% endblock %}
+
+{% block meta %}
+<link rel='canonical' href="{{ url_for('overview_view', class_id=class_obj.id, _external=True) }}">
+<meta property="og:url" content="{{ url_for('overview_view', class_id=class_obj.id, _external=True) }}">
+{% endblock %}
+
+{% block img %}
+{% if class_obj.image() %}
+<meta property="og:image" content="{{ class_obj.image() }}">
+{% else %}
+<meta property="og:image" content="{{ url_for('static', filename='images/seal.jpg', _external=True) }}">
+{% endif %}
+{% endblock %}
+
 {% block body %}
 
 {% include '_overview.html' %}

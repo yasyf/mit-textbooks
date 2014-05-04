@@ -121,13 +121,13 @@ def format_class(c):
 
 def is_int(value):
   try:
-    int(value)
-    return True
+	int(value)
+	return True
   except ValueError:
-    return False
+	return False
 
 def prepare_class_hash(classes):
-	classes = ','.join(list(sorted(set([format_class(clean_html(c)) for c in classes]), key=lambda x: int(x.split('.')[0]) if '.' in x and is_int(x.split('.')[0]) else x)))
+	classes = ','.join(list(sorted(set([format_class(clean_html(c)) for c in classes]), key=lambda x: float(x) if is_float(x) else int(x.split('.')[0]) if '.' in x and is_int(x.split('.')[0]) else x)))
 	_hash = md5(classes)
 	if groups.find_one({"hash": _hash}):
 		return _hash
@@ -669,7 +669,7 @@ def get_blacklist(classes):
 	return 1 + (penalty-1)/2.5
 
 def sitemap_allows():
-	allows = [url_for('index_view', _external=True)]
+	allows = [url_for('index_view', _external=True), url_for('textbooks_view', _external=True)]
 	for c in classes.find({}):
 		if 'textbooks' not in c:
 			continue
@@ -731,3 +731,10 @@ def check_all_times(classes):
 							overlap.add(tuple(free[day][current]))
 						current += 0.5
 	return overlap
+
+def is_float(n):
+	try:
+		float(n)
+		return True
+	except ValueError:
+		return False

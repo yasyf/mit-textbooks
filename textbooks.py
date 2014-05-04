@@ -63,9 +63,22 @@ def _500_view(e):
 	return render_template('500.html', e=str(e)), 500
 
 @app.route('/textbooks')
-def textbooks_vuew():
-	recent = recents.find().sort('dt',-1).limit(RECENTS)
-	return render_template('index.html', recent=recent)
+def textbooks_view():
+	all_offers = list(offers.find().sort('class_id', 1))
+	classes = [offer['class_id'] for offer in all_offers]
+	group_id = prepare_class_hash(classes)
+	group_obj = get_group(group_id)
+	if not check_group(group_obj.class_ids):
+		send_to_worker(group_id, group=True)
+		url = url_for('textbooks_view', _external=True)
+		return loading_view(','.join(group_obj.class_ids), override_url=url)
+	textbooks = {}
+	for offer in all_offers:
+		c = get_class(offer['class_id'])
+		if c not in textbooks:
+			textbooks[c] = []
+		textbooks[c].append(tb_id_to_tb_filter(offer['class_id'], offer['tb_id']))
+	return render_template('textbooks.html', offers=textbooks, classes=group_obj.class_ids)
 
 @app.route('/check/<class_id>')
 def check_view(class_id):
@@ -350,12 +363,20 @@ def tb_id_to_tb_filter(class_id, textbook_id):
 def space_out_filter(s):
 	return ', '.join(s.split(','))
 
+@app.template_filter('summarize_group')
+def space_out_filter(classes):
+	return '. '.join([x.short_name for x in classes])
+
 @app.template_filter('prices')
-def prices_filter(textbook):
+def prices_filter(textbook, class_obj):
 	prices = []
+	if class_obj.has_local():
+		offers = [x['price'] for x in class_obj.offers(tb_id_filter(textbook))]
+		if offers:
+			prices.append(('Local', "%.2f" % min(offers)))
 	for x in ['used', 'new', 'retail']:
 		if x in textbook and textbook[x]:
-			prices.append((x,textbook[x]))
+			prices.append((x[0].upper() + x[1:],textbook[x]))
 	return prices
 
 @app.template_filter('year_from_i')
@@ -385,12 +406,17 @@ def gcal_events_filter(classes):
 	return events
 
 @app.template_filter('section_saved')
-def section_saved_filter(section):
+def section_saved_filter(section, class_obj):
 	percentages = []
-	p = None
+	all_p = [0.0]
 	for book in section:
+		p = 0
 		if 'retail' in book and book['retail']:
-			if 'used' in book and book['used']:
+			if class_obj.has_local():
+				offers = [x['price'] for x in class_obj.offers(tb_id_filter(book))]
+			if class_obj.has_local() and offers:
+				p = max(100 * (1 - float(min(offers))/float(book['retail'])), float(book['saved']) if 'saved' in book else 0)
+			elif 'used' in book and book['used']:
 				p = max(100 * (1 - float(book['used'])/float(book['retail'])), float(book['saved']) if 'saved' in book else 0)
 			elif 'new' in book and book['new']:
 				p = max(100 * (1 - float(book['new'])/float(book['retail'])), float(book['saved']) if 'saved' in book else 0)
@@ -398,7 +424,9 @@ def section_saved_filter(section):
 				p = float(book['saved'] if 'saved' in book else 0)
 		elif 'saved' in book and book['saved']:
 			p = float(book['saved'])
-	return "up to {p}%".format(p=int(p)) if p and p > 20 else 'a ton'
+		all_p.append(p)
+	p = int(max(all_p))
+	return "up to {p}%".format(p=p) if p and p > 20 else 'a ton'
 
 @app.template_filter('tb_len')
 def tb_len_filter(textbooks):

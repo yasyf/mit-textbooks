@@ -40,9 +40,13 @@ blockquote{
 	vertical-align: -1px;
 }
 
-.footer_bar {
-	padding-left: 0px;
-	padding-right: 0px;
+#sidebar.affix-top {
+	position: static;
+}
+
+#sidebar.affix {
+	position: fixed;
+	top:70px;
 }
 
 @media only screen and (min-width : 769px) {
@@ -63,5 +67,6 @@ blockquote{
 	.navbar {
 		min-height: 70px;
 	}
+
 }
 

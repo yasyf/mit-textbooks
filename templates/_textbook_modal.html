@@ -12,7 +12,7 @@
 			href="{{ textbook.purchase[1] }}"
 			target='_blank'
 			data-toggle='modal'
-			class='btn btn-success'>
+			class='btn btn-{% if class_obj.has_local() %}info{% else %}success{% endif %}'>
 				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; {{ textbook.purchase[0] }}
 			</a>
 			{% endif %}
@@ -24,13 +24,13 @@
 			{% endif %}
 			target='_blank'
 			data-toggle='modal'
-			class='btn btn-{% if textbook.purchase %}info{% else %}success{% endif %}'>
+			class='btn btn-{% if textbook.purchase or class_obj.has_local() %}info{% else %}success{% endif %}'>
 				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Amazon
 			</a>
 			{% if class_obj.has_local() %}
 			<a
 			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local').modal();"
-			class='btn btn-info'>
+			class='btn btn-success'>
 				<span class='glyphicon glyphicon-home'></span> &nbsp; Local
 			</a>
 			{% endif %}

@@ -1,0 +1,74 @@
+{% extends "_base.html" %}
+{% block title %}Locally Available Texbooks{% endblock %}
+{% block description %}All of the textbooks available on and off campus for MIT classes. Save time and money by buying locally!{% endblock %}
+
+{% block meta %}
+<link rel='canonical' href="{{ url_for('textbooks_view', _external=True) }}">
+<meta property="og:url" content="{{ url_for('textbooks_view', _external=True) }}">
+{% endblock %}
+
+{% block body %}
+
+<div>
+	<h1>All Local Textbooks</h1>
+</div>
+
+<br>
+
+<div class="row">
+
+	<div class="col-md-11">
+
+		{% for c in classes %}
+
+		{% set class_obj = c|id_to_obj %}
+		{% set textbooks = offers[class_obj] %}
+
+
+		<div class="panel panel-default" id="books_{{ class_obj.safe_id() }}">
+			<div class="panel-heading">{{ class_obj.display_name() }}</div>
+			<div class="panel-body">Save up to {{ textbooks|section_saved(class_obj) }} by purchasing through MIT Textbooks!</div>
+			<div class="list-group">
+				{% for textbook in textbooks %}
+					{% include '_textbook.html' %}
+				{% endfor %}
+			</div>	
+		</div>
+
+		{% if not loop.last %}<hr>{% endif %}
+		
+		{% endfor %}
+	</div>
+
+	<div class="col-md-1" id="nav-parent">
+
+		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110">
+			{% for c in classes %}
+			<li><a class='sidebar-link' href="#books_{{ c.replace('.','') }}">{{ c }}</a></li>
+			{% endfor %}
+		</ul>
+
+	</div>
+</div>
+
+
+<script>
+
+$(document).ready(function() {
+  $('body').scrollspy({ target: '#nav-parent', offset: 75 })
+});
+
+var $root = $('html, body');
+$('.sidebar-link').click(function() {
+    var href = $.attr(this, 'href');
+    $root.animate({
+        scrollTop: $(href).offset().top - 75
+    }, 500, function () {
+        window.location.hash = href;
+    });
+    return false;
+});
+
+</script>
+
+{% endblock %}

@@ -1,6 +1,6 @@
 <hr>
-<div class="col-xs-12 footer_bar">
-    <div class="col-xs-6 footer_bar">
+<div class="row">
+    <div class="col-xs-4">
         <p>
             {% if g.user %}
             <a class="btn btn-primary btn-sm" href="{{ url_for('account_view') }}">My Account</a>
@@ -16,22 +16,27 @@
             {% endif %}
         </p>
     </div>
-    <div class="col-xs-6 text-right footer_bar">
+    <div class="col-xs-4 text-center">
+        <p>
+            <a href="{{ url_for('textbooks_view') }}" class="btn btn-primary btn-sm">All Local Textbooks</a>
+        </p>
+    </div>
+    <div class="col-xs-4 text-right">
         <p>
             <a onclick="$('#feedback_modal').modal();" class="btn btn-primary btn-sm">Feedback</a>
         </p>
     </div>
 </div>
 
-<div class="col-xs-12 footer_bar">
-    <div class="col-xs-6 footer_bar">
+<div class="row">
+    <div class="col-xs-6">
         <p>
             {% if g.user %}
             You are logged in as {{ g.user.name }}<br>
             {% endif %}
         </p>
     </div>
-    <div class="col-xs-6 text-right footer_bar">
+    <div class="col-xs-6 text-right">
         <p>
             &copy; Copyright 2014 <a href='http://www.yasyf.com' target='_blank'>Yasyf Mohamedali</a>
         </p>
