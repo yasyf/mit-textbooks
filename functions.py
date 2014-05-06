@@ -2,7 +2,7 @@
 
 from setup import *
 import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach, csv, StringIO
-from flask import g, flash, url_for
+from flask import g, flash, url_for, request
 from bs4 import BeautifulSoup
 from lxml import objectify
 from bson.objectid import ObjectId
