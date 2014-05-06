@@ -342,16 +342,18 @@ def try_url(url):
 		return None
 
 def get_google_site_guess(class_id):
-		br = mechanize.Browser()
-		br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0 (compatible;)'),('Accept', '*/*')]
-		br.set_handle_robots(False)
-		br.open("http://www.google.com/search?&q=MIT+{q}&btnG=Google+Search&inurl=https".format(q=class_id.replace(' ', '+')))
-		for link in br.links():
-			url = link.url
-			if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url and 'google' not in url and 'http' in url:
-				get = try_url(url)
-				if get:
-					return get
+	br = mechanize.Browser()
+	br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0 (compatible;)'),('Accept', '*/*')]
+	br.set_handle_robots(False)
+	google_url = "http://www.google.com/search?&q=MIT+{q}&btnG=Google+Search&inurl=https".format(q=class_id.replace(' ', '+'));
+	br.open(google_url)
+	for link in br.links():
+		url = link.url
+		if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url and 'google' not in url and 'http' in url:
+			get = try_url(url)
+			if get:
+				return get
+	return try_url(google_url)
 
 def get_class_site(class_id):
 	url = "http://course.mit.edu/{class_id}".format(class_id=class_id)
@@ -738,3 +740,4 @@ def is_float(n):
 		return True
 	except ValueError:
 		return False
+
