@@ -285,6 +285,10 @@ def sitemap_view():
 def urllist_view():
 	return Response(response=render_template('urllist.txt', allows=sitemap_allows()), status=200, mimetype="text/plain;charset=UTF-8")
 
+@app.route('/suggest/<search_term>')
+def suggest_view(search_term):
+	return jsonify(suggestion(search_term))
+
 @app.route('/go/<search_term>')
 def go_view(search_term):
 	classes = [format_class(c) for c in search_term.split(',')]

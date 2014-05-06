@@ -741,3 +741,10 @@ def is_float(n):
 	except ValueError:
 		return False
 
+def suggestion(search_term):
+	results = recents.find({'class':{'$regex':'^'+format_class(search_term)}}).limit(3)
+	suggestions = []
+	for r in results:
+		suggestions.append({'c': r['class'], 'n': r['display_name']})
+	return {'suggestions': suggestions}
+
