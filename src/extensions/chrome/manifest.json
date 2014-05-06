@@ -1,0 +1,28 @@
+{
+  "name": "MIT Textbooks",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "Integrates MIT Textbooks into your daily browsing.",
+  "homepage_url": "http://textbooksearch.mit.edu/",
+  "permissions": [
+    "*://*/*"
+  ],
+  "omnibox": {
+    "keyword": "textbook"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "exclude_matches": [
+        "*://textbooksearch.mit.edu/*",
+        "*://tb.mit.edu/*"
+      ],
+      "js": [
+        "inject.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}
