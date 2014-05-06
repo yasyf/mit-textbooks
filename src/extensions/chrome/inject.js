@@ -1,6 +1,7 @@
 var mit_textbooks_re = /([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})/g;
 var mit_textbooks_replace = "<a href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
 var mit_textbooks_current_html;
+var mit_textbooks_nodesVisited = Object.create(null);
 function walkDom() {
 	if (mit_textbooks_current_html == document.documentElement.innerHTML) {
 		return;
@@ -25,7 +26,8 @@ function walkDom() {
 	}
 
 	for(var i = 0; node=nodes[i] ; i++) {
-		if (node.parentNode){
+		if (node.parentNode && !(node.parentNode in mit_textbooks_nodesVisited)){
+			mit_textbooks_nodesVisited[node.parentNode] = true;
 			node.parentNode.innerHTML = node.parentNode.innerHTML.replace(mit_textbooks_re, mit_textbooks_replace);
 		}
 	}
