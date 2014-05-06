@@ -1,8 +1,8 @@
 {
   "name": "MIT Textbooks",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "manifest_version": 2,
-  "description": "Integrates MIT Textbooks into your daily browsing.",
+  "description": "Clickable class names on any website!",
   "homepage_url": "http://textbooksearch.mit.edu/",
   "permissions": [
     "*://*/*"
