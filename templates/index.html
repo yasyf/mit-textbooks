@@ -4,6 +4,7 @@
 {% block description %}A search engine for all your MIT classes, complete with links to the cheapest textbooks online. Includes tons of relevant class info, a built-in scheduler, textbook marketplace, and more.{% endblock %}
 {% block og_description %}A search engine for all your MIT classes, complete with links to the cheapest textbooks online. Includes tons of relevant class info, a built-in scheduler, textbook marketplace, and more.{% endblock %}
 {% block meta %}
+<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ndgcomkciihbdocdhnhaekkkgblcgcml">
 <link rel='canonical' href="{{ url_for('index_view', _external=True) }}">
 <meta property="og:url" content="{{ url_for('index_view', _external=True) }}">
 {% endblock %}
@@ -17,6 +18,9 @@
 </p>
 <p>
 	Use search bar above to find a class. You can search for multiple classes by separating them with a comma.
+</p>
+<p>
+	Check out our <a onclick='chrome.webstore.install();' class='btn btn-primary btn-xs'>Chrome Extension</a> to show class and textbook info on any website.
 </p>
 <p>
 	If you find the site useful, be sure to tell your friends and give us a like on Facebook!
