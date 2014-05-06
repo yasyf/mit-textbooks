@@ -23,11 +23,13 @@ function navigate(url) {
   });
 }
 
+chrome.omnibox.setDefaultSuggestion({'description': '<dim>Search MIT Textbooks</dim>'});
+
 chrome.omnibox.onInputChanged.addListener(function (text, suggest) {
     loadJSON('http://textbooksearch.mit.edu/suggest/'+text, function (data) {
     	suggestions = [];
     	for (var i = data.suggestions.length - 1; i >= 0; i--) {
-    		suggestions.push({'content': data.suggestions[i].c, 'description': data.suggestions[i].n.replace(text,'<match>'+text+'</match>')});
+    		suggestions.push({'content': data.suggestions[i].c, 'description': data.suggestions[i].n.replace(text,'<match>'+text+'</match>') + ' on MIT Textbooks'});
     	};
     	suggest(suggestions);
     });

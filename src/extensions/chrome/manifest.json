@@ -1,8 +1,10 @@
 {
   "name": "MIT Textbooks",
+  "short_name": "MIT Textbooks",
   "version": "1.1.1",
   "manifest_version": 2,
   "description": "Clickable class names on any website!",
+  "author": "Yasyf Mohamedali",
   "homepage_url": "http://textbooksearch.mit.edu/",
   "permissions": [
     "*://*/*"
