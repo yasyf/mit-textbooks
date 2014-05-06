@@ -1,5 +1,5 @@
 var mit_textbooks_re = /((([A-Za-z]{2,3})|([1-9][0-9]?[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
-var mit_textbooks_re_search = /(\s|^)((([A-Za-z]{2,3})|([1-9][0-9]?[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([\s](?!([%]|GB)))|$)/g;
+var mit_textbooks_re_search = /(\s|^)((([A-Za-z]{2,3})|([1-9][0-9]?[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([\s\?\.\!](?!([%]|GB)))|$)/g;
 var mit_textbooks_replace = "<a data-tb='replaced' href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
 var mit_textbooks_current_html;
 function walkDom() {
@@ -30,7 +30,11 @@ function walkDom() {
 			if (node.parentNode.getAttribute('data-tb') === 'replaced'){
 				continue;
 			}
-			if (node.parentNode.tagName.toLowerCase() === "a" || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
+			excludes = ["a", "input", "button", "textarea"];
+			if (node.parentNode.tagName.toLowerCase() in excludes || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
+				continue;
+			}
+			if (node.parentNode.parentNode && node.parentNode.parentNode.getAttribute('role') === 'textbox'){
 				continue;
 			}
 			span = document.createElement('span');
