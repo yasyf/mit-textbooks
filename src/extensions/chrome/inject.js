@@ -1,7 +1,7 @@
-var mit_textbooks_re = /([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})/g;
-var mit_textbooks_replace = "<a href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
+var mit_textbooks_re = /((([A-Za-z]{2,3})|([1-9][0-9]?[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
+var mit_textbooks_re_search = /(\s|^)((([A-Za-z]{2,3})|([1-9][0-9]?[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([\s](?!([%]|GB)))|$)/g;
+var mit_textbooks_replace = "<a data-tb='replaced' href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
 var mit_textbooks_current_html;
-var mit_textbooks_nodesVisited = Object.create(null);
 function walkDom() {
 	if (mit_textbooks_current_html == document.documentElement.innerHTML) {
 		return;
@@ -10,7 +10,7 @@ function walkDom() {
 	  document.body,
 	  NodeFilter.SHOW_TEXT,
 	  function(node) {
-	    var matches = node.textContent.match(mit_textbooks_re);
+	    var matches = node.textContent.match(mit_textbooks_re_search);
 	    if(matches) { 
 	      return NodeFilter.FILTER_ACCEPT;
 	    } else {
@@ -26,9 +26,16 @@ function walkDom() {
 	}
 
 	for(var i = 0; node=nodes[i] ; i++) {
-		if (node.parentNode && !(node.parentNode in mit_textbooks_nodesVisited)){
-			mit_textbooks_nodesVisited[node.parentNode] = true;
-			node.parentNode.innerHTML = node.parentNode.innerHTML.replace(mit_textbooks_re, mit_textbooks_replace);
+		if (node.parentNode) {
+			if (node.parentNode.getAttribute('data-tb') === 'replaced'){
+				continue;
+			}
+			if (node.parentNode.tagName.toLowerCase() === "a" || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
+				continue;
+			}
+			span = document.createElement('span');
+			span.innerHTML = node.nodeValue.replace(mit_textbooks_re, mit_textbooks_replace);
+			node.parentNode.replaceChild(span, node);
 		}
 	}
 	mit_textbooks_current_html = document.documentElement.innerHTML;
@@ -41,5 +48,7 @@ if (document.domain === "textbooksearch.mit.edu") {
 	}
 } else {
 	walkDom();
-	window.setInterval(walkDom, 10000);
+	window.setTimeout(walkDom, 1000);
+	window.setTimeout(walkDom, 3000);
+	window.setInterval(walkDom, 5000);
 }
