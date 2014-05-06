@@ -19,7 +19,7 @@
 <p>
 	Use search bar above to find a class. You can search for multiple classes by separating them with a comma.
 </p>
-<p>
+<p id='cr-ext'>
 	Check out our <a onclick='chrome.webstore.install();' class='btn btn-primary btn-xs'>Chrome Extension</a> for clickable class names on any website.
 </p>
 <p>
@@ -55,4 +55,9 @@ $('.recents').easyTicker({
 });
 </script>
 
+<script>
+if (chrome && chrome.app.isInstalled) {
+  $('#cr-ext').hide();
+}
+</script>
 {% endblock %}
