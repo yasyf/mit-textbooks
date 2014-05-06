@@ -39,7 +39,7 @@ if (document.domain === "textbooksearch.mit.edu") {
 	if (installP) {
 		installP.style.display = 'none';
 	}
+} else {
+	walkDom();
+	window.setInterval(walkDom, 10000);
 }
-walkDom();
-
-window.setInterval(walkDom, 10000);
