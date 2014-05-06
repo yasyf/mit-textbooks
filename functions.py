@@ -115,7 +115,7 @@ def get_group(group_id):
 
 def format_class(c):
 	c = c.upper()
-	if c[-1] == 'J':
+	if c and c[-1] == 'J':
 		c = c[:-1]
 	return c.strip()
 
@@ -127,7 +127,7 @@ def is_int(value):
 	return False
 
 def prepare_class_hash(classes):
-	classes = ','.join(list(sorted(set([format_class(clean_html(c)) for c in classes]), key=lambda x: float(x) if is_float(x) else int(x.split('.')[0]) if '.' in x and is_int(x.split('.')[0]) else x)))
+	classes = ','.join(list(sorted(set([format_class(clean_html(c)) for c in classes if len(c) > 1]), key=lambda x: float(x) if is_float(x) else int(x.split('.')[0]) if '.' in x and is_int(x.split('.')[0]) else x)))
 	_hash = md5(classes)
 	if groups.find_one({"hash": _hash}):
 		return _hash

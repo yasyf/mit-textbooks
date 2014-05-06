@@ -161,7 +161,7 @@ def calendar_view(group_id):
 		if '404' in session:
 			session.pop('404')
 		return redirect(url_for('_404_view'))
-	events = reduce(lambda x,y: x + get_class(y).events(), group_obj.class_ids, [])
+	events = reduce(lambda x,y: x + get_class(y).events() if get_class(y) else x, group_obj.class_ids, [])
 	return render_template('scheduler.html', events=events)
 
 @app.route('/overview/<class_id>')
@@ -261,8 +261,10 @@ def account_view():
 	session['loading'] = None
 	return render_template('account.html')
 
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['POST', 'GET'])
 def search_view():
+	if request.method == 'GET':
+		return redirect(url_for('index_view'))
 	search_term = request.form.get('search_term')
 	return go_view(search_term)
 
