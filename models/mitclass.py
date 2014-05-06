@@ -175,7 +175,7 @@ class MITClass():
 		d = {'M': 'Mondays', 'T':'Tuesdays', 'W': 'Wednesdays', 'R': 'Thursdays', 'F': 'Fridays'}
 		times = []
 		for group in self.lecture.split(','):
-			m = re.match(re.compile(r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'), group)
+			m = re.match(re.compile(TIME_REGEX), group)
 			if m:
 				days = [d[x] for x in list(m.group(1))]
 				days = ', '.join(days[:-1]) + ' and ' + days[-1] if len(days) > 1 else ' and '.join(days) if len(days) == 2 else days[0]
@@ -201,7 +201,7 @@ class MITClass():
 		color = random.choice(colors)
 		i = 0
 		for group in self.lecture.split(','):
-			m = re.match(re.compile(r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'), group)
+			m = re.match(re.compile(TIME_REGEX), group)
 			if m:
 				for day in m.group(1):
 					d = {'id':"{id}#{i}".format(id=self.id, i=i), 'text': self.id, 'color': color}
@@ -217,7 +217,7 @@ class MITClass():
 	def events_raw(self):
 		events = []
 		for group in self.lecture.split(','):
-			m = re.match(re.compile(r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'), group)
+			m = re.match(re.compile(TIME_REGEX), group)
 			if m:
 				days = m.group(1)
 				d = {}
