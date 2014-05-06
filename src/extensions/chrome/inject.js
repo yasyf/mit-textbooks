@@ -34,6 +34,12 @@ function walkDom() {
 	mit_textbooks_current_html = document.documentElement.innerHTML;
 }
 
+if (document.domain === "textbooksearch.mit.edu") {
+	installP = document.getElementById('mit-tb-cr-ext');
+	if (installP) {
+		installP.style.display = 'none';
+	}
+}
 walkDom();
 
 window.setInterval(walkDom, 10000);
