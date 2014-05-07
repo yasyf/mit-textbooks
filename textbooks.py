@@ -305,6 +305,9 @@ def go_view(search_term):
 @app.route('/site/<class_id>')
 def site_view(class_id):
 	class_obj = get_class(class_id)
+	if class_obj is None:
+		session['404'] = [class_id]
+		return redirect(url_for('_404_view'))
 	return redirect(class_obj.class_site_url())
 
 @app.route('/stellar/<class_id>')

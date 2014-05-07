@@ -166,7 +166,10 @@ def fetch_class_info(class_id):
 	if class_info:
 		return clean_class_info(class_info['class'], class_info['lecture'] if 'lecture' in class_info else None)
 	else:
-		return manual_class_scrape(class_id)
+		class_info =  manual_class_scrape(class_id)
+		if not class_info:
+			class_info = manual_class_scrape(class_id, url=LAST_CATALOG)
+		return class_info
 
 def custom_parse_instructors(instructors):
 	new_intructors = []
@@ -174,11 +177,12 @@ def custom_parse_instructors(instructors):
 		new_intructors.extend([x.split(':')[-1] for x in i.split('<br>')])
 	return new_intructors
 
-def manual_class_scrape(class_id):
+def manual_class_scrape(class_id, url=None):
 	try:
 		class_info = {}
 		class_info['dt'] = int(time.time())
-		url = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim".format(class_id=class_id)
+		if not url:
+			url = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim".format(class_id=class_id)
 		html = requests.get(url).text
 		if 'No matching subjects found.' in html:
 			return
@@ -672,7 +676,7 @@ def get_blacklist(classes):
 
 def sitemap_allows():
 	allows = [url_for('index_view', _external=True), url_for('textbooks_view', _external=True)]
-	for c in classes.find({}):
+	for c in classes.find({"error": None}):
 		if 'textbooks' not in c:
 			continue
 		allows.append(url_for('class_view', class_id=c['class'], _external=True))
@@ -747,4 +751,3 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
-
