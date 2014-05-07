@@ -177,12 +177,11 @@ def custom_parse_instructors(instructors):
 		new_intructors.extend([x.split(':')[-1] for x in i.split('<br>')])
 	return new_intructors
 
-def manual_class_scrape(class_id, url=None):
+def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 	try:
 		class_info = {}
 		class_info['dt'] = int(time.time())
-		if not url:
-			url = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim".format(class_id=class_id)
+		url = url.format(class_id=class_id)
 		html = requests.get(url).text
 		if 'No matching subjects found.' in html:
 			return
@@ -233,7 +232,7 @@ def manual_class_scrape(class_id, url=None):
 			prereq_info = ''
 		class_info['prereqs'], class_info['coreqs']  = process_prereqs(prereq_info)
 		unit_index_start = ssoup.find("Units: ") + 7
-		unit_index_end = ssoup.find("<br/>",unit_index_start)-1
+		unit_index_end = unit_index_start + 5
 		units_info = clean_html(ssoup[unit_index_start:unit_index_end])
 		class_info['units'] = [int(x) for x in units_info.split('-')]
 		lecture_node = soup.find('b', text='Lecture:')

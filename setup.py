@@ -16,6 +16,8 @@ TERM = "2015FA"
 TERM_LAST = "2014SP"
 
 CURRENT_TERM = 'Fall 2014'
+
+CURRENT_CATALOG  = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim"
 LAST_CATALOG  = "http://student.mit.edu/catalog/archive/spring/search.cgi?search={class_id}&style=verbatim"
 
 STERM = "fa14"
