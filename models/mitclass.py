@@ -116,10 +116,12 @@ class MITClass():
 
 	def formatted_availability(self):
 		if len(self.semesters) == 1:
-			return '{semester} semester'.format(semester=self.semesters[0])
+			if self.semesters[0] == "IAP":
+				return "during IAP"
+			return 'in the {semester} semester'.format(semester=self.semesters[0])
 		else:
 			semesters_string = '{first} and {last}'.format(first=", ".join(self.semesters[:-1]), last=self.semesters[-1])
-			return '{semesters} semesters'.format(semesters=semesters_string)
+			return 'in the {semesters} semesters'.format(semesters=semesters_string)
 
 	def formatted_summarized_availability(self):
 		availability = self.semesters[:]
