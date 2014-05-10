@@ -27,12 +27,15 @@
 </p>
 <p>
 	{% if g.user %}
-	<a class="btn btn-primary btn-sm" onclick="$('#courseroad_modal').modal();">
-		Export to CourseRoad
-	</a>
+	<button type="button" class="btn btn-primary btn-sm" onclick="$('#courseroad_modal').modal();">
+		CourseRoad
+	</button>
 	{% endif %}
-	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
-	<button type="button" class="btn btn-primary btn-sm" onclick="$('#calendar_modal').modal();">View On Calendar</button>
+	<a class="btn btn-primary btn-sm" target="_blank" href="http://student.mit.edu/ent/cgi-bin/sfprwtrm.sh?{{ ','.join(group_obj.class_ids) }}">
+		Pre-Register
+	</a>
+	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Facebook</button>
+	<button type="button" class="btn btn-primary btn-sm" onclick="$('#calendar_modal').modal();">Calendar</button>
 </p>
 <hr>
 {% for class_obj in classes %}
