@@ -11,13 +11,18 @@ def do_get_class(class_id):
 	while i <= 5:
 		try:
 			return get_class(class_id)
-		except AttributeError:
+		except AttributeError, e:
+			print 'Worker Failure'
+			print e
 			init_auth_browser()
 			time.sleep(.5*i)
 			i += 1
-		except Exception:
+		except Exception, e:
+			print 'Worker Failure'
+			print e
 			time.sleep(1*i)
 			i += 1
+	task['time'] = time.time()
 	queue.insert(task)
 
 def error_mail():

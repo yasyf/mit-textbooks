@@ -10,6 +10,9 @@ class MITUser():
 	def get_id(self):
 		return self.email
 
+	def is_admin(self):
+		return self.email == os.getenv('admin_email')
+
 	def get_groups(self):
 		return groups.find({"named": True, "user_id": self.get_id()})
 

@@ -448,6 +448,14 @@ def tb_len_filter(textbooks):
 		s += len(section)
 	return s
 
+@app.template_filter('queue_length')
+def queue_length_filter():
+	return queue.find({}).count()
+
+@app.template_filter('classes_length')
+def classes_length_filter():
+	return classes.find({}).count()
+
 if __name__ == '__main__':
 	if os.environ.get('PORT'):
 		app.run(host='0.0.0.0',port=int(os.environ.get('PORT')),debug=dev)
