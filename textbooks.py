@@ -449,11 +449,11 @@ def tb_len_filter(textbooks):
 	return s
 
 @app.template_filter('queue_length')
-def queue_length_filter():
+def queue_length_filter(s):
 	return queue.find({}).count()
 
 @app.template_filter('classes_length')
-def classes_length_filter():
+def classes_length_filter(s):
 	return classes.find({}).count()
 
 if __name__ == '__main__':
