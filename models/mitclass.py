@@ -47,6 +47,7 @@ class MITClass():
 		self.class_site = tuple(class_info['class_site'])
 		self.evaluation = tuple(class_info['evaluation'])
 		self.textbooks = class_info['textbooks']
+		self.search_term = class_info['search_term']
 		self.grad = class_info['grad'] if 'grad' in class_info else False
 		self._image = None
 
@@ -71,6 +72,7 @@ class MITClass():
 		d['class_site'] = self.class_site
 		d['evaluation'] = self.evaluation
 		d['textbooks'] = self.textbooks
+		d['search_term'] = self.search_term
 		d['grad'] = self.grad
 		return d
 

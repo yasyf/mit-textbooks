@@ -148,7 +148,7 @@ def class_view(class_id):
 	if class_obj is None:
 		session['404'] = [class_id]
 		return redirect(url_for('_404_view'))
-	if class_obj.master_subject_id != class_obj.id:
+	if class_obj.master_subject_id != class_obj.id or class_id != class_obj.id:
 		return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
 	update_recents_with_class(class_obj)
 	g.search_val = class_id

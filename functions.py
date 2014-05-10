@@ -81,7 +81,7 @@ def get_class(class_id):
 	class_id = format_class(class_id)
 	if class_id in class_objects:
 		return class_objects[class_id]
-	class_info = classes.find_one({"class": class_id})
+	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]})
 	if class_info and (time.time() - class_info['dt']) < CACHE_FOR:
 		if 'error' in class_info:
 			return None
@@ -192,6 +192,12 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['short_name'] = class_info['name']
 		class_info['master_subject_id'] = class_info['class']
 		class_info['course'] = class_info['class'].split('.')[0]
+		
+		old_class = classes.find_one({'class': class_info['class']})
+		if old_class:
+			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id}})
+			return classes.find_one({'class': class_info['class']})
+
 		when = []
 		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring"}.iteritems():
 			when_img_src = "/icns/%s.gif" % (when_img)
@@ -247,6 +253,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['class_site'] = get_class_site(class_id)
 		class_info['evaluation'] = get_subject_evauluation(class_id)
 		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
+		class_info['search_term'] = [class_id]
 		return class_info
 	except Exception:
 		return
@@ -269,6 +276,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
+	class_info_cleaned['search_term'] = []
 	if lecture_info:
 		data = lecture_info['timeAndPlace'].split(' ')
 		class_info_cleaned['lecture'], class_info_cleaned['location'] = clean_html(' '.join(data[:-1])), clean_html(data[-1])
@@ -478,7 +486,7 @@ def update_new_prices(book, info):
 				book['purchase'] = info['purchase']
 	return book
 
-def doItemSeach(Keywords,SearchIndex):
+def doItemSearch(Keywords,SearchIndex):
 	i = 1
 	while i <= 5:
 		try:
@@ -503,17 +511,17 @@ def get_amazon_info(isbn, title, author):
 		title = title.replace("[Ebook]","")
 		title = "{title} ebook".format(title=title)
 	d = {'asin': None}
-	response = doItemSeach(Keywords=isbn, SearchIndex="Books")
+	response = doItemSearch(Keywords=isbn, SearchIndex="Books")
 	if not response:
 		return d
 	root = objectify.fromstring(response)
 	if root.Items.TotalResults == 0:
-		response = doItemSeach(Keywords="{title} by {author}".format(title=title, author=author), SearchIndex='All')
+		response = doItemSearch(Keywords="{title} by {author}".format(title=title, author=author), SearchIndex='All')
 		if not response:
 			return d
 		root = objectify.fromstring(response)
 	if root.Items.TotalResults == 0:
-		response = doItemSeach(Keywords=title, SearchIndex='All')
+		response = doItemSearch(Keywords=title, SearchIndex='All')
 		if not response:
 			return d
 		root = objectify.fromstring(response)
@@ -573,15 +581,15 @@ def process_title(title, author, titles):
 		return title.strip()
 
 def check_class_json(class_id):
-	loaded = classes.find_one({'class': class_id}) != None
+	loaded = check_class(class_id)
 	return {'loaded': loaded}
 
 def check_class(class_id):
-	loaded = classes.find_one({'class': class_id}) != None
+	loaded = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]}) != None
 	return loaded
 
 def check_group(class_ids):
-	loaded = None not in [classes.find_one({'class': class_id}) for class_id in class_ids]
+	loaded = False not in [check_class(class_id) for class_id in class_ids]
 	return loaded
 
 def save_group(group_obj, group_name):
