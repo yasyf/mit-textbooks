@@ -319,22 +319,22 @@ def stellar_view(class_id):
 
 @app.route('/amazon/product/<asin>')
 def amazon_product_view(asin):
-	url = "http://www.amazon.com/dp/{asin}/?tag=mit-tb-20".format(asin=asin)
+	url = u"http://www.amazon.com/dp/{asin}/?tag=mit-tb-20".format(asin=asin)
 	return redirect(url)
 
 @app.route('/amazon/search/<title>')
 def amazon_search_view(title):
-	url = "http://www.amazon.com/s/?tag=mit-tb-20&field-keywords={title}".format(title=title)
+	url = u"http://www.amazon.com/s/?tag=mit-tb-20&field-keywords={title}".format(title=title)
 	return redirect(url)
 
 @app.route('/evaluation/<class_id>')
 def class_evaluation_view(class_id):
-	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
+	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
 	return redirect(url)
 
 @app.route('/evaluation/<class_id>/<professor>')
 def professor_evaluation_view(class_id, professor):
-	url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
+	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
 	return redirect(url)
 
 @app.route('/export/courseroad/<class_ids>', methods=['POST'])
