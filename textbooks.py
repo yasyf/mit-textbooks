@@ -332,9 +332,9 @@ def class_evaluation_view(class_id):
 	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
 	return redirect(url)
 
-@app.route('/evaluation/<class_id>/<professor>')
-def professor_evaluation_view(class_id, professor):
-	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
+@app.route('/professor/<professor>')
+def professor_view(professor):
+	url = search_google(professor + ' + MIT')[0]
 	return redirect(url)
 
 @app.route('/export/courseroad/<class_ids>', methods=['POST'])

@@ -25,7 +25,7 @@
 <p>
 	Instructors: 
 	{% for instructor in class_obj.current_instructors() %}
-	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last %}, {% endif %}
+	<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last %}, {% endif %}
 	{% endfor %}
 </p>
 <p>

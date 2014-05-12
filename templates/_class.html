@@ -25,7 +25,7 @@
 	{{ class_obj.id }} will not be offered this semester. It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
 	{% endif %}
 	{% for instructor in class_obj.current_instructors() %}
-	<a href="{{ url_for('professor_evaluation_view', class_id=class_obj.id, professor=instructor|last_name) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
+	<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
 	{% endfor %}
 </p>
 {% if class_obj.lecture %}

@@ -228,6 +228,8 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 						if professor not in ["Jr.","Sr."]:
 							all_instructors.append(professor)
 					final_instructors = [clean_html(i) for i in custom_parse_instructors(all_instructors)]
+					for instructor in final_instructors:
+						search_google(instructor + ' + MIT')
 					class_info['instructors'] = {k.lower():(final_instructors if k in when else []) for k in ['Fall', 'Spring']}
 		
 		prereq_index_start = ssoup.find("Prereq: ") + 8
@@ -298,7 +300,11 @@ def clean_class_info(class_info, lecture_info):
 
 	for key, instructor_set in class_info_cleaned['instructors'].iteritems():
 		class_info_cleaned['instructors'][key] = [instructor for instructor in instructor_set if test_instructor(instructor)]
-			
+	
+	for instructor_set in class_info_cleaned['instructors'].values():
+		for instructor in instructor_set:
+			search_google(instructor + ' + MIT')
+
 	return class_info_cleaned
 
 def get_eecs_staff(c):
@@ -352,15 +358,29 @@ def try_url(url):
 	except requests.exceptions.TooManyRedirects:
 		return None
 
-def get_google_site_guess(class_id):
+def search_google(term):
+	cached = google_cache.find_one({'term': term})
+	if cached and cached['dt'] > (datetime.datetime.utcnow() - datetime.timedelta(seconds=CACHE_FOR)):
+		return cached['links']
+
 	br = mechanize.Browser()
 	br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0 (compatible;)'),('Accept', '*/*')]
 	br.set_handle_robots(False)
-	google_url = "http://www.google.com/search?&q=MIT+{q}&btnG=Google+Search&inurl=https".format(q=class_id.replace(' ', '+'));
+	google_url = "http://www.google.com/search?&q={q}&btnG=Google+Search&inurl=https".format(q=urllib.quote_plus(term))
 	br.open(google_url)
-	for link in br.links():
-		url = link.url
-		if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url and 'google' not in url and 'http' in url:
+	def check_excludes(url):
+		excludes = ['google', 'youtube', 'blogger']
+		for ex in excludes:
+			if ex in url:
+				return False
+		return True
+	links = [link.url for link in br.links() if check_excludes(link.url) and link.url[:4] == 'http']
+	google_cache.update({'term': term}, {"$set": {'links': links, 'dt': datetime.datetime.utcnow()}}, upsert=True)
+	return links
+
+def get_google_site_guess(class_id):
+	for url in search_google('MIT + ' + class_id):
+		if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url:
 			get = try_url(url)
 			if get:
 				return get
@@ -758,3 +778,6 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
+
+if __name__ == '__main__':
+	fetch_class_info('6.005')

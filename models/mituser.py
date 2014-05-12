@@ -7,7 +7,7 @@ class MITUser():
 		obj =  users.find_one({"email": self.email})
 		if not obj:
 			users.insert({"name": self.name, "email": self.email, "dt": datetime.datetime.utcnow()})
-		elif obj['dt'] < (datetime.datetime.utcnow - datetime.timedelta(days=1)):
+		elif obj['dt'] < (datetime.datetime.utcnow() - datetime.timedelta(days=1)):
 			users.update({'_id': obj['_id']}, {'$set': {'dt': datetime.datetime.utcnow()}})
 
 	def get_id(self):
