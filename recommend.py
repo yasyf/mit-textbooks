@@ -81,7 +81,7 @@ def calc_distance(dists, c1, c2, weights):
 
 def default_weights(user_id, c):
 	weights = [0.8]*len(distance_fields) + [1]*(len(fields)-len(distance_fields))
-	defaults = [('course', 1.25), ('in_groups', 3), ('in_history', 3), ('prereqs', 1.5), ('coreqs', 1.5), ('name', 4), ('description', 2)]
+	defaults = [('course', 1.25), ('in_groups', 2.75), ('in_history', 3.5), ('prereqs', 1.5), ('coreqs', 1.5), ('name', 4), ('description', 1.75)]
 	for k, v in defaults:
 		weights[fields.index(k)] = v
 	if user_id in user_recents and c in user_recents[user_id]:
@@ -101,3 +101,5 @@ def recommend(u, c):
 			results[c_cmp] = dist
 	return sorted(results.keys(), key=lambda x: results[x])[:5]
 
+if __name__ == '__main__':
+	print recommend('yasyf@mit.edu', '6.01')
