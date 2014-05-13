@@ -253,7 +253,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['description'] = text
 		class_info['stellar_url'] = get_stellar_url(class_id)
 		class_info['class_site'] = get_class_site(class_id)
-		class_info['evaluation'] = get_subject_evauluation(class_id)
+		class_info['evaluation'] = get_subject_evaluation(class_id)
 		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
 		class_info['search_term'] = [class_id]
 		return class_info
@@ -276,7 +276,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['instructors'] = {'spring': [clean_html(i) for i in custom_parse_instructors(class_info['spring_instructors'])], 'fall': [clean_html(i) for i in custom_parse_instructors(class_info['fall_instructors'])]}
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
-	class_info_cleaned['evaluation'] = get_subject_evauluation(class_info['id'])
+	class_info_cleaned['evaluation'] = get_subject_evaluation(class_info['id'])
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
 	class_info_cleaned['search_term'] = []
 	if lecture_info:
@@ -402,7 +402,8 @@ def get_class_site(class_id):
 		title = title.split('|')[0]
 	return (clean_html(title), r.url)
 
-def get_subject_evauluation(class_id):
+def get_subject_evaluation(class_id):
+	all_info = {}
 	try:
 		url = "https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
 		try:
@@ -423,9 +424,20 @@ def get_subject_evauluation(class_id):
 		soup = BeautifulSoup(response.read())
 		rating = soup.find('strong', text='Overall rating of subject: ')
 		percentage = soup.find('strong', text='Response rate:')
-		return (clean_html(str(rating.next_sibling)), clean_html(str(percentage.next_sibling)), date)
-	except AttributeError:
-		return (None,)
+		all_info['date'] = date
+		all_info['rating'] = float(clean_html(str(rating.next_sibling))[:3])
+		all_info['percent_response'] = float(clean_html(str(percentage.next_sibling))[:-1])
+		pairings = {"Subject expectations were clearly defined": "expectations_clear", "Subject expectations were made clear": "expectations_clear", "Subject's learning objectives were met": "learning_objectives_met", "Assignments contributed to my learning": "assigments_useful", "Grading thus far has been fair": "grading_fair", "The pace of the class (content and assignments) was:": "pace", "Average hours you spent per week on this subject in the classroom": "classroom_hours", "Average hours you spent per week on this subject outside of the classroom": "home_hours", "Lab hours/week": "lab_hours", "Prep hours/week": "prep_hours", "Average hours you spent per week on this subject, both in and outside the classroom": 'hours'}
+		for string, key in pairings.iteritems():
+			try:
+				found = soup.find(text=string).parent
+				elt = found.parent if found.name == "a" else found
+				all_info[key] = float(clean_html(str(elt.next_sibling.next_sibling)))
+			except Exception:
+				continue
+		return all_info
+	except Exception:
+		return all_info
 
 def get_textbook_info(class_id, semesters):
 	pairing = {'SP': 'Spring', 'FA': 'Fall'}
@@ -779,5 +791,3 @@ def suggestion(search_term):
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
 
-if __name__ == '__main__':
-	fetch_class_info('6.005')

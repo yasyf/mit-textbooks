@@ -45,7 +45,7 @@ class MITClass():
 		self.instructors = class_info['instructors']
 		self.stellar_url = class_info['stellar_url']
 		self.class_site = tuple(class_info['class_site'])
-		self.evaluation = tuple(class_info['evaluation'])
+		self.evaluation = class_info['evaluation']
 		self.textbooks = class_info['textbooks']
 		self.search_term = class_info['search_term']
 		self.grad = class_info['grad'] if 'grad' in class_info else False
