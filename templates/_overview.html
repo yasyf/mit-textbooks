@@ -40,8 +40,8 @@
 	Units: {{ class_obj.formatted_units() }} ({{ class_obj.units_detail() }})
 </p>
 <p>
-	{% if class_obj.evaluation[0] %}
-	Evaluation: {{ class_obj.evaluation[0] }} ({{ class_obj.evaluation[1] }} response from {{ class_obj.evaluation[2] }})
+	{% if class_obj.evaluation.date %}
+	Evaluation: {{ class_obj.evaluation.rating }}/7.0 ({{ class_obj.evaluation.percent_response }}% response from {{ class_obj.evaluation.date }})
 	{% endif %}
 </p>
 <p>
