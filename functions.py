@@ -142,7 +142,7 @@ def create_group_info(classes, _hash):
 	group_info = {}
 	group_info['named'] = False
 	group_info['hash'] = _hash
-	group_info['class_ids'] = classes
+	group_info['class_ids'] = classes.split(',')
 	return group_info
 
 def check_json_for_class(url, class_id):
@@ -637,7 +637,7 @@ def save_group(group_obj, group_name):
 	group_info['named'] = True
 	group_info['name'] = group_name
 	group_info['user_id'] = g.user.get_id()
-	group_info['class_ids'] = ",".join(group_obj.class_ids)
+	group_info['class_ids'] = group_obj.class_ids
 	named_group_obj = MITClassGroup(group_info)
 	group_objects[group_name] = named_group_obj
 	groups.insert(named_group_obj.to_dict())
@@ -790,4 +790,3 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
-

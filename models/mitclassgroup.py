@@ -13,7 +13,7 @@ class MITClassGroup():
 			self.hash = group_info['hash']
 			self.name = None
 			self.user_id = None
-		self.class_ids = group_info['class_ids'].split(',')
+		self.class_ids = group_info['class_ids']
 
 	def to_dict(self):
 		d = {}
