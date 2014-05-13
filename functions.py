@@ -338,6 +338,8 @@ def update_recents_with_class(class_obj):
 			recents.update({'class': class_obj.id}, {'$set':{'dt': int(time.time())}})
 	else:
 		recents.insert({'class': class_obj.id, 'dt': int(time.time()), 'display_name': class_obj.display_name(), 'description': class_obj.summary()})
+	if g.user:
+		g.user.add_recent_class(class_obj.id)
 
 def get_stellar_url(class_id):
 	url = "https://stellar.mit.edu/S/course/%s/%s/%s/" % (class_id.split('.')[0], STERM, class_id)
