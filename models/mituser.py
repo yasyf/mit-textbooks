@@ -6,10 +6,11 @@ class MITUser():
 		self.name = name
 		self.obj = users.find_one({"email": self.email})
 		if not self.obj:
-			users.insert({"name": self.name, "email": self.email, "dt": datetime.datetime.utcnow()})
+			users.insert({"name": self.name, "email": self.email, "dt": datetime.datetime.utcnow(), 'recents': []})
 			self.obj = users.find_one({"email": self.email})
 		elif self.obj['dt'] < (datetime.datetime.utcnow() - datetime.timedelta(days=1)):
 			users.update({'_id': self.obj['_id']}, {'$set': {'dt': datetime.datetime.utcnow()}})
+		self.recents = self.obj['recents']
 
 	def get_id(self):
 		return self.email
@@ -27,13 +28,9 @@ class MITUser():
 		return self.email.split("@")[0]
 
 	def add_recent_class(self, c):
-		try:
-			recents = self.obj['recents']
-		except KeyError:
-			recents = []
-		if c in recents:
-			if recents[-1] == c:
+		if c in self.recents:
+			if self.recents[-1] == c:
 				return
-			recents.remove(c)
-		recents.append(c)
-		users.update({'_id': self.obj['_id']}, {'$set': {'recents': recents}})
+			self.recents.remove(c)
+		self.recents.append(c)
+		users.update({'_id': self.obj['_id']}, {'$set': {'recents': self.recents}})

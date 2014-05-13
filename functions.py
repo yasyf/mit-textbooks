@@ -792,3 +792,4 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
+
