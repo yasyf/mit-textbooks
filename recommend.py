@@ -96,10 +96,11 @@ def recommend(u, c):
 	results = {}
 	for c_cmp in all_c:
 		if c != c_cmp:
-			weights = default_weights(u, c)
-			dist = calc_distance(sd, c, c_cmp, weights)
-			results[c_cmp] = dist
+			try:
+				weights = default_weights(u, c)
+				dist = calc_distance(sd, c, c_cmp, weights)
+				results[c_cmp] = dist
+			except IndexError:
+				pass
 	return sorted(results.keys(), key=lambda x: results[x])[:5]
 
-if __name__ == '__main__':
-	print recommend('yasyf@mit.edu', '6.01')
