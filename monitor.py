@@ -55,7 +55,7 @@ def fail_mail(e):
 try:
 	while True:
 		last_task = task
-		task = queue.find_one(sort=[("time", 1)])
+		task = queue.find_one({'queue': 'worker'}, sort=[("time", 1)])
 		if task and last_task and task == last_task and not mailed:
 			mailed = True
 			error_mail()

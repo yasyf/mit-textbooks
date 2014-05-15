@@ -10,6 +10,7 @@ blacklist = db.blacklist
 queue = db.queue
 users = db.users
 google_cache = db.google_cache
+recommendations = db.recommendations
 
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 

@@ -1,5 +1,5 @@
 from setup import *
-import datetime, calendar, json, re, random
+import datetime, calendar, json, re, random, time
 from flask import url_for
 
 def event_to_start_end(day, m):
@@ -250,5 +250,19 @@ class MITClass():
 			events.append(d)
 		return events
 
+	def get_rec(self, user):
+		def insert_to_queue():
+			d = {'class_id': self.id, 'user_id': user, 'queue': 'recommender'}
+			if not queue.find_one(d):
+				d['time'] = time.time()
+				queue.insert(d)
+		try:
+			recs = recommendations.find_one({'class_id': self.id})['users']['u']
+			c = recs['class_ids']
+			if (time.time() - recs['time']) > CACHE_FOR:
+				insert_to_queue()
+			return c
+		except Exception:
+			insert_to_queue()
 
 

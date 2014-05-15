@@ -2,7 +2,7 @@ from setup import *
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-import pickle, Levenshtein
+import pickle, Levenshtein, time, re
 
 all_classes = list(classes.find({'error': None}))
 all_groups = [x['class_ids'] for x in groups.find()]
@@ -17,10 +17,8 @@ data = dict(zip(all_c, raw_data))
 distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
 bool_fields = ['course', 'grad', 'hass']
 bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters']
-custom_fields = ['name', 'description', 'in_groups', 'in_history']
+custom_fields = ['name', 'description', 'in_groups', 'in_history', 'less_advanced']
 fields = distance_fields + bool_fields + bool_fields_deep + custom_fields
-
-sd = pickle.load(open("dat/sd.dat","rb"))
 
 def calculate_similarity(c1, c2):
 	class1 = data[c1]
@@ -58,8 +56,10 @@ def calculate_similarity(c1, c2):
 	dists.append(1.0 - total/float(len(all_groups)))
 	#in_history
 	dists.append(1.0)
-	return dists
+	#less_advanced
+	dists.append(1.0)
 
+	return dists
 
 def simple_distances():
 	sd = []
@@ -79,13 +79,25 @@ def calc_distance(dists, c1, c2, weights):
 	dist = weights * row
 	return dist.sum(axis=1).tolist()[0]
 
-def default_weights(user_id, c):
+def default_weights(user_id, c, c_cmp):
 	weights = [0.8]*len(distance_fields) + [1]*(len(fields)-len(distance_fields))
 	defaults = [('course', 1.25), ('in_groups', 2.75), ('in_history', 3.5), ('prereqs', 1.5), ('coreqs', 1.5), ('name', 4), ('description', 1.75)]
+	
 	for k, v in defaults:
 		weights[fields.index(k)] = v
-	if user_id in user_recents and c in user_recents[user_id]:
+	
+	if user_id in user_recents and c_cmp in user_recents[user_id]:
 		weights[fields.index('in_history')] = 0
+	
+	weights[fields.index('less_advanced')] = 0
+	try:
+		c_f = float("."+re.findall("\d+", c.split('.')[-1])[0])
+		c_cmp_f = float("."+re.findall("\d+", c_cmp.split('.')[-1])[0])
+		if c_cmp_f < c_f:
+			weights[fields.index('less_advanced')] = 5
+	except Exception:
+		pass
+		
 	return [float(w) / sum(weights) for w in weights]
 
 def save_sd():
@@ -97,10 +109,28 @@ def recommend(u, c):
 	for c_cmp in all_c:
 		if c != c_cmp:
 			try:
-				weights = default_weights(u, c)
+				weights = default_weights(u, c, c_cmp)
 				dist = calc_distance(sd, c, c_cmp, weights)
 				results[c_cmp] = dist
 			except IndexError:
 				pass
 	return sorted(results.keys(), key=lambda x: results[x])[:5]
 
+if __name__ == '__main__':
+	print 'Generating Recommendations'
+	save_sd()
+	print 'Loading Recommendations'
+	sd = pickle.load(open("dat/sd.dat","rb"))
+	print 'Starting Run Loop'
+	while True:
+		task = queue.find_one({'queue': 'recommender'}, sort=[("time", 1)])
+		if task:
+			queue.remove(task)
+			_id = task['class_id']
+			uid = task['user_id'].split("@")[0]
+			print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)
+			r = {'class_ids': recommend(uid, _id)}
+			r['time'] = time.time()
+			recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}}, upsert=True)
+		else:
+			time.sleep(5)

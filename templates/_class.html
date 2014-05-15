@@ -5,6 +5,12 @@
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
 </p>
 <hr>
+{% if rec %}
+Related Classes:
+{% for r in rec %}
+<span class='rec'><a href="{{ url_for('class_view', class_id=r) }}">{{ r }}</a></span>
+{% endfor %}
+{% endif %}
 {% endif %}
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>

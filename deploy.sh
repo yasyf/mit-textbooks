@@ -1,22 +1,63 @@
 #!/bin/bash
 
-echo "Deploying Web"
-git checkout -b web_procfile
-echo "web: ./web.sh" > Procfile
-git add Procfile
-git commit -m 'web Procfile'
-git push heroku web_procfile:master --force
-git checkout master
+WEB=0
+RECOMMENDERS=0
+WORKERS=0
 
-echo "Deploying Workers"
-git checkout -b worker_procfile
-echo "worker: ./worker.sh" > Procfile
-git add Procfile
-git commit -m 'worker Procfile'
-git push worker-1 worker_procfile:master --force
-git push worker-2 worker_procfile:master --force
-git push worker-3 worker_procfile:master --force
-git checkout master
+case "$1" in
+	web) 
+		WEB=1
+		;;
+	recommenders)
+		RECOMMENDERS=1
+		;;
+	workers)
+		WORKERS=1
+		;;
+	all)
+		WORKERS=1
+		WEB=1
+		RECOMMENDERS=1
+		;;
+	*)
+		WEB=1
+		;; 
+esac
 
-git branch -D web_procfile
-git branch -D worker_procfile
+
+if [[ WEB -eq 1 ]]; then
+	echo "Deploying Web"
+	git checkout -b web_procfile
+	echo "web: ./web.sh" > Procfile
+	git add Procfile
+	git commit -m 'web Procfile'
+	git push heroku web_procfile:master --force
+	git checkout master
+	git branch -D web_procfile
+fi
+
+if [[ RECOMMENDERS -eq 1 ]]; then
+	echo "Deploying Recommenders"
+	git checkout -b recommender_procfile
+	echo "worker: ./recommender.sh" > Procfile
+	git add Procfile
+	echo "numpy==1.7.0\nscipy==0.11.0\nscikit-learn==0.13.1\npandas==0.13.1\npickle" > requirements.txt
+	git add requirements.txt
+	git commit -m 'recommender Procfile and requirements.txt'
+	git push recommender-1 worker_procfile:master --force
+	git checkout master
+	git branch -D recommender_procfile
+fi
+
+if [[ WORKERS -eq 1 ]]; then
+	echo "Deploying Workers"
+	git checkout -b worker_procfile
+	echo "worker: ./worker.sh" > Procfile
+	git add Procfile
+	git commit -m 'worker Procfile'
+	git push worker-1 worker_procfile:master --force
+	git push worker-2 worker_procfile:master --force
+	git push worker-3 worker_procfile:master --force
+	git checkout master
+	git branch -D worker_procfile
+fi
