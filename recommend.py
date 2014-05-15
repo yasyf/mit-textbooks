@@ -163,7 +163,7 @@ if __name__ == '__main__':
 				current = recommendations.find_one({'class_id': _id})
 				if current:
 					if r['class_ids'] == current['default']['class_ids']:
-						recommendations.update({'class_id': _id}, {"$push": {"default_uids": uid}})
+						recommendations.update({'class_id': _id}, {"$addToSet": {"default_uids": uid}})
 					else:
 						recommendations.update({'class_id': _id}, {"$pull": {"default_uids": uid}, "$set": {"users.{uid}".format(uid=uid): r}})
 					
