@@ -261,7 +261,7 @@ class MITClass():
 		current = recommendations.find_one({'class_id': self.id})
 		def return_default():
 			if current:
-				return current['default']['class_ids']
+				return current['default']['class_ids'][:-1]
 			else:
 				return None
 
@@ -288,5 +288,5 @@ class MITClass():
 			insert_to_queue()
 			return return_default()
 			
-		return c
+		return c[:-1]
 
