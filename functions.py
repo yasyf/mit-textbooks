@@ -32,7 +32,7 @@ def init_auth_browser():
 		pass
 
 def send_to_worker(class_id, update=False, group=False):
-	d = {'class_id': class_id, 'update': update, 'group': group}
+	d = {'class_id': class_id, 'update': update, 'group': group, 'queue': 'worker'}
 	if not queue.find_one(d):
 		d['time'] = time.time()
 		queue.insert(d)
@@ -199,7 +199,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 			return classes.find_one({'class': class_info['class']})
 
 		when = []
-		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring"}.iteritems():
+		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring", "Summer": "summer"}.iteritems():
 			when_img_src = "/icns/%s.gif" % (when_img)
 			if soup.find("img",src=when_img_src) != None:
 				when.append(when_when)
@@ -792,4 +792,3 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
-
