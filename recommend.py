@@ -20,6 +20,20 @@ bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters']
 custom_fields = ['name', 'description', 'in_groups', 'in_history', 'less_advanced']
 fields = distance_fields + bool_fields + bool_fields_deep + custom_fields
 
+
+def fail_mail(e):
+	message = sendgrid.Mail()
+	message.add_to(os.getenv('admin_email'))
+	message.set_subject('Crashing Recommender @ MIT Textbooks')
+	trace = traceback.format_exc() 
+	message.set_html('<br><br>' + e.message + '<br><br><pre>' + trace + '</pre>')
+	message.set_text('\n\n' + e.message + '\n\n' + trace)
+	message.set_from('MIT Textbooks <tb_support@mit.edu>')
+	try:
+		sg.send(message)
+	except Exception:
+		pass
+
 def calculate_similarity(c1, c2):
 	class1 = data[c1]
 	class2 = data[c2]
@@ -123,18 +137,21 @@ if __name__ == '__main__':
 	sd = pickle.load(open("dat/sd.dat","rb"))
 	print 'Starting Run Loop'
 	last_task = None
-	while True:
-		task = queue.find_one({'queue': 'recommender'}, sort=[("time", 1)])
-		if task:
-			queue.remove(task)
-			if task == last_task:
-				continue
-			last_task = task
-			_id = task['class_id']
-			uid = task['user_id'].split("@")[0]
-			print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)
-			r = {'class_ids': recommend(uid, _id)}
-			r['time'] = time.time()
-			recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}}, upsert=True)
-		else:
-			time.sleep(5)
+	try:
+		while True:
+			task = queue.find_one({'queue': 'recommender'}, sort=[("time", 1)])
+			if task:
+				queue.remove(task)
+				if task == last_task:
+					continue
+				last_task = task
+				_id = task['class_id']
+				uid = task['user_id'].split("@")[0]
+				print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)
+				r = {'class_ids': recommend(uid, _id)}
+				r['time'] = time.time()
+				recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}}, upsert=True)
+			else:
+				time.sleep(5)
+	except Exception, e:
+		fail_mail(e)
