@@ -31,13 +31,14 @@ function walkDom() {
 				continue;
 			}
 			excludes = ["a", "input", "button", "textarea"];
-			if (node.parentNode.tagName.toLowerCase() in excludes || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
+			if (_.contains(excludes, node.parentNode.tagName.toLowerCase()) || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
 				continue;
 			}
 			if (node.parentNode.parentNode && node.parentNode.parentNode.getAttribute('role') === 'textbox'){
 				continue;
 			}
 			span = document.createElement('span');
+			span.setAttribute('data-x', node.parentNode.tagName.toLowerCase());
 			span.innerHTML = node.nodeValue.replace(mit_textbooks_re, mit_textbooks_replace);
 			node.parentNode.replaceChild(span, node);
 		}
