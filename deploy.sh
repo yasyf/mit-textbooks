@@ -44,7 +44,7 @@ if [[ RECOMMENDERS -eq 1 ]]; then
 	echo "numpy==1.7.0\nscipy==0.11.0\nscikit-learn==0.13.1\npandas==0.13.1\npickle" > requirements.txt
 	git add requirements.txt
 	git commit -m 'recommender Procfile and requirements.txt'
-	git push recommender-1 worker_procfile:master --force
+	git push recommender-1 recommender_procfile:master --force
 	git checkout master
 	git branch -D recommender_procfile
 fi
