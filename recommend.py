@@ -2,7 +2,7 @@ from setup import *
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-import pickle, Levenshtein, time, re
+import pickle, Levenshtein, time, re, os
 
 all_classes = list(classes.find({'error': None}))
 all_groups = [x['class_ids'] for x in groups.find()]
@@ -33,6 +33,10 @@ def fail_mail(e):
 		sg.send(message)
 	except Exception:
 		pass
+
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
 
 def calculate_similarity(c1, c2):
 	class1 = data[c1]
@@ -116,6 +120,9 @@ def default_weights(user_id, c, c_cmp):
 	return [float(w) / sum(weights) for w in weights]
 
 def save_sd():
+	if not os.path.exists("dat/"):
+		os.makedirs("dat/")
+	touch("dat/sd.dat")
 	pickle.dump(simple_distances(), open("dat/sd.dat","wb"))
 
 
