@@ -270,8 +270,11 @@ class MITClass():
 				queue.insert(d)
 		
 		try:
-			recs = current['users'][uid]
-			c = recs['class_ids']
+			if uid in current['default_uids']:
+				c = return_default()
+			else:
+				recs = current['users'][uid]
+				c = recs['class_ids']
 		except Exception:
 			insert_to_queue()
 			return return_default()

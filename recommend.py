@@ -161,12 +161,16 @@ if __name__ == '__main__':
 				r['time'] = time.time()
 				current = recommendations.find_one({'class_id': _id})
 				if current:
-					recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
+					if r['class_ids'] == current['default']['class_ids']:
+						recommendations.update({'class_id': _id}, {"$push": {"default_uids": uid}})
+					else:
+						recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
+					
 					if (time.time() - current['default']['time']) > CACHE_FOR:
 						recommendations.update({'class_id': _id}, {"$set": {"default": r}})
 
 				else:
-					recommendations.update({'class_id': _id}, {"$set": {"default": r}}, upsert=True)
+					recommendations.update({'class_id': _id}, {"$set": {"default": r, "default_uids": []}}, upsert=True)
 					recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
 			else:
 				time.sleep(5)
