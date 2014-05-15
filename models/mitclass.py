@@ -281,12 +281,12 @@ class MITClass():
 				c = return_default()
 			else:
 				recs = current['users'][uid]
-				c = recs['class_ids']
+				c = recs['class_ids'][:-1]
 				if (time.time() - recs['time']) > CACHE_FOR:
 					insert_to_queue()
 		except Exception:
 			insert_to_queue()
 			return return_default()
 			
-		return c[:-1]
+		return c
 
