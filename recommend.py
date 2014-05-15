@@ -164,14 +164,13 @@ if __name__ == '__main__':
 					if r['class_ids'] == current['default']['class_ids']:
 						recommendations.update({'class_id': _id}, {"$push": {"default_uids": uid}})
 					else:
-						recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
+						recommendations.update({'class_id': _id}, {"$pull": {"default_uids": uid}, "$set": {"users.{uid}".format(uid=uid): r}})
 					
 					if (time.time() - current['default']['time']) > CACHE_FOR:
-						recommendations.update({'class_id': _id}, {"$set": {"default": r}})
+						recommendations.update({'class_id': _id}, {"$set": {"default": r, "default_uids": []}})
 
 				else:
-					recommendations.update({'class_id': _id}, {"$set": {"default": r, "default_uids": []}}, upsert=True)
-					recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
+					recommendations.update({'class_id': _id}, {"$set": {"default": r, "default_uids": [uid], 'users': {}}}, upsert=True)
 			else:
 				time.sleep(5)
 	except Exception, e:

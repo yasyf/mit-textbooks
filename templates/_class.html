@@ -9,7 +9,7 @@
 <div class='rec'>
 	Related Classes:
 	{% for r in rec %}
-	<span><a href="{{ url_for('class_view', class_id=r.id) }}">{{ r.display_name() }}</a></span>
+	<span><a href="{{ url_for('class_view', class_id=r.id) }}">{{ r.display_name(short=True) }}</a></span>
 	{% endfor %}
 </div>
 {% endif %}

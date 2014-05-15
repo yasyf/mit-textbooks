@@ -95,8 +95,15 @@ class MITClass():
 	def safe_id(self):
 		return self.id.replace(".","")
 
-	def display_name(self):
-		return '{id} {name}'.format(id=self.id, name=self.name)
+	def display_name(self, short=False):
+		name = self.name
+		if short and len(self.name) > 25:
+			if len(self.short_name) > 25:
+				name = self.short_name[:25] + "..."
+			else:
+				name = self.short_name
+			
+		return '{id} {name}'.format(id=self.id, name=name)
 
 	def summary(self):
 		if len(self.description) < 150:
@@ -275,11 +282,11 @@ class MITClass():
 			else:
 				recs = current['users'][uid]
 				c = recs['class_ids']
+				if (time.time() - recs['time']) > CACHE_FOR:
+					insert_to_queue()
 		except Exception:
 			insert_to_queue()
 			return return_default()
 			
-		if (time.time() - recs['time']) > CACHE_FOR:
-			insert_to_queue()
 		return c
 
