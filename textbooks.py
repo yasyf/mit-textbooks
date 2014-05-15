@@ -377,7 +377,7 @@ def tb_id_to_tb_filter(class_id, textbook_id):
 
 @app.template_filter('space_out')
 def space_out_filter(s):
-	return ', '.join(s.split(','))
+	return ', '.join(s)
 
 @app.template_filter('summarize_group')
 def space_out_filter(classes):
