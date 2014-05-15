@@ -4,13 +4,17 @@
 <p>
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
 </p>
-<hr>
 {% if rec %}
-Related Classes:
-{% for r in rec %}
-<span class='rec'><a href="{{ url_for('class_view', class_id=r) }}">{{ r }}</a></span>
-{% endfor %}
+<hr>
+<div class='rec'>
+	Related Classes:
+	{% for r in rec %}
+	<span><a href="{{ url_for('class_view', class_id=r.id) }}">{{ r.display_name() }}</a></span>
+	{% endfor %}
+</div>
 {% endif %}
+<hr>
+
 {% endif %}
 <p><blockquote>{{ class_obj.description }}</blockquote></p>
 <p>
@@ -56,17 +60,17 @@ Related Classes:
 	You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at the <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0]|safe }}</a> site{% if class_obj.stellar_url %} or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar</a> site. {% else %}.{% endif %}
 </p>
 
-	{% for title, section in class_obj.textbooks.sections.iteritems() %}
-	<div class="panel panel-default">
-		<div class="panel-heading">{{ title }}</div>
-		<div class="panel-body">Save up to {{ section|section_saved(class_obj) }} by purchasing through MIT Textbooks!</div>
-		<div class="list-group">
-			{% for textbook in section %}
-				{% include '_textbook.html' %}
-			{% endfor %}
-		</div>	
-	</div>
-	{% endfor %}
+{% for title, section in class_obj.textbooks.sections.iteritems() %}
+<div class="panel panel-default">
+	<div class="panel-heading">{{ title }}</div>
+	<div class="panel-body">Save up to {{ section|section_saved(class_obj) }} by purchasing through MIT Textbooks!</div>
+	<div class="list-group">
+		{% for textbook in section %}
+			{% include '_textbook.html' %}
+		{% endfor %}
+	</div>	
+</div>
+{% endfor %}
 
 <script>
 $('.popover_activate').popover();

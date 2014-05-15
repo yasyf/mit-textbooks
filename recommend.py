@@ -122,10 +122,14 @@ if __name__ == '__main__':
 	print 'Loading Recommendations'
 	sd = pickle.load(open("dat/sd.dat","rb"))
 	print 'Starting Run Loop'
+	last_task = None
 	while True:
 		task = queue.find_one({'queue': 'recommender'}, sort=[("time", 1)])
 		if task:
 			queue.remove(task)
+			if task == last_task:
+				continue
+			last_task = task
 			_id = task['class_id']
 			uid = task['user_id'].split("@")[0]
 			print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)

@@ -153,7 +153,9 @@ def class_view(class_id):
 	update_recents_with_class(class_obj)
 	g.search_val = class_id
 	if g.user:
-		rec = class_obj.get_rec(g.user.get_id())
+		rec = class_obj.get_rec(g.user)
+		if rec:
+			rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
 	else:
 		rec = None
 	return render_template('class.html', class_obj=class_obj, rec=rec)
