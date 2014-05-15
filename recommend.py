@@ -123,7 +123,8 @@ def save_sd():
 	if not os.path.exists("dat/"):
 		os.makedirs("dat/")
 	touch("dat/sd.dat")
-	pickle.dump(simple_distances(), open("dat/sd.dat","wb"))
+	sd = simple_distances()
+	pickle.dump(sd, open("dat/sd.dat","wb"))
 
 
 def recommend(u, c):
