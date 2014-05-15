@@ -152,12 +152,9 @@ def class_view(class_id):
 		return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
 	update_recents_with_class(class_obj)
 	g.search_val = class_id
-	if g.user:
-		rec = class_obj.get_rec(g.user)
-		if rec:
-			rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
-	else:
-		rec = None
+	rec = class_obj.get_rec(g.user)
+	if rec:
+		rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
 	return render_template('class.html', class_obj=class_obj, rec=rec)
 
 @app.route('/calendar/<group_id>')

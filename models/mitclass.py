@@ -251,18 +251,31 @@ class MITClass():
 		return events
 
 	def get_rec(self, user):
-		uid = user.get_id().split("@")[0]
+		current = recommendations.find_one({'class_id': self.id})
+		def return_default():
+			if current:
+				return current['default']['class_ids']
+			else:
+				return None
+
+		if user:
+			uid = user.get_id().split("@")[0]
+		else:
+			return return_default()
+
 		def insert_to_queue():
 			d = {'class_id': self.id, 'user_id': uid, 'queue': 'recommender'}
 			if not queue.find_one(d):
 				d['time'] = time.time()
 				queue.insert(d)
+		
 		try:
-			recs = recommendations.find_one({'class_id': self.id})['users'][uid]
+			recs = current['users'][uid]
 			c = recs['class_ids']
 		except Exception:
 			insert_to_queue()
-			return
+			return return_default()
+			
 		if (time.time() - recs['time']) > CACHE_FOR:
 			insert_to_queue()
 		return c

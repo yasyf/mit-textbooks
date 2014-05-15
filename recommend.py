@@ -159,7 +159,15 @@ if __name__ == '__main__':
 				print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)
 				r = {'class_ids': recommend(uid, _id)}
 				r['time'] = time.time()
-				recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}}, upsert=True)
+				current = recommendations.find_one({'class_id': _id})
+				if current:
+					recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
+					if (time.time() - current['default']['time']) > CACHE_FOR:
+						recommendations.update({'class_id': _id}, {"$set": {"default": r}})
+
+				else:
+					recommendations.update({'class_id': _id}, {"$set": {"default": r}}, upsert=True)
+					recommendations.update({'class_id': _id}, {"$set": {"users.{uid}".format(uid=uid): r}})
 			else:
 				time.sleep(5)
 	except Exception, e:
