@@ -109,13 +109,14 @@ def default_weights(user_id, c, c_cmp):
 		weights[fields.index('in_history')] = 0
 	
 	weights[fields.index('less_advanced')] = 0
-	try:
-		c_f = float("."+re.findall("\d+", c.split('.')[-1])[0])
-		c_cmp_f = float("."+re.findall("\d+", c_cmp.split('.')[-1])[0])
-		if c_cmp_f < c_f:
-			weights[fields.index('less_advanced')] = 5
-	except Exception:
-		pass
+	if c.split('.')[0] == c_cmp.split('.')[0]:
+		try:
+			c_f = float("."+re.findall("\d+", c.split('.')[-1])[0])
+			c_cmp_f = float("."+re.findall("\d+", c_cmp.split('.')[-1])[0])
+			if c_cmp_f < c_f:
+				weights[fields.index('less_advanced')] = 5
+		except Exception:
+			pass
 		
 	return [float(w) / sum(weights) for w in weights]
 
