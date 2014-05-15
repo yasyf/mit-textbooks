@@ -77,8 +77,9 @@ def calculate_similarity(c1, c2):
 
 def simple_distances():
 	sd = []
-	for c1 in all_c:
-		print 'Processing', c1
+	all_c_len = float(len(all_c))
+	for i, c1 in enumerate(all_c):
+		print 'Processing {c1} ({p:.2f}%)'.format(c1=c1, p=100*(float(i)/all_c_len))
 		for c2 in all_c:
 			if c2 != c1:
 				row = [c1, c2] + calculate_similarity(c1, c2)
