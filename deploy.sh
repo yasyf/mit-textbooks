@@ -45,6 +45,8 @@ if [[ RECOMMENDERS -eq 1 ]]; then
 	git add requirements.txt
 	git commit -m 'recommender Procfile and requirements.txt'
 	git push recommender-1 recommender_procfile:master --force
+	git push recommender-2 recommender_procfile:master --force
+	git push recommender-3 recommender_procfile:master --force
 	git checkout master
 	git branch -D recommender_procfile
 fi
