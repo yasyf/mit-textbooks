@@ -268,7 +268,7 @@ class MITClass():
 		if user:
 			uid = user.get_id().split("@")[0]
 		else:
-			return return_default()
+			uid = 'anonymous_user'
 
 		def insert_to_queue():
 			d = {'class_id': self.id, 'user_id': uid, 'queue': 'recommender'}
