@@ -366,15 +366,18 @@ def try_url(url):
 	except requests.exceptions.TooManyRedirects:
 		return None
 
-def search_google(term):
+def get_google_url(term):
+	return "http://www.google.com/search?&q={q}&btnG=Google+Search&inurl=https".format(q=urllib.quote_plus(term))
+
+def search_google(term, cache=True):
 	cached = google_cache.find_one({'term': term})
-	if cached and cached['dt'] > (datetime.datetime.utcnow() - datetime.timedelta(seconds=CACHE_FOR)):
+	if cache and cached and cached['dt'] > (datetime.datetime.utcnow() - datetime.timedelta(seconds=CACHE_FOR)):
 		return cached['links']
 
 	br = mechanize.Browser()
 	br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0 (compatible;)'),('Accept', '*/*')]
 	br.set_handle_robots(False)
-	google_url = "http://www.google.com/search?&q={q}&btnG=Google+Search&inurl=https".format(q=urllib.quote_plus(term))
+	google_url = get_google_url(term)
 	br.open(google_url)
 	def check_excludes(url):
 		excludes = ['google', 'youtube', 'blogger']
@@ -387,12 +390,19 @@ def search_google(term):
 	return links
 
 def get_google_site_guess(class_id):
-	for url in search_google('MIT + ' + class_id):
-		if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url:
-			get = try_url(url)
-			if get:
-				return get
-	return try_url(google_url)
+	def process_urls(urls):
+		for url in urls:
+			if 'mit.edu' in url and 'stellar' not in url and 'textbooksearch' not in url:
+				get = try_url(url)
+				if get:
+					return get
+	result = process_urls(search_google('MIT + ' + class_id))
+	if result:
+		return result
+	result = process_urls(search_google('MIT + ' + class_id), cache=False)
+	if result:
+		return result
+	return get_google_url(term)
 
 def get_class_site(class_id):
 	url = "http://course.mit.edu/{class_id}".format(class_id=class_id)
@@ -798,3 +808,4 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
+
