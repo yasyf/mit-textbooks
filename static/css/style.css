@@ -55,6 +55,25 @@ blockquote{
 	padding-right: 5px;
 }
 
+
+@media only screen and (min-width : 993px) and (max-width : 1200px) {
+	.rec span:nth-child(n+4) {
+		display: none;
+	}
+}
+
+@media only screen and (min-width : 769px) and (max-width : 992px) {
+	.rec span:nth-child(n+3) {
+		display: none;
+	}
+}
+
+@media only screen and (max-width : 768px) {
+	.rec span:nth-child(n+2) {
+		display: none;
+	}
+}
+
 @media only screen and (min-width : 769px) {
 	.mit_logo {
 		height: 35px;
@@ -73,6 +92,5 @@ blockquote{
 	.navbar {
 		min-height: 70px;
 	}
-
 }
 

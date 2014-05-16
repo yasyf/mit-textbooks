@@ -177,6 +177,12 @@ def custom_parse_instructors(instructors):
 		new_intructors.extend([x.split(':')[-1] for x in i.split('<br>')])
 	return new_intructors
 
+def custom_shorten_name(name):
+	replacements = [("Introduction", "Intro"), ("Principles of ", "")]
+	for k,v in replacements:
+		name = name.replace(k,v)
+	return name
+
 def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 	try:
 		class_info = {}
@@ -189,7 +195,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		ssoup = str(soup)
 		name = clean_html(soup.find("h3").text).split(' ')
 		class_info['class'], class_info['name'] = name[0], ' '.join(name[1:])
-		class_info['short_name'] = class_info['name']
+		class_info['short_name'] = custom_shorten_name(class_info['name'])
 		class_info['master_subject_id'] = class_info['class']
 		class_info['course'] = class_info['class'].split('.')[0]
 		
@@ -268,7 +274,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['course'] = class_info['course']
 	class_info_cleaned['name'] = clean_html(class_info['label'])
 	class_info_cleaned['prereqs'], class_info_cleaned['coreqs'] = process_prereqs(clean_html(class_info['prereqs']))
-	class_info_cleaned['short_name'] = clean_html(class_info['shortLabel'])
+	class_info_cleaned['short_name'] = custom_shorten_name(clean_html(class_info['shortLabel']))
 	class_info_cleaned['description'] = clean_html(class_info['description'])
 	class_info_cleaned['semesters'] = class_info['semester']
 	class_info_cleaned['hass'] = class_info['hass_attribute'][-1:]
