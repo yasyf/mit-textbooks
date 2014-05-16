@@ -1,11 +1,22 @@
 #!/usr/bin/env python
 
 from flask import Flask, Response, session, redirect, url_for, escape, request, render_template, g, flash, make_response, jsonify
+from werkzeug.contrib.cache import MemcachedCache
+from flask.ext.compress import Compress
+import flask.ext.webcache.handlers as flask_web_cache
+import flask.ext.webcache.modifiers as modifiers
 from functions import *
 from bson.objectid import ObjectId
 
+cache = MemcachedCache(os.environ.get('MEMCACHIER_SERVERS').split(','), os.environ.get('MEMCACHIER_USERNAME'), os.environ.get('MEMCACHIER_PASSWORD'))
+
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
+
+flask_web_cache.RequestHandler(cache, app)
+flask_web_cache.ResponseHandler(cache, app)
+
+Compress(app)
 
 init_auth_browser()
 
@@ -35,7 +46,8 @@ def preprocess_request():
 
 @app.after_request
 def postprocess_request(response):
-	if request.endpoint in ['loading_view', 'check_view']:
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	if request.endpoint in ['loading_view', 'check_view', 'account_view']:
 		response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
 		response.headers['Pragma'] = 'no-cache'
 		response.headers['Expires'] = '0'
@@ -63,6 +75,7 @@ def _500_view(e):
 	return render_template('500.html', e=str(e)), 500
 
 @app.route('/textbooks')
+@modifiers.cache_for(hours=1)
 def textbooks_view():
 	if 'override_url' in session:
 		session.pop('override_url')
@@ -139,6 +152,7 @@ def loading_view(class_ids, override_url=None):
 	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=t, can_blacklist=can_blacklist, penalty=penalty)
 
 @app.route('/class/<class_id>')
+@modifiers.cache_for(hours=12)
 def class_view(class_id):
 	if not check_class(class_id):
 		send_to_worker(class_id)
@@ -158,6 +172,7 @@ def class_view(class_id):
 	return render_template('class.html', class_obj=class_obj, rec=rec)
 
 @app.route('/calendar/<group_id>')
+@modifiers.cache_for(days=7)
 def calendar_view(group_id):
 	group_obj = get_group(group_id)
 	if not group_obj:
@@ -168,10 +183,12 @@ def calendar_view(group_id):
 	return render_template('scheduler.html', events=events)
 
 @app.route('/overview/<class_id>')
+@modifiers.cache_for(days=1)
 def overview_view(class_id):
 	return render_template('overview.html', class_obj=get_class(class_id))
 
 @app.route('/json/class/<class_id>')
+@modifiers.cache_for(hours=1)
 def json_class_view(class_id):
 	class_obj = get_class(class_id)
 	if class_obj is None:
@@ -179,6 +196,7 @@ def json_class_view(class_id):
 	return jsonify(class_obj.json())
 
 @app.route('/json/group/<group_id>')
+@modifiers.cache_for(hours=1)
 def json_group_view(group_id):
 	group_obj = get_group(group_id)
 	group = {c:get_class(c).json() for c in group_obj.class_ids}
@@ -188,6 +206,7 @@ def json_group_view(group_id):
 	return jsonify(group)
 
 @app.route('/group/<group_id>')
+@modifiers.cache_for(hours=12)
 def group_view(group_id):
 	group_obj = get_group(group_id)
 	if not group_obj:
@@ -276,15 +295,18 @@ def opensearchdescription_view():
 	return Response(response=render_template('opensearchdescription.xml'), status=200, mimetype="application/xml")
 
 @app.route('/robots.txt')
+@modifiers.cache_for(days=1)
 def robots_view():
 	disallows = [url_for('_404_view'), url_for('account_view'), url_for('check_view',class_id=''), url_for('update_textbooks_view',class_id=''), url_for('blacklist_view',class_ids=''), url_for('loading_view',class_ids='') , url_for('name_group_view',group_id='', group_name=''), url_for('delete_group_view',group_id=''), url_for('sell_textbook_view',class_id='', tb_id=''), url_for('remove_offer_view',class_id='', offer_id='')]
 	return Response(response=render_template('robots.txt', disallows=disallows), status=200, mimetype="text/plain;charset=UTF-8")
 
 @app.route('/sitemap.xml')
+@modifiers.cache_for(days=1)
 def sitemap_view():
 	return Response(response=render_template('sitemap.xml', allows=sitemap_allows()), status=200, mimetype="application/xml")
 
 @app.route('/urllist.txt')
+@modifiers.cache_for(days=1)
 def urllist_view():
 	return Response(response=render_template('urllist.txt', allows=sitemap_allows()), status=200, mimetype="text/plain;charset=UTF-8")
 
@@ -306,6 +328,7 @@ def go_view(search_term):
 		return redirect(url_for('group_view', group_id=group_id))
 
 @app.route('/site/<class_id>')
+@modifiers.cache_for(days=7)
 def site_view(class_id):
 	class_obj = get_class(class_id)
 	if class_obj is None:
@@ -314,6 +337,7 @@ def site_view(class_id):
 	return redirect(class_obj.class_site_url())
 
 @app.route('/stellar/<class_id>')
+@modifiers.cache_for(days=7)
 def stellar_view(class_id):
 	class_obj = get_class(class_id)
 	if class_obj and class_obj.stellar_site_url():
@@ -321,21 +345,25 @@ def stellar_view(class_id):
 	return redirect(url_for('site_view', class_id=class_id))
 
 @app.route('/amazon/product/<asin>')
+@modifiers.cache_for(days=7)
 def amazon_product_view(asin):
 	url = u"http://www.amazon.com/dp/{asin}/?tag=mit-tb-20".format(asin=asin)
 	return redirect(url)
 
 @app.route('/amazon/search/<title>')
+@modifiers.cache_for(days=7)
 def amazon_search_view(title):
 	url = u"http://www.amazon.com/s/?tag=mit-tb-20&field-keywords={title}".format(title=title)
 	return redirect(url)
 
 @app.route('/evaluation/<class_id>')
+@modifiers.cache_for(days=7)
 def class_evaluation_view(class_id):
 	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
 	return redirect(url)
 
 @app.route('/professor/<professor>')
+@modifiers.cache_for(days=7)
 def professor_view(professor):
 	url = search_google(professor + ' + MIT')[0]
 	return redirect(url)
