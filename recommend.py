@@ -11,9 +11,8 @@ for x in users.find():
 		print x
 user_recents = {x['email']:x['recents'] for x in users.find()}
 
-raw_data = [x for x in all_classes if x['evaluation']]
-all_c = [x['class'] for x in raw_data]
-data = dict(zip(all_c, raw_data))
+all_c = [x['class'] for x in all_classes]
+data = dict(zip(all_c, all_classes))
 distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
 bool_fields = ['course', 'grad', 'hass']
 bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters']
@@ -42,8 +41,11 @@ def calculate_similarity(c1, c2):
 	class1 = data[c1]
 	class2 = data[c2]
 	dists = []
-	for f in distance_fields:
-		dists.append(euclidean_distances(class1['evaluation'][f] if f in class1['evaluation'] else 0, class2['evaluation'][f] if f in class2['evaluation'] else 0)[0][0] / 7.0)
+	if class1['evaluation'] and class2['evaluation']:
+		for f in distance_fields:
+			dists.append(euclidean_distances(class1['evaluation'][f] if f in class1['evaluation'] else 0, class2['evaluation'][f] if f in class2['evaluation'] else 0)[0][0] / 7.0)
+	else:
+		dists.extend([1.0]*len(distance_fields))
 	for f in bool_fields:
 		class_1_f = class1[f] if f in class1 else None
 		class_2_f = class2[f] if f in class2 else None
