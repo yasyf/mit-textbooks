@@ -177,6 +177,7 @@ if __name__ == '__main__':
 				if task == last_task:
 					continue
 				if task.get('safe', False) and task['class_id'] not in all_c:
+					print '{c} not in master class list, this server is no longer reliable!'.format(task['class_id'])
 					is_safe = False
 					continue
 				last_task = task
