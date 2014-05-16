@@ -448,12 +448,12 @@ def tb_len_filter(textbooks):
 	return s
 
 @app.template_filter('queue_length')
-def queue_length_filter(s):
-	return queue.find({}).count()
+def queue_length_filter(t):
+	return queue.find({'queue': t}).count()
 
 @app.template_filter('classes_length')
 def classes_length_filter(s):
-	return classes.find({}).count()
+	return classes.find().count()
 
 @app.template_filter('get_display_names')
 def get_display_names_filter(classes):

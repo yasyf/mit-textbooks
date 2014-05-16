@@ -8,11 +8,15 @@
 	<div class="panel-heading">Admin</div>
 	<div class="list-group">
 		<a class="list-group-item">
-			<h4 class="list-group-item-heading">Queue</h4>
-			<p class="list-group-item-text">{{ ''|queue_length }} pending items across 3 workers</p>
+			<h4 class="list-group-item-heading">Worker Queue</h4>
+			<p class="list-group-item-text">{{ 'worker'|queue_length }} pending classes across 3 workers</p>
 		</a>
 		<a class="list-group-item">
-			<h4 class="list-group-item-heading">Classes</h4>
+			<h4 class="list-group-item-heading">Recommender Queue</h4>
+			<p class="list-group-item-text">{{ 'recommender'|queue_length }} pending recommendations across 3 recommenders</p>
+		</a>
+		<a class="list-group-item">
+			<h4 class="list-group-item-heading">Cached Classes</h4>
 			<p class="list-group-item-text">{{ ''|classes_length }} classes cached in the database</p>
 		</a>
 	</div>	
