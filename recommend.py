@@ -143,16 +143,41 @@ def recommend(u, c):
 if __name__ == '__main__':
 	print 'Generating Recommendations'
 	save_sd()
+	start_time = time.time()
 	print 'Loading Recommendations'
 	sd = pickle.load(open("dat/sd.dat","rb"))
+	print 'Loading Initial Tasks'
+	for c in recommendations.find({'default.class_ids': {"$size": 0}}):
+		try:
+			d = {'class_id': c['class_id'], 'user_id': c['default_uids'][0], 'queue': 'recommender', 'safe': True}
+			if not queue.find_one(d):
+				recommendations.remove(c['_id'], safe=True)
+				d['time'] = time.time()
+				queue.insert(d, safe=True)
+		except Exception:
+			continue
 	print 'Starting Run Loop'
 	last_task = None
+	is_safe = True
 	try:
 		while True:
-			task = queue.find_one({'queue': 'recommender'}, sort=[("time", 1)])
+			try:
+				if is_safe:
+					query = {'queue': 'recommender'}
+				else:
+					query = {'queue': 'recommender', 'safe': None}
+				task = queue.find(query, snapshot=True).sort("time", 1).limit(1)[0]
+			except Exception:
+				task = None
 			if task:
-				queue.remove(task)
+				try:
+					queue.remove(task['_id'], safe=True)
+				except Exception:
+					continue
 				if task == last_task:
+					continue
+				if task.get('safe', False) and task['class_id'] not in all_c:
+					is_safe = False
 					continue
 				last_task = task
 				_id = task['class_id']

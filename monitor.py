@@ -55,12 +55,18 @@ def fail_mail(e):
 try:
 	while True:
 		last_task = task
-		task = queue.find_one({'queue': 'worker'}, sort=[("time", 1)])
+		try:
+			task = queue.find({'queue': 'worker'}, snapshot=True).sort("time", 1).limit(1)[0]
+		except Exception:
+			task = None
 		if task and last_task and task == last_task and not mailed:
 			mailed = True
 			error_mail()
 		if task:
-			queue.remove(task)
+			try:
+				queue.remove(task['_id'], safe=True)
+			except Exception:
+				continue
 			_id = task['class_id']
 			print 'Processing {_id}'.format(_id=_id)
 			if task['group']:
