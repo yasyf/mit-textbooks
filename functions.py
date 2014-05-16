@@ -178,7 +178,7 @@ def custom_parse_instructors(instructors):
 	return new_intructors
 
 def custom_shorten_name(name):
-	replacements = [("Introduction", "Intro"), ("Principles of ", "")]
+	replacements = [("Introduction", "Intro"), ("Principles of ", ""), ("Introductory", "Intro"), ("Chemistry", "Chem"), ("Biology", "Bio")]
 	for k,v in replacements:
 		name = name.replace(k,v)
 	return name
@@ -809,6 +809,3 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
-
-if __name__ == '__main__':
-	print get_class('14.441').to_dict()
