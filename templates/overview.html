@@ -1,8 +1,8 @@
 {% extends "_base.html" %}
-{% block title %}{{ class_obj.display_name()|safe }} Overview{% endblock %}
-{% block og_title %}{{ class_obj.display_name()|safe }} Overview{% endblock %}
-{% block description %}Overview of {{ class_obj.display_name()|safe }} at MIT Textbooks. {{ class_obj.summary()|safe }}{% endblock %}
-{% block og_description %}Overview of {{ class_obj.display_name()|safe }} at MIT Textbooks. {{ class_obj.summary()|safe }}{% endblock %}
+{% block title %}{{ class_obj.display_name() }} Overview{% endblock %}
+{% block og_title %}{{ class_obj.display_name() }} Overview{% endblock %}
+{% block description %}Overview of {{ class_obj.display_name() }} at MIT Textbooks. {{ class_obj.summary() }}{% endblock %}
+{% block og_description %}Overview of {{ class_obj.display_name() }} at MIT Textbooks. {{ class_obj.summary() }}{% endblock %}
 
 {% block meta %}
 <link rel='canonical' href="{{ url_for('overview_view', class_id=class_obj.id, _external=True) }}">

@@ -379,10 +379,6 @@ def tb_id_to_tb_filter(class_id, textbook_id):
 def space_out_filter(s):
 	return ', '.join(s)
 
-@app.template_filter('summarize_group')
-def space_out_filter(classes):
-	return '. '.join([x.short_name for x in classes])
-
 @app.template_filter('prices')
 def prices_filter(textbook, class_obj):
 	prices = []
@@ -458,6 +454,10 @@ def queue_length_filter(s):
 @app.template_filter('classes_length')
 def classes_length_filter(s):
 	return classes.find({}).count()
+
+@app.template_filter('get_display_names')
+def get_display_names_filter(classes):
+	return [x.display_name() for x in classes]
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):

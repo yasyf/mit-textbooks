@@ -42,10 +42,10 @@ class MITClassGroup():
 		else:
 			return ", ".join(self.class_ids)
 
-	def display_description(self):
+	def display_description(self, display_names):
 		if self.name:
 			return 'Buy and sell both new and used textbooks for the textbook group {name} at MIT Textbooks.'.format(name=self.name)
 		else:
-			classes_string = '{first} and {last}'.format(first=", ".join(self.class_ids[:-1]), last=self.class_ids[-1])
+			classes_string = '{first} and {last}'.format(first=", ".join(display_names[:-1]), last=display_names[-1])
 			return 'Buy and sell both new and used textbooks for {classes} at MIT Textbooks.'.format(classes=classes_string)
 		
