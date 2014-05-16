@@ -2,7 +2,7 @@ from setup import *
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-import pickle, Levenshtein, time, re, os
+import pickle, Levenshtein, time, re, os, traceback
 
 all_classes = list(classes.find({'error': None}))
 all_groups = [x['class_ids'] for x in groups.find()]
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 					query = {'queue': 'recommender'}
 				else:
 					query = {'queue': 'recommender', 'safe': None}
-				task = queue.find(query, snapshot=True).sort("time", 1).limit(1)[0]
+				task = sorted(queue.find(query, snapshot=True), key=lambda x: x['time'])[0]
 			except Exception:
 				task = None
 			if task:
@@ -177,7 +177,7 @@ if __name__ == '__main__':
 				if task == last_task:
 					continue
 				if task.get('safe', False) and task['class_id'] not in all_c:
-					print '{c} not in master class list, this server is no longer reliable!'.format(task['class_id'])
+					print '{c} not in master class list, this server is no longer reliable!'.format(c=task['class_id'])
 					is_safe = False
 					continue
 				last_task = task
