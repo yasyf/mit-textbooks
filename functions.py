@@ -396,13 +396,14 @@ def get_google_site_guess(class_id):
 				get = try_url(url)
 				if get:
 					return get
-	result = process_urls(search_google('MIT + ' + class_id))
+	term = 'MIT + ' + class_id
+	result = process_urls(search_google(term))
 	if result:
 		return result
-	result = process_urls(search_google('MIT + ' + class_id), cache=False)
+	result = process_urls(search_google(term, cache=False))
 	if result:
 		return result
-	return get_google_url(term)
+	return try_url(get_google_url(term))
 
 def get_class_site(class_id):
 	url = "http://course.mit.edu/{class_id}".format(class_id=class_id)
@@ -809,3 +810,5 @@ def suggestion(search_term):
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
 
+if __name__ == '__main__':
+	print get_class('14.441').to_dict()
