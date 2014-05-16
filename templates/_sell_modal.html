@@ -25,7 +25,7 @@
 			<label for='title' class='col-lg-2 control-label'>Textbook</label>
 			<div class='col-lg-10'>
 			   <p class='form-control-static'>
-				{{ textbook.title }}
+				{{ textbook.title|safe }}
 				<input type='hidden' name='tb_id' value='{{ textbook|tb_id }}'>
 			   </p>
 			</div>

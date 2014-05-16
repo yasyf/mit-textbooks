@@ -4,7 +4,7 @@
 	href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal();"
 	class="list-group-item" >
 		<h4 class="list-group-item-heading" itemprop='description'>
-			<i itemprop='name'>{{ textbook.title }}</i> by <span itemprop='brand'>{{ textbook.author }}</span>
+			<i itemprop='name'>{{ textbook.title|safe }}</i> by <span itemprop='brand'>{{ textbook.author|safe }}</span>
 		</h4>
 		<p class="list-group-item-text">
 			{% for label, price in (textbook|prices(class_obj)) %}

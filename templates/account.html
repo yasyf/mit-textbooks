@@ -26,7 +26,7 @@
 		<a href='javascript:$("#modal_{{ offer._id }}").modal();' class="list-group-item">
 			{% set class_obj = offer.class_id|id_to_obj %}
 			{% set textbook = offer.class_id|tb_id_to_tb(offer.tb_id) %}
-			<h4 class="list-group-item-heading"><i>{{ textbook.title }}</i> by {{ textbook.author }}</h4>
+			<h4 class="list-group-item-heading"><i>{{ textbook.title|safe }}</i> by {{ textbook.author }}</h4>
 			<p class="list-group-item-text">
 				{{ offer.class_id }} <span class='slash'>/</span> ${{ offer.price }} Asking <span class='slash'>/</span> {{ offer.condition }} Condition
 			</p>
