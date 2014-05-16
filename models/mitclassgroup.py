@@ -24,7 +24,7 @@ class MITClassGroup():
 		else:
 			d['named'] = False
 			d['hash'] = self.hash
-		d['class_ids'] = ",".join(self.class_ids)
+		d['class_ids'] = self.class_ids
 		return d
 
 	def slug(self):
