@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 app.secret_key = os.environ['sk']
 app.debug = dev
-app.config.update(AWS_ACCESS_KEY_ID=os.getenv('ACCESS_KEY'), AWS_SECRET_ACCESS_KEY = os.getenv('SECRET_KEY'), S3_CDN_DOMAIN = os.getenv('CF_DOMAIN'), S3_BUCKET_NAME = os.getenv('S3_BUCKET'), S3_HEADERS = {'Cache-Control': 'max-age=86400'})
+app.config.update(AWS_ACCESS_KEY_ID=os.getenv('ACCESS_KEY'), AWS_SECRET_ACCESS_KEY = os.getenv('SECRET_KEY'), S3_CDN_DOMAIN = os.getenv('CF_DOMAIN'), S3_BUCKET_NAME = os.getenv('S3_BUCKET'), S3_HEADERS = {'Cache-Control': 'max-age=86400', "Vary": "Accept-Encoding"})
 
 if not dev:
 	handle_exceptions(app)
