@@ -105,11 +105,13 @@
   {% if not g.user %}
     if ($.cookie('id_email') == undefined) {
         $.get( "https://tb.mit.edu:444/auth/auth.php", function(data) {
-          $.cookie('id_email', data.email);
-          $.cookie('id_name', data.name);
-          ga('send', 'event', 'view', 'user', data.email);
-          ga('set', '&uid', data.email);
-          location.reload();
+          if (data.email) {
+            $.cookie('id_email', data.email);
+            $.cookie('id_name', data.name);
+            ga('send', 'event', 'view', 'user', data.email);
+            ga('set', '&uid', data.email);
+            location.reload();
+          }
         });
     }
   {% else %}
