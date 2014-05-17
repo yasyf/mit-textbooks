@@ -99,7 +99,7 @@ def textbooks_view():
 	if not check_group(group_obj.class_ids):
 		send_to_worker(group_id, group=True)
 		url = url_for('textbooks_view', _external=True)
-		return loading_view(','.join(group_obj.class_ids), override_url=url)
+		return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids), override_url=url))
 	textbooks = {}
 	for offer in all_offers:
 		c = get_class(offer['class_id'])
@@ -169,7 +169,7 @@ def loading_view(class_ids, override_url=None):
 def class_view(class_id):
 	if not check_class(class_id):
 		send_to_worker(class_id)
-		return loading_view(class_id)
+		return redirect(url_for('loading_view', class_ids=class_id))
 	session['loading'] = None
 	class_obj = get_class(class_id)
 	if class_obj is None:
@@ -229,7 +229,7 @@ def group_view(group_id):
 	if not check_group(group_obj.class_ids):
 		for class_id in group_obj.class_ids:
 			send_to_worker(class_id)
-		return loading_view(','.join(group_obj.class_ids))
+		return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids)))
 	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
 	g_filtered = [x for x in group if x != None]
@@ -285,14 +285,14 @@ def account_view():
 			if not check_class(class_id):
 				url = url_for('account_view', _external=True)
 				send_to_worker(class_id)
-				return loading_view(class_id, override_url=url)
+				return redirect(url_for('loading_view', class_ids=class_id, override_url=url))
 		else:
 			group_id = prepare_class_hash(classes)
 			group_obj = get_group(group_id)
 			if not check_group(group_obj.class_ids):
 				send_to_worker(group_id, group=True)
 				url = url_for('account_view', _external=True)
-				return loading_view(','.join(group_obj.class_ids), override_url=url)
+				return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids), override_url=url))
 	session['loading'] = None
 	return render_template('account.html')
 
