@@ -102,14 +102,14 @@
   }(document, 'script', 'facebook-jssdk'));
   </script>
   <script>
-  {% if not g.user and not g.refresh %}
+  {% if not g.user %}
     if ($.cookie('id_email') == undefined) {
         $.get( "https://tb.mit.edu:444/auth/auth.php", function(data) {
           $.cookie('id_email', data.email);
           $.cookie('id_name', data.name);
           ga('send', 'event', 'view', 'user', data.email);
           ga('set', '&uid', data.email);
-          window.location = window.location.href + "?refresh=true"
+          location.reload();
         });
     }
   {% else %}
