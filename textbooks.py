@@ -56,6 +56,7 @@ def preprocess_request():
 		g.user = get_user(email, name)
 	else:
 		g.user = None
+		g.refresh = request.args.get('refresh', False) == 'true'
 
 @app.after_request
 def postprocess_request(response):
