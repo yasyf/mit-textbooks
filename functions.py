@@ -809,3 +809,7 @@ def suggestion(search_term):
 	for r in results:
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
+
+def upload_static(app):
+	import flask_s3
+	flask_s3.create_all(app)

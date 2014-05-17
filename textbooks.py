@@ -6,6 +6,7 @@ from flask.ext.compress import Compress
 import flask.ext.webcache.handlers as flask_web_cache
 import flask.ext.webcache.modifiers as modifiers
 import bugsnag, bmemcached
+from flask_s3 import FlaskS3
 from bugsnag.flask import handle_exceptions
 from functions import *
 from bson.objectid import ObjectId
@@ -15,7 +16,10 @@ cache = MemcachedCache(bmemcached.Client(os.environ.get('MEMCACHEDCLOUD_SERVERS'
 bugsnag.configure(api_key="e558ed40a3d0eab0598e5ac17d433ebd", project_root="/app")
 
 app = Flask(__name__)
+
 app.secret_key = os.environ['sk']
+app.debug = dev
+app.config.update(AWS_ACCESS_KEY_ID=os.getenv('ACCESS_KEY'), AWS_SECRET_ACCESS_KEY = os.getenv('SECRET_KEY'), S3_CDN_DOMAIN = os.getenv('CF_DOMAIN'), S3_BUCKET_NAME = os.getenv('S3_BUCKET'))
 
 if not dev:
 	handle_exceptions(app)
@@ -24,6 +28,8 @@ flask_web_cache.RequestHandler(cache, app)
 flask_web_cache.ResponseHandler(cache, app)
 
 Compress(app)
+
+FlaskS3(app)
 
 init_auth_browser()
 
