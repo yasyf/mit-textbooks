@@ -91,7 +91,8 @@
       {% include 'footer.html' %}
     </div>
   </div>
-    <script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
+  <script>
     window.fbAsyncInit = function() {
       FB.init({
         appId      : '1497643403780485',
