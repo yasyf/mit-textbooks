@@ -59,7 +59,7 @@ def preprocess_request():
 
 @app.after_request
 def postprocess_request(response):
-	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers['X-UA-Compatible'] = 'IE=edge,chrome=1'
 	if request.endpoint in ['loading_view', 'check_view', 'account_view']:
 		response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
 		response.headers['Pragma'] = 'no-cache'

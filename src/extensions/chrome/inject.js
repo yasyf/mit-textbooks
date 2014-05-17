@@ -30,15 +30,14 @@ function walkDom() {
 			if (node.parentNode.getAttribute('data-tb') === 'replaced'){
 				continue;
 			}
-			excludes = ["a", "input", "button", "textarea"];
-			if (_.contains(excludes, node.parentNode.tagName.toLowerCase()) || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
+			excludes = ["a", "input", "button", "textarea", "font"];
+			if (_.contains(excludes, node.parentNode.tagName.toLowerCase()) || (node.parentNode.parentNode && _.contains(excludes, node.parentNode.parentNode.tagName.toLowerCase())) || window.getComputedStyle(node.parentNode).cursor === 'pointer'){
 				continue;
 			}
 			if (node.parentNode.parentNode && node.parentNode.parentNode.getAttribute('role') === 'textbox'){
 				continue;
 			}
 			span = document.createElement('span');
-			span.setAttribute('data-x', node.parentNode.tagName.toLowerCase());
 			span.innerHTML = node.nodeValue.replace(mit_textbooks_re, mit_textbooks_replace);
 			node.parentNode.replaceChild(span, node);
 		}
