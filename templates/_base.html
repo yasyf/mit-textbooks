@@ -110,7 +110,8 @@
   </script>
   <script>
   {% if not g.user %}
-    if ($.cookie('id_email') == undefined) {
+    $(document).ready(function() {
+      if ($.cookie('id_email') == undefined) {
         $.get( "https://tb.mit.edu:444/auth/auth.php", function(data) {
           if (data.email) {
             $.cookie('id_email', data.email);
@@ -120,7 +121,8 @@
             location.reload();
           }
         });
-    }
+      }
+    });
   {% else %}
       ga('send', 'event', 'view', 'user', "{{ g.user.get_id() }}");
       ga('set', '&uid', "{{ g.user.get_id() }}");
