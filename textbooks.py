@@ -5,21 +5,19 @@ from werkzeug.contrib.cache import MemcachedCache
 from flask.ext.compress import Compress
 import flask.ext.webcache.handlers as flask_web_cache
 import flask.ext.webcache.modifiers as modifiers
-import bugsnag
+import bugsnag, bmemcached
 from bugsnag.flask import handle_exceptions
-import newrelic.agent
 from functions import *
 from bson.objectid import ObjectId
 
-cache = MemcachedCache(os.environ.get('MEMCACHIER_SERVERS').split(','), os.environ.get('MEMCACHIER_USERNAME'), os.environ.get('MEMCACHIER_PASSWORD'))
+cache = MemcachedCache(bmemcached.Client(os.environ.get('MEMCACHEDCLOUD_SERVERS').split(','), os.environ.get('MEMCACHEDCLOUD_USERNAME'), os.environ.get('MEMCACHEDCLOUD_PASSWORD')))
 
-bugsnag.configure(api_key = "e558ed40a3d0eab0598e5ac17d433ebd", project_root = "/app")
+bugsnag.configure(api_key="e558ed40a3d0eab0598e5ac17d433ebd", project_root="/app")
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
 
 if not dev:
-	app.wsgi_app = newrelic.agent.WSGIApplicationWrapper(app.wsgi_app)
 	handle_exceptions(app)
 
 flask_web_cache.RequestHandler(cache, app)
