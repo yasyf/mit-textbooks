@@ -13,8 +13,6 @@ from bson.objectid import ObjectId
 
 cache = MemcachedCache(bmemcached.Client(os.environ.get('MEMCACHEDCLOUD_SERVERS').split(','), os.environ.get('MEMCACHEDCLOUD_USERNAME'), os.environ.get('MEMCACHEDCLOUD_PASSWORD')))
 
-bugsnag.configure(api_key="e558ed40a3d0eab0598e5ac17d433ebd", project_root="/app")
-
 app = Flask(__name__)
 
 app.secret_key = os.environ['sk']
@@ -22,6 +20,7 @@ app.debug = dev
 app.config.update(AWS_ACCESS_KEY_ID=os.getenv('ACCESS_KEY'), AWS_SECRET_ACCESS_KEY = os.getenv('SECRET_KEY'), S3_CDN_DOMAIN = os.getenv('CF_DOMAIN'), S3_BUCKET_NAME = os.getenv('S3_BUCKET'), S3_HEADERS = {'Cache-Control': 'max-age=86400'})
 
 if not dev:
+	bugsnag.configure(api_key="e558ed40a3d0eab0598e5ac17d433ebd", project_root="/app")
 	handle_exceptions(app)
 
 flask_web_cache.RequestHandler(cache, app)
@@ -324,8 +323,14 @@ def urllist_view():
 	return Response(response=render_template('urllist.txt', allows=sitemap_allows()), status=200, mimetype="text/plain;charset=UTF-8")
 
 @app.route('/suggest/<search_term>')
+@modifiers.cache_for(days=7)
 def suggest_view(search_term):
 	return jsonify(suggestion(search_term))
+
+@app.route('/popover/<class_id>')
+@modifiers.cache_for(days=7)
+def popover_view(class_id):
+	return jsonify(popover(class_id))
 
 @app.route('/go/<search_term>')
 def go_view(search_term):

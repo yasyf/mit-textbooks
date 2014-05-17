@@ -810,6 +810,14 @@ def suggestion(search_term):
 		suggestions.append({'c': r['class'], 'n': r['display_name']})
 	return {'suggestions': suggestions}
 
+def popover(class_id):
+	c = recents.find_one({'class': class_id})
+	if c:
+		d = {'n': c['display_name'], 'd': c['description']}
+	else:
+		d = None
+	return {'class_info': d}
+
 def upload_static(app):
 	import flask_s3
 	flask_s3.create_all(app)
