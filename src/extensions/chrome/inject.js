@@ -63,20 +63,25 @@ function walkDom() {
 					position: {
 						my: 'top center',
 						at: 'bottom center',
-						target: 'event'
+						target: 'event',
+						viewport: $(window)
 					},
 					style: { 
 						classes: 'qtip-bootstrap'
 					},
 					show: {
 						effect: function(offset) {
-							$(this).slideDown();
-						}
+							$(this).slideDown(250);
+						},
+						delay: 200,
+						solo: true,
 					},
 					hide: {
 						effect: function(offset) {
-							$(this).slideUp();
-						}
+							$(this).slideUp(250);
+						},
+						delay: 200,
+						fixed: true
 					}
 				});
 
