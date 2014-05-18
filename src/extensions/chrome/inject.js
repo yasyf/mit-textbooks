@@ -31,7 +31,7 @@ function walkDom() {
 			var bad_roles = ["textbox", "alert"];
 			var skip = false;
 			$.each($(node).parents(), function(index, value) {
-				if($.inArray(value.tagName.toLowerCase(), excludes) != -1 || $.inArray(value.getAttribute('role'), bad_roles) != -1 || value.getAttribute('data-tb') === 'replaced' || $(value).css('cursor') === 'pointer'){
+				if(value.getAttribute('data-tb') === 'replaced' || $.inArray(value.tagName.toLowerCase(), excludes) != -1 || $.inArray(value.getAttribute('role'), bad_roles) != -1 || $(value).css('cursor') === 'pointer'){
 					skip = true;
 					return false;
 				}
