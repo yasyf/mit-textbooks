@@ -35,8 +35,8 @@
 				{% for r in recent %}
 					<div>
 						<a href="{{ url_for('class_view',class_id=r.class) }}" class="list-group-item">
-							<h4 class="list-group-item-heading">{{ r.display_name }}</h4>
-							<p class="list-group-item-text">{{ r.description }}</p>
+							<h4 class="list-group-item-heading">{{ r.display_name|safe }}</h4>
+							<p class="list-group-item-text">{{ r.description|safe }}</p>
 						</a>
 					</div>
 				{% endfor %}

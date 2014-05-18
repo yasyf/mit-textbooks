@@ -1,5 +1,5 @@
 <a id='{{ class_obj.id }}'></a>
-<h1>{{ class_obj.display_name() }}</h1>
+<h1>{{ class_obj.display_name()|safe }}</h1>
 <hr>
 <p>
 	Currently Offered: {% if class_obj.is_currently_available() %} Yes {% else %} No {% endif %}
@@ -56,6 +56,6 @@
 </p>
 <p>
 	{% if class_obj.textbooks|tb_len %}
-	Textbooks: {{ class_obj.textbooks|tb_len }} at <a href="{{ url_for('class_view', class_id=class_obj.id) }}">{{ class_obj.display_name() }} on MIT Textbooks</a>
+	Textbooks: {{ class_obj.textbooks|tb_len }} at <a href="{{ url_for('class_view', class_id=class_obj.id) }}">{{ class_obj.display_name()|safe }} on MIT Textbooks</a>
 	{% endif %}
 </p>

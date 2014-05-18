@@ -26,7 +26,7 @@
 
 
 		<div class="panel panel-default" id="books_{{ class_obj.safe_id() }}">
-			<div class="panel-heading">{{ class_obj.display_name() }}</div>
+			<div class="panel-heading">{{ class_obj.display_name()|safe }}</div>
 			<div class="panel-body">Save up to {{ textbooks|section_saved(class_obj) }} by purchasing through MIT Textbooks!</div>
 			<div class="list-group">
 				{% for textbook in textbooks %}
