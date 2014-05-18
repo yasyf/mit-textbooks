@@ -1,6 +1,6 @@
 var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1-2][0-9]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
 var mit_textbooks_re_search = /(\s|^)((([A-Za-z]{2,3})|(([1-2][0-9]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([,\s\?\.\!](?!([%]|GB)))|$)/g;
-var mit_textbooks_replace = "<a data-tb='replaced' data-tbclass='$1' href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
+var mit_textbooks_replace = "<a data-tbclass='$1' href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
 var mit_textbooks_current_html;
 function walkDom() {
 	if (mit_textbooks_current_html == document.documentElement.innerHTML) {
@@ -27,14 +27,11 @@ function walkDom() {
 
 	for(var i = 0; node=nodes[i] ; i++) {
 		if (node.parentNode) {
-			if (node.parentNode.getAttribute('data-tb') === 'replaced'){
-				continue;
-			}
 			var excludes = ["script", "a", "input", "button", "textarea", "font"];
 			var bad_roles = ["textbox", "alert"];
 			var skip = false;
 			$.each($(node).parents(), function(index, value) {
-				if($.inArray(value.tagName.toLowerCase(), excludes) != -1 || $.inArray(value.getAttribute('role'), bad_roles) != -1 || $(value).css('cursor') === 'pointer'){
+				if($.inArray(value.tagName.toLowerCase(), excludes) != -1 || $.inArray(value.getAttribute('role'), bad_roles) != -1 || value.getAttribute('data-tb') === 'replaced' || $(value).css('cursor') === 'pointer'){
 					skip = true;
 					return false;
 				}
@@ -43,6 +40,7 @@ function walkDom() {
 				continue;
 			}
 			span = document.createElement('span');
+			span.setAttribute('data-tb', 'replaced');
 			span.innerHTML = node.nodeValue.replace(mit_textbooks_re, mit_textbooks_replace);
 			node.parentNode.replaceChild(span, node);
 		}
@@ -85,6 +83,9 @@ function walkDom() {
 					}
 				});
 
+			}
+			else if (!data.pending){
+				elt.parent().html(c);
 			}
 		});
 	});
