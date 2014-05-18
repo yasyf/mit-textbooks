@@ -76,6 +76,13 @@ class MITClass():
 		d['grad'] = self.grad
 		return d
 
+	def to_recents_dict(self):
+		d = {}
+		d['class'] = self.id
+		d['description'] = self.summary()
+		d['display_name'] = self.display_name()
+		return d
+
 	def json(self):
 		d = self.to_dict()
 		del d['dt']
