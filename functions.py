@@ -813,7 +813,7 @@ def suggestion(search_term):
 def popover(class_id):
 	c = recents.find_one({'class': class_id})
 	if c:
-		d = {'n': c['display_name'], 'd': c['description']}
+		d = {'n': c['display_name'], 'd': c['description'], 'c': class_id}
 	else:
 		d = None
 	return {'class_info': d}

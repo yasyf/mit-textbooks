@@ -330,7 +330,7 @@ def suggest_view(search_term):
 @app.route('/popover/<class_id>')
 @modifiers.cache_for(days=7)
 def popover_view(class_id):
-	return jsonify(popover(class_id))
+	return jsonify(popover(format_class(class_id)))
 
 @app.route('/go/<search_term>')
 def go_view(search_term):
