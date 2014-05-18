@@ -814,7 +814,9 @@ def popover(class_id):
 	c = recents.find_one({'class': class_id})
 	if not c:
 		if check_class(class_id):
-			c = get_class(class_id).to_recents_dict()
+			cl = get_class(class_id)
+			if cl:
+				c = cl.to_recents_dict()
 		else:
 			send_to_worker(class_id)
 	d = {'n': c['display_name'], 'd': c['description'], 'c': class_id} if c else None
