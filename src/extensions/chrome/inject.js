@@ -54,6 +54,7 @@ function walkDom() {
 		elt.removeAttr('data-tbclass');
 		$.getJSON('https://mit-textbooks.herokuapp.com/popover/'+c, function(data) {
 			if (data.class_info) {
+				elt.text(data.class_info.c);
 				elt.qtip({
 					content: {
 						title: data.class_info.n,
