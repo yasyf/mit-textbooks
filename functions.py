@@ -63,7 +63,7 @@ def md5(s):
 	return _hash
 
 def clean_html(html):
-	return bleach.clean(html.replace("\n"," ").replace("\t"," "), tags=[], strip=True).encode('ascii','xmlcharrefreplace').strip()
+	return ' '.join(bleach.clean(html.replace("\n"," ").replace("\t"," "), tags=[], strip=True).encode('ascii','xmlcharrefreplace').split())
 
 def get_user(email, name):
 	global user_objects
