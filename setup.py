@@ -38,7 +38,7 @@ is_worker = os.getenv('is_worker', 'False') == 'True'
 
 dev = (os.getenv('dev','False') == 'True')
 
-TIME_REGEX = r'([A-Z]{1,5})(?: EVE \()?([0-9]{0,2})\.?([0-9]{0,2})-?([0-9]{0,2})\.?([0-9]{0,2})( [A-Z]{2})?\)?'
+TIME_REGEX = r'([A-Z]{1,5})(?: EVE \()?[\s]?([0-9]{0,2})[:\.]?([0-9]{0,2})-?([0-9]{0,2})[:\.]?([0-9]{0,2})( [A-Z]{2})?\)?'
 
 if not dev:
 	sg = sendgrid.SendGridClient(os.getenv('SENDGRID_USERNAME'), os.getenv('SENDGRID_PASSWORD'))
