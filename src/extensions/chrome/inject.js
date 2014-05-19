@@ -85,7 +85,7 @@ function walkDom() {
 
 			}
 			else if (!data.pending){
-				elt.parent().html(c);
+				elt.contents().unwrap();
 			}
 		});
 	});
