@@ -417,8 +417,7 @@ def get_class_site(class_id):
 			title = "{class_id} Class Site".format(class_id=class_id)
 	except AttributeError:
 		title = "{class_id} Class Site".format(class_id=class_id)
-	if 'MIT OpenCourseWare' in title:
-		title = title.split('|')[0]
+	title = title.split('|')[0]
 	return (clean_html(title), r.url)
 
 def get_subject_evaluation(class_id):
