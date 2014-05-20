@@ -751,18 +751,6 @@ def sitemap_allows():
 		allows.append(url_for('group_view', group_id=gr['name'] if 'name' in gr else gr['hash'], _external=True))
 	return allows
 
-
-def reset_class_db(verify=False):
-	if not verify:
-		return
-	all_classes = set()
-	for c in classes.find():
-		classes.remove(c["_id"])
-		all_classes.add(c["class"])
-	time.sleep(5)
-	for c in all_classes:
-		send_to_worker(c)
-
 def check_all_times(classes):
 	free = {}
 	for j in list('MTWRF'):
