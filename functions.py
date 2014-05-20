@@ -742,7 +742,7 @@ def sitemap_allows():
 		if 'class_site' in c:
 			allows.append(url_for('site_view', class_id=c['class'], _external=True))
 		if 'stellar_url' in c:
-			allows.append(url_for('site_view', class_id=c['class'], _external=True))
+			allows.append(url_for('stellar_view', class_id=c['class'], _external=True))
 		allows.append(url_for('class_evaluation_view', class_id=c['class'], _external=True))
 		for section in c['textbooks']['sections'].values():
 			for book in section:
