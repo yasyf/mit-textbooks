@@ -380,6 +380,12 @@ def class_evaluation_view(class_id):
 	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&search=Search".format(class_id=class_id)
 	return redirect(url)
 
+@app.route('/evaluation/<class_id>/<professor>')
+@modifiers.cache_for(days=7)
+def class_professor_evaluation_view(class_id, professor):
+	url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
+	return redirect(url)
+
 @app.route('/professor/<professor>')
 @modifiers.cache_for(days=7)
 def professor_view(professor):
@@ -396,6 +402,16 @@ def courseroad_export_view(class_ids):
 	session['semester'] = semester
 	url = "https://courseroad.mit.edu/?hash={kerberos}&addclasses={class_ids}&year={year}&term={term}".format(kerberos=g.user.kerberos(), class_ids=class_ids, year=year, term=term)
 	return redirect(url)
+
+@app.route('/amazon_prime_student')
+@modifiers.cache_for(days=7)
+def amazon_prime_student_view():
+	return redirect('http://www.amazon.com/gp/student/signup/info?ie=UTF8&tag=mit-tb-20&refcust=UF4ETMRRZEYWDKZETGTJUD2IV4&ref_type=generic')
+
+@app.route('/out/<_hash>')
+@modifiers.cache_for(days=7)
+def out_view(_hash):
+	return redirect(url_for('amazon_product_view',asin=get_asin_from_hash(_hash)))
 
 @app.template_filter('id_to_obj')
 def id_to_obj_filter(class_id):

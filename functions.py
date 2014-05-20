@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach, csv, StringIO
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach, csv, StringIO, base64
 from flask import g, flash, url_for, request
 from bs4 import BeautifulSoup
 from lxml import objectify
@@ -814,3 +814,6 @@ def popover(class_id):
 def upload_static(app):
 	import flask_s3
 	flask_s3.create_all(app)
+
+def get_asin_from_hash(_hash):
+	return base64.b64decode(_hash)
