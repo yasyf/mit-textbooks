@@ -15,20 +15,24 @@
 	Coreqs: {{ class_obj.formatted_coreqs_summary()|safe }}.
 	{% endif %}
 </p>
+{% if class_obj.lecture %}
 <p>
 	Lecture: {{ class_obj.formatted_lecture() }}
 </p>
+{% endif %}
 <p>
 	{% if class_obj.location %}
 	Location: <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>
 	{% endif %}
 </p>
+{% if class_obj.current_instructors() %}
 <p>
 	Instructors: 
 	{% for instructor in class_obj.current_instructors() %}
 	<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last %}, {% endif %}
 	{% endfor %}
 </p>
+{% endif %}
 <p>
 	{% if class_obj.hass %}
 	HASS: <strong>{{ class_obj.hass }}</strong>
