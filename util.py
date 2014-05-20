@@ -13,11 +13,13 @@ def reset_class_db(verify=False):
 	for c in all_classes:
 		send_to_worker(c)
 
-def transform_all(f):
+def transform_all(f, verbose=False):
 	for c in classes.find({'error': None}):
 		transformations = f(c.copy())
 		classes.update({'_id': c['_id']}, transformations)
 		print 'Processed', c['class']
+		if verbose:
+			print transformations
 
 def transform_all_set(f):
 	transform_all(lambda x: {"$set": f(x)})
