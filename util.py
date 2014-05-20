@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from functions import *
+
 def reset_class_db(verify=False):
 	if not verify:
 		return

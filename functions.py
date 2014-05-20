@@ -417,7 +417,7 @@ def get_class_site(class_id):
 			title = "{class_id} Class Site".format(class_id=class_id)
 	except AttributeError:
 		title = "{class_id} Class Site".format(class_id=class_id)
-	title = title.split('|')[0]
+	title = title.split('|')[0].strip()
 	return (clean_html(title), r.url)
 
 def get_subject_evaluation(class_id):
