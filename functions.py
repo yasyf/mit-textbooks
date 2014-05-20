@@ -738,9 +738,9 @@ def sitemap_allows():
 			continue
 		allows.append(url_for('class_view', class_id=c['class'], _external=True))
 		allows.append(url_for('overview_view', class_id=c['class'], _external=True))
-		if 'class_site' in c:
+		if 'google.com' not in c['class_site']:
 			allows.append(url_for('site_view', class_id=c['class'], _external=True))
-		if 'stellar_url' in c:
+		if c['stellar_url']:
 			allows.append(url_for('stellar_view', class_id=c['class'], _external=True))
 		allows.append(url_for('class_evaluation_view', class_id=c['class'], _external=True))
 		for section in c['textbooks']['sections'].values():
