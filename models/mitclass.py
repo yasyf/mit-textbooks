@@ -37,8 +37,8 @@ class MITClass():
 		self.description = class_info['description']
 		self.prereqs = class_info['prereqs']
 		self.coreqs = class_info['coreqs']
-		self.lecture = class_info['lecture'].replace('TBD','')
-		self.location = class_info['location'].replace('TBD','')
+		self.lecture = class_info['lecture'].replace('TBD','').replace('TBA','')
+		self.location = class_info['location'].replace('TBD','').replace('TBA','')
 		self.hass = class_info['hass']
 		self.semesters = class_info['semesters']
 		self.units = class_info['units']
