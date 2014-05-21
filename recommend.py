@@ -3,8 +3,10 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 import pickle, Levenshtein, time, re, os, traceback
+import multiprocessing, gc
 
 all_classes = list(classes.find({'error': None}))
+all_recents = list(recents.find().sort("dt", -1).limit(100))
 all_groups = [x['class_ids'] for x in groups.find()]
 for x in users.find():
 	if 'recents' not in x:
@@ -12,6 +14,7 @@ for x in users.find():
 user_recents = {x['email']:x['recents'] for x in users.find()}
 
 all_c = [x['class'] for x in all_classes]
+all_r = [x['class'] for x in all_recents]
 data = dict(zip(all_c, all_classes))
 distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
 bool_fields = ['course', 'grad', 'hass']
@@ -81,17 +84,27 @@ def calculate_similarity(c1, c2):
 
 	return dists
 
-def simple_distances():
+def sd_worker((i,c1)):
 	sd = []
-	all_c_len = float(len(all_c))
-	for i, c1 in enumerate(all_c):
-		print 'Processing {c1} ({p:.2f}%)'.format(c1=c1, p=100*(float(i)/all_c_len))
-		for c2 in all_c:
-			if c2 != c1:
-				row = [c1, c2] + calculate_similarity(c1, c2)
-				sd.append(row)
+	for c2 in set(filter(lambda x: x.split('.')[0] == c1.split('.')[0], all_c) + all_r):
+		if c2 != c1:
+			row = [c1, c2] + calculate_similarity(c1, c2)
+			sd.append(row)
+	print 'Processing {c1}'.format(c1=c1)
+	return sd
+
+def simple_distances():
+	p = multiprocessing.Pool()
+	sd_to_flatten = p.map(sd_worker, enumerate(all_c))
+	p.close()
+	sd = []
+	map(sd.extend, sd_to_flatten)
+	del sd_to_flatten
 	cols = ['c1', 'c2'] + fields
-	return pd.DataFrame(sd, columns=cols)
+	df = pd.DataFrame(sd, columns=cols)
+	del sd
+	gc.collect()
+	return df
 
 def calc_distance(dists, c1, c2, weights):
 	mask = (dists.c1 == c1) & (dists.c2 == c2)
@@ -128,26 +141,41 @@ def save_sd():
 	touch("dat/sd.dat")
 	sd = simple_distances()
 	pickle.dump(sd, open("dat/sd.dat","wb"))
+	del sd
 
+def get_sd():
+	if not os.path.exists("dat/"):
+		os.makedirs("dat/")
+	import boto
+	from boto.s3.key import Key
+	c = boto.connect_s3(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'))
+	b = c.get_bucket(os.getenv('S3_BUCKET'))
+	k = b.get_key('dat/sd.dat')
+	k.get_contents_to_filename('dat/sd.dat')
+
+def recommend_worker((u,c,c_cmp)):
+	try:
+		weights = default_weights(u, c, c_cmp)
+		dist = calc_distance(sd, c, c_cmp, weights)
+		return (c_cmp, dist)
+	except IndexError:
+		return None
 
 def recommend(u, c):
-	results = {}
-	for c_cmp in all_c:
-		if c != c_cmp:
-			try:
-				weights = default_weights(u, c, c_cmp)
-				dist = calc_distance(sd, c, c_cmp, weights)
-				results[c_cmp] = dist
-			except IndexError:
-				pass
-	return sorted(results.keys(), key=lambda x: results[x])[:5]
+	p = multiprocessing.Pool()
+	recs_to_flatten = p.map(recommend_worker, [(u, c, c_cmp) for c_cmp in all_c])
+	p.close()
+	recs = filter(lambda x: x != None, recs_to_flatten)
+	return [x[0] for x in sorted(recs, key=lambda x: x[1])[:5]]
 
 if __name__ == '__main__':
-	print 'Generating Recommendations'
-	save_sd()
+	# print 'Saving Recommendations'
+	# save_sd()
+	# print 'Fetching Recommendations'
+	# get_sd()
 	start_time = time.time()
-	print 'Loading Recommendations'
-	sd = pickle.load(open("dat/sd.dat","rb"))
+	print 'Generating Recommendations'
+	sd = simple_distances()
 	print 'Loading Initial Tasks'
 	for c in recommendations.find({'default.class_ids': {"$size": 0}}):
 		try:
