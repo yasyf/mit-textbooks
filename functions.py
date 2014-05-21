@@ -172,10 +172,11 @@ def fetch_class_info(class_id):
 		return class_info
 
 def custom_parse_instructors(instructors):
+	excludes = ["Jr.", "Sr."]
 	new_intructors = []
 	for i in instructors:
 		new_intructors.extend([x.split(':')[-1] for x in i.split('<br>')])
-	return new_intructors
+	return filter(lambda x: x not in excludes, new_intructors)
 
 def custom_shorten_name(name):
 	replacements = [("Introduction", "Intro"), ("Principles of ", ""), ("Introductory", "Intro"), ("Chemistry", "Chem"), ("Biology", "Bio")]
