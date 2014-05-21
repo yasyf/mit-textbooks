@@ -341,10 +341,10 @@ def process_prereqs(prereqs):
 def update_recents_with_class(class_obj):
 	recent_entry = recents.find_one({'class': class_obj.id})
 	if recent_entry:
-		if (time.time() - recent_entry['dt']) > 600:
-			recents.update({'class': class_obj.id}, {'$set':{'dt': int(time.time())}})
+		if (datetime.datetime.utcnow() - recent_entry['dt']) > datetime.timedelta(minutes=1):
+			recents.update({'class': class_obj.id}, {'$set':{'dt': datetime.datetime.utcnow()}})
 	else:
-		recents.insert({'class': class_obj.id, 'dt': int(time.time()), 'display_name': class_obj.display_name(), 'description': class_obj.summary()})
+		recents.insert({'class': class_obj.id, 'dt': datetime.datetime.utcnow(), 'display_name': class_obj.display_name(), 'description': class_obj.summary()})
 	if g.user:
 		g.user.add_recent_class(class_obj.id)
 
