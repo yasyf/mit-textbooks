@@ -5,31 +5,26 @@ from sklearn.metrics.pairwise import euclidean_distances
 import pickle, Levenshtein, time, re, os, traceback
 import multiprocessing, gc
 
-all_classes = list(classes.find({'error': None}))
-all_recents = list(recents.find().sort("dt", -1).limit(100))
-all_groups = [x['class_ids'] for x in groups.find()]
-for x in users.find():
-	if 'recents' not in x:
-		print x
-user_recents = {x['email']:x['recents'] for x in users.find()}
+def get_accept_function(i):
+	def f1(c):
+		course = c.split('.')[0]
+		return course.isdigit() and int(course) in range(1,11)
+	def f2(c):
+		course = c.split('.')[0]
+		return course.isdigit() and int(course) in range(11,25)
+	def f3(c):
+		course = c.split('.')[0]
+		return not course.isdigit()
 
-all_c = [x['class'] for x in all_classes]
-all_r = [x['class'] for x in all_recents]
-data = dict(zip(all_c, all_classes))
-distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
-bool_fields = ['course', 'grad', 'hass']
-bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters']
-custom_fields = ['name', 'description', 'in_groups', 'in_history', 'less_advanced']
-fields = distance_fields + bool_fields + bool_fields_deep + custom_fields
-
+	return {1: f1, 2: f2, 3: f3}[i]
 
 def fail_mail(e):
 	message = sendgrid.Mail()
 	message.add_to(os.getenv('admin_email'))
 	message.set_subject('Crashing Recommender @ MIT Textbooks')
 	trace = traceback.format_exc() 
-	message.set_html('<br><br>' + e.message + '<br><br><pre>' + trace + '</pre>')
-	message.set_text('\n\n' + e.message + '\n\n' + trace)
+	message.set_html('<br><br>' + str(e) + '<br><br><pre>' + trace + '</pre>')
+	message.set_text('\n\n' + str(e) + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
 		sg.send(message)
@@ -95,7 +90,7 @@ def sd_worker((i,c1)):
 
 def simple_distances():
 	p = multiprocessing.Pool()
-	sd_to_flatten = p.map(sd_worker, enumerate(all_c))
+	sd_to_flatten = p.map(sd_worker, enumerate([x for x in all_c if accept_function(x)]))
 	p.close()
 	print 'Flattening simple_distances'
 	sd = []
@@ -171,13 +166,33 @@ def recommend(u, c):
 	return [x[0] for x in sorted(recs, key=lambda x: x[1])[:5]]
 
 if __name__ == '__main__':
+	print 'Initializing Globals'
+	SERVER_NUM = int(os.environ['SERVER_NUM'])
+	accept_function = get_accept_function(SERVER_NUM)
+
+	all_classes = list(classes.find({'error': None}))
+	all_recents = list(recents.find().sort("dt", -1).limit(100))
+	all_groups = [x['class_ids'] for x in groups.find()]
+	user_recents = {x['email']:x['recents'] for x in users.find()}
+
+	all_c = [x['class'] for x in all_classes]
+	all_r = [x['class'] for x in all_recents]
+	data = dict(zip(all_c, all_classes))
+	distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
+	bool_fields = ['course', 'grad', 'hass']
+	bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters']
+	custom_fields = ['name', 'description', 'in_groups', 'in_history', 'less_advanced']
+	fields = distance_fields + bool_fields + bool_fields_deep + custom_fields
+
 	# print 'Saving Recommendations'
 	# save_sd()
 	# print 'Fetching Recommendations'
 	# get_sd()
-	start_time = time.time()
+
 	print 'Generating Recommendations'
 	sd = simple_distances()
+	start_time = time.time()
+
 	print 'Loading Initial Tasks'
 	for c in recommendations.find({'default.class_ids': {"$size": 0}}):
 		try:
@@ -194,10 +209,9 @@ if __name__ == '__main__':
 	try:
 		while True:
 			try:
-				if is_safe:
-					query = {'queue': 'recommender'}
-				else:
-					query = {'queue': 'recommender', 'safe': None}
+				query = {'queue': 'recommender', 'ignore': {'$nin': [SERVER_NUM]}}
+				if not is_safe:
+					query['safe'] =  None
 				task = sorted(queue.find(query, snapshot=True), key=lambda x: x['time'])[0]
 			except Exception:
 				task = None
@@ -208,13 +222,24 @@ if __name__ == '__main__':
 					continue
 				if task == last_task:
 					continue
-				if task.get('safe', False) and task['class_id'] not in all_c:
-					print '{c} not in master class list, this server is no longer reliable!'.format(c=task['class_id'])
-					is_safe = False
-					continue
-				last_task = task
 				_id = task['class_id']
 				uid = task['user_id'].split("@")[0]
+				if not accept_function(_id):
+					print 'Skipping {_id} for user {uid}'.format(_id=_id, uid=uid)
+					s = set(task.get('ignore',[]))
+					s.add(SERVER_NUM)
+					task['ignore'] = list(s)
+					queue.insert(task, safe=True)
+					continue
+				if task.get('safe', False) and _id not in all_c:
+					print '{c} not in master class list, this server is no longer reliable!'.format(c=_id)
+					is_safe = False
+					s = set(task.get('ignore',[]))
+					s.add(SERVER_NUM)
+					task['ignore'] = list(s)
+					queue.insert(task, safe=True)
+					continue
+				last_task = task
 				print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)
 				r = {'class_ids': recommend(uid, _id)}
 				r['time'] = time.time()
