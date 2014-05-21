@@ -48,6 +48,11 @@ def preprocess_request():
 		if (browser == 'msie' and version < 10):
 			return render_template('unsupported.html')
 
+	if browser in {"google", "aol", "ask", "yahoo"}:
+		g.scraper = True
+	else:
+		g.scraper = False
+
 	email = request.cookies.get('id_email')
 	if email:
 		email = urllib.unquote(email)
@@ -176,7 +181,8 @@ def class_view(class_id):
 		return redirect(url_for('_404_view'))
 	if class_obj.master_subject_id != class_obj.id or class_id != class_obj.id:
 		return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
-	update_recents_with_class(class_obj)
+	if not g.scraper:
+		update_recents_with_class(class_obj)
 	g.search_val = class_id
 	rec = class_obj.get_rec(g.user)
 	if rec:
