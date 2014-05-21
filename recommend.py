@@ -97,12 +97,14 @@ def simple_distances():
 	p = multiprocessing.Pool()
 	sd_to_flatten = p.map(sd_worker, enumerate(all_c))
 	p.close()
+	print 'Flattening simple_distances'
 	sd = []
 	map(sd.extend, sd_to_flatten)
 	del sd_to_flatten
 	cols = ['c1', 'c2'] + fields
 	df = pd.DataFrame(sd, columns=cols)
 	del sd
+	print 'Garbage Collecting'
 	gc.collect()
 	return df
 
