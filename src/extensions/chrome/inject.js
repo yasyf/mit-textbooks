@@ -84,7 +84,7 @@ function walkDom() {
 				});
 
 			}
-			else if (!data.pending){
+			else {
 				elt.contents().unwrap();
 			}
 		});
