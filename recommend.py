@@ -112,7 +112,7 @@ def calc_distance(dists, c1, c2, weights):
 
 def default_weights(user_id, c, c_cmp):
 	weights = [0.8]*len(distance_fields) + [1]*(len(fields)-len(distance_fields))
-	defaults = [('course', 1.25), ('in_groups', 2.75), ('in_history', 3.5), ('prereqs', 1.5), ('coreqs', 1.5), ('name', 4), ('description', 1.75)]
+	defaults = [('course', 1.5), ('in_groups', 2.75), ('in_history', 3.5), ('prereqs', 1.5), ('coreqs', 1.5), ('name', 4), ('description', 1.75)]
 	
 	for k, v in defaults:
 		weights[fields.index(k)] = v
