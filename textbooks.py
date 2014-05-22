@@ -521,7 +521,11 @@ def queue_length_filter(t):
 
 @app.template_filter('classes_length')
 def classes_length_filter(s):
-	return classes.find().count()
+	return classes.find({'error': None}).count()
+
+@app.template_filter('errors_length')
+def errors_length_filter(s):
+	return classes.find({'error': {'$exists': 1}}).count()
 
 @app.template_filter('get_display_names')
 def get_display_names_filter(classes):

@@ -8,10 +8,10 @@ import multiprocessing, gc
 def get_accept_function(i):
 	def f1(c):
 		course = c.split('.')[0]
-		return course.isdigit() and int(course) in range(1,15) and int(course) != 6
+		return course.isdigit() and int(course) in range(1,16) and int(course) != 6
 	def f2(c):
 		course = c.split('.')[0]
-		return course.isdigit() and (int(course) == 6 or int(course) in range(15,25))
+		return course.isdigit() and (int(course) == 6 or int(course) in range(16,25))
 	def f3(c):
 		course = c.split('.')[0]
 		return not course.isdigit()
