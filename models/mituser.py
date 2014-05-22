@@ -33,4 +33,6 @@ class MITUser():
 				return
 			self.recents.remove(c)
 		self.recents.append(c)
+		if len(self.recents) > 50:
+			self.recents = self.recents[-50:]
 		users.update({'_id': self.obj['_id']}, {'$set': {'recents': self.recents}})
