@@ -27,11 +27,11 @@ function walkDom() {
 
 	for(var i = 0; node=nodes[i] ; i++) {
 		if (node.parentNode) {
-			var excludes = ["script", "a", "input", "button", "textarea", "font"];
+			var excludes = ["script", "a", "input", "button", "textarea", "font", "h1", "h2", "h3"];
 			var bad_roles = ["textbox", "alert"];
 			var skip = false;
 			$.each($(node).parents(), function(index, value) {
-				if(value.getAttribute('data-tb') === 'replaced' || $.inArray(value.tagName.toLowerCase(), excludes) != -1 || $.inArray(value.getAttribute('role'), bad_roles) != -1 || $(value).css('cursor') === 'pointer'){
+				if(value.getAttribute('data-tb') === 'replaced' || $.inArray(value.tagName.toLowerCase(), excludes) != -1 || $.inArray(value.getAttribute('role'), bad_roles) != -1 || $(value).css('cursor') === 'pointer' || $(value).attr('id') === 'header'){
 					skip = true;
 					return false;
 				}
