@@ -1,5 +1,5 @@
 var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
-var mit_textbooks_re_search = /(\s|^)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([,\s\?\.\!](?!([%]|GB)))|$)/g;
+var mit_textbooks_re_search = /([\s,\(]|^)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([,\s\?\.\!\)](?!([%]|GB)))|$)/g;
 var mit_textbooks_replace = "<a data-tbclass='$1' href='http://textbooksearch.mit.edu/go/$1' target='_blank'>$1</a>";
 var mit_textbooks_current_html;
 function walkDom() {
