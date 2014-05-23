@@ -99,7 +99,7 @@ def get_class(class_id):
 	classes.insert({"class": class_id, "error": 404, 'dt': time.time()})
 
 def update_textbooks(class_id):
-	class_info = classes.find_one({"class": class_id})
+	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]})
 	class_info['textbooks'] = get_textbook_info(class_info['class'], class_info['semesters'])
 	classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
 
