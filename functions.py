@@ -100,7 +100,7 @@ def get_class(class_id):
 
 def update_textbooks(class_id):
 	class_info = classes.find_one({"class": class_id})
-	class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
+	class_info['textbooks'] = get_textbook_info(class_info['class'], class_info['semesters'])
 	classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
 
 def get_group(group_id):
@@ -459,6 +459,7 @@ def get_subject_evaluation(class_id):
 		return all_info
 
 def get_textbook_info(class_id, semesters):
+	time.sleep(.5)
 	pairing = {'SP': 'Spring', 'FA': 'Fall'}
 	if pairing[TERM[-2:]] in semesters:
 		term = TERM
@@ -518,6 +519,7 @@ def get_abe_info(isbn):
 		d['purchase'] = ('AbeBooks', "http://affiliates.abebooks.com/c/92729/77416/2029?u={u}".format(u=listing_url))
 	except Exception:
 		pass
+	time.sleep(.5)
 	try:
 		url = "http://search2.abebooks.com/search?clientkey={key}&outputsize=short&isbn={isbn}&bookcondition=usedonly".format(key=os.getenv('abe_key'), isbn=isbn)
 		response = str(requests.get(url).text)
