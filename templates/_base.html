@@ -108,6 +108,14 @@
        js.src = "//connect.facebook.net/en_US/sdk.js";
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
+
+    var trackOutboundLink = function(url, c, s) {
+      ga('send', 'event', 'outbound', s.toLowerCase(), url, c*.04, {'hitCallback':
+       function () {
+        window.open(url);
+       }
+      });
+    }
   </script>
   <script>
   {% if not g.user %}

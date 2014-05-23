@@ -11,7 +11,7 @@
 			<a 
 			href="{{ textbook.purchase[1] }}"
 			target='_blank'
-			data-toggle='modal'
+			onclick="trackOutboundLink('{{ textbook.purchase[1] }}', '{{ textbook.new }}', '{{ textbook.purchase[0] }}'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
 			class='btn btn-{% if class_obj.has_local() %}info{% else %}success{% endif %}'>
 				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; {{ textbook.purchase[0] }}
 			</a>
@@ -19,11 +19,12 @@
 			<a 
 			{% if textbook.asin %}
 			href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
+			onclick="trackOutboundLink('{{ url_for('amazon_product_view', asin=textbook.asin) }}', '{{ textbook.new }}', 'amazon'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
 			{% else %}
 			href="{{ url_for('amazon_search_view', title=textbook.title) }}"
+			onclick="trackOutboundLink('{{ url_for('amazon_search_view', title=textbook.title) }}', '{{ textbook.new }}', 'amazon'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
 			{% endif %}
 			target='_blank'
-			data-toggle='modal'
 			class='btn btn-{% if textbook.purchase or class_obj.has_local() %}info{% else %}success{% endif %}'>
 				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Amazon
 			</a>

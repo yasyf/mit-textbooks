@@ -456,7 +456,7 @@ def prices_filter(textbook, class_obj):
 			prices.append(('Local', "%.2f" % min(offers)))
 	for x in ['used', 'new', 'retail']:
 		if x in textbook and textbook[x]:
-			prices.append((x[0].upper() + x[1:],textbook[x]))
+			prices.append((x[0].upper() + x[1:], textbook[x]))
 	return prices
 
 @app.template_filter('year_from_i')
