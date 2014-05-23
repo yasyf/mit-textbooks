@@ -110,11 +110,8 @@
      }(document, 'script', 'facebook-jssdk'));
 
     var trackOutboundLink = function(url, c, s) {
-      ga('send', 'event', 'outbound', s.toLowerCase(), url, c*.04, {'hitCallback':
-       function () {
-        window.open(url);
-       }
-      });
+      ga('send', 'event', 'outbound', s.toLowerCase(), url, c*.04);
+      window.open(url);
     }
   </script>
   <script>
