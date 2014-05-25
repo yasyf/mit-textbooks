@@ -82,11 +82,13 @@ def get_class(class_id):
 	if class_id in class_objects:
 		return class_objects[class_id]
 	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]})
-	if class_info and (time.time() - class_info['dt']) < CACHE_FOR:
+	if class_info:
 		if 'error' in class_info:
 			return None
 		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
 			send_to_worker(class_id, update=True)
+		elif (time.time() - class_info['dt']) > CACHE_FOR and not is_worker:
+			send_to_worker(class_id)
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		return class_obj
