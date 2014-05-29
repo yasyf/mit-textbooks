@@ -51,6 +51,9 @@ class MITClass():
 		self.grad = class_info['grad'] if 'grad' in class_info else False
 		self._image = None
 
+	def __repr__(self):
+		return "<MITClass {c}>".format(c=self.id)
+
 	def to_dict(self):
 		d = {}
 		d['dt'] = calendar.timegm(self.dt.utctimetuple())
@@ -296,4 +299,25 @@ class MITClass():
 			return return_default()
 			
 		return c
+
+	def get_base_rating(self):
+		return self.evaluation.get('rating', 0)
+
+	def get_total_rating(self):
+		if 'rating' not in self.evaluation:
+			return 0
+		good_fields = {'learning_objectives_met', 'assigments_useful', 'expectations_clear', 'grading_fair'}
+		mid_fields = {'pace'}
+		bad_fields = {'home_hours', 'classroom_hours', 'lab_hours', 'prep_hours'}
+		total = self.evaluation['rating']*100
+		for f in good_fields:
+			if f in self.evaluation:
+				total += self.evaluation[f]
+		for f in mid_fields:
+			if f in self.evaluation:
+				total -= abs(self.evaluation[f] - 4.0)
+		for f in bad_fields:
+			if f in self.evaluation:
+				total -= self.evaluation[f]
+		return total
 

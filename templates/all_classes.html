@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+{% block title %}Top-Ranked Classes{% endblock %}
+{% block description %}The highest-ranked MIT classes, as chosen by the undergraduate students.{% endblock %}
+{% block css %}<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">{% endblock %}
+
+{% block meta %}
+<link rel='canonical' href="{{ url_for('all_classes_view', _external=True) }}">
+<meta property="og:url" content="{{ url_for('all_classes_view', _external=True) }}">
+{% endblock %}
+
+{% block body %}
+
+<div>
+	<h1>Top-Ranked Classes</h1>
+</div>
+
+<br>
+
+{% include '_classes.html' %}
+
+{% endblock %}

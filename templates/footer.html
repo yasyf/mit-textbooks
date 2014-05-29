@@ -18,7 +18,7 @@
     </div>
     <div class="col-xs-4 text-center">
         <p>
-            <a href="{{ url_for('textbooks_view') }}" class="btn btn-primary btn-sm hidden-xs">All Local Textbooks</a>
+            <a onclick="$('#special_modal').modal()" class="btn btn-primary btn-sm hidden-xs">Special Pages</a>
         </p>
     </div>
     <div class="col-xs-4 text-right">
@@ -104,6 +104,28 @@ function save_group(){
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 {% endif %}
+<div class='modal fade' id='special_modal'>
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+        <h4 class='modal-title'>Special Pages</h4>
+      </div>
+      <div class='modal-body'>
+        <p class='center'>
+            <a data-toggle='modal' href='{{ url_for('textbooks_view') }}' class='btn btn-info'>Local Textbooks</a>
+            <a data-toggle='modal' href='{{ url_for('all_classes_view') }}' class='btn btn-info'>All Classes</a>
+            <br><br>
+            <a data-toggle='modal' href='{{ url_for('class_kv_view', key='hass', value='A') }}' class='btn btn-info'>HASS A</a>
+            <a data-toggle='modal' href='{{ url_for('class_kv_view', key='hass', value='H') }}' class='btn btn-info'>HASS H</a>
+            <a data-toggle='modal' href='{{ url_for('class_kv_view', key='hass', value='S') }}' class='btn btn-info'>HASS S</a>
+      </div>
+      <div class='modal-footer'>
+        <button type='button'  data-dismiss='modal' class='btn btn-primary'>Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <div class='modal fade' id='feedback_modal'>
   <div class='modal-dialog'>
     <div class='modal-content'>

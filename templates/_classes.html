@@ -1,0 +1,48 @@
+<div class="row">
+
+	<div class="col-md-11">
+
+		{% for c in classes %}
+
+		<a href="{{ url_for('class_view', class_id=c.class) }}" class="list-group-item" id="{{ c.class.replace('.','') }}">
+			<h4 class="list-group-item-heading">{{ c.title }}</h4>
+			<p class="list-group-item-text">
+				{% for i in range(c.base_rating|round(0, 'floor')|int) %}<i class="fa fa-star"></i>{% endfor %}{% if c.base_rating|get_half_star %}<i class="fa fa-star-half"></i>{% endif %}
+			</p>
+		</a>
+
+		{% if not loop.last %}<hr>{% endif %}
+		
+		{% endfor %}
+	</div>
+
+	<div class="col-md-1" id="nav-parent">
+		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" style="height:100%;overflow-y:scroll;overflow-x:visible;">
+			{% for c in classes %}
+			<li><a class='sidebar-link' href="#{{ c.class.replace('.','') }}">{{ c.class }}</a></li>
+			{% endfor %}
+		</ul>
+
+	</div>
+</div>
+
+
+<script>
+
+$(document).ready(function() {
+  $('body').scrollspy({ target: '#nav-parent', offset: 75 })
+});
+
+var $root = $('html, body');
+$('.sidebar-link').click(function() {
+    var href = $.attr(this, 'href');
+    console.log()
+    $root.animate({
+        scrollTop: $(href).offset().top - 75
+    }, 500, function () {
+        window.location.hash = href;
+    });
+    return false;
+});
+
+</script>

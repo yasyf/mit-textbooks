@@ -119,7 +119,7 @@ def format_class(c):
 	c = c.upper()
 	if c and c[-1] == 'J':
 		c = c[:-1]
-	return c.strip()
+	return c.split(',')[0].strip()
 
 def is_int(value):
   try:
@@ -822,3 +822,21 @@ def upload_static(app):
 
 def get_asin_from_hash(_hash):
 	return base64.b64decode(_hash)
+
+def get_sorted_classes(key, value):
+	replacements = {'true': True, 'false': False, 'none': None}
+	if value.lower() in replacements:
+		value = replacements[value.lower()]
+	all_classes = []
+	proto = classes.find_one({key: {'$exists': True}})
+	if not proto:
+		return []
+	if hasattr(proto[key], '__iter__'):
+		constraints = {key: {'$in': [value]}}
+	else:
+		constraints = {key: value}
+	good_classes = set([x['class'] for x in classes.find(constraints)])
+	for c in rankings.find().sort('rating', -1):
+		if c['class'] in good_classes:
+			all_classes.append(c)
+	return all_classes

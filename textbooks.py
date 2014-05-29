@@ -112,6 +112,16 @@ def textbooks_view():
 		textbooks[c].append(tb_id_to_tb_filter(offer['class_id'], offer['tb_id']))
 	return render_template('textbooks.html', offers=textbooks, classes=group_obj.class_ids)
 
+@app.route('/classes/all')
+@modifiers.cache_for(weeks=4)
+def all_classes_view():
+	return render_template('all_classes.html', classes=get_sorted_classes('error', 'None'))
+
+@app.route('/classes/<key>/<value>')
+@modifiers.cache_for(weeks=4)
+def class_kv_view(key, value):
+	return render_template('classes_kv.html', k=key.upper(), v=value, classes=get_sorted_classes(key, value))
+
 @app.route('/check/<class_id>')
 def check_view(class_id):
 	return jsonify(check_class_json(class_id))
@@ -530,6 +540,10 @@ def errors_length_filter(s):
 @app.template_filter('get_display_names')
 def get_display_names_filter(classes):
 	return [x.display_name() for x in classes]
+
+@app.template_filter('get_half_star')
+def get_half_star_filter(i):
+	return float('.'+str(i).split('.')[-1]) > 0.5
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):
