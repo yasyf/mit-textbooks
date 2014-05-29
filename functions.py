@@ -824,17 +824,19 @@ def get_asin_from_hash(_hash):
 	return base64.b64decode(_hash)
 
 def get_sorted_classes(key, value):
+	value = value.split(',')
 	replacements = {'true': True, 'false': False, 'none': None}
-	if value.lower() in replacements:
-		value = replacements[value.lower()]
+	for v in value:
+		if v.lower() in replacements:
+			v = replacements[v.lower()]
 	all_classes = []
 	proto = classes.find_one({key: {'$exists': True}})
 	if not proto:
 		return []
 	if hasattr(proto[key], '__iter__'):
-		constraints = {key: {'$in': [value]}}
+		constraints = {key: {'$in': value}}
 	else:
-		constraints = {key: value}
+		constraints = {'$or': [{key: v} for v in value]}
 	good_classes = set([x['class'] for x in classes.find(constraints)])
 	for c in rankings.find().sort('rating', -1):
 		if c['class'] in good_classes:
