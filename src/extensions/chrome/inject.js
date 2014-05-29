@@ -68,50 +68,50 @@ function walkDom() {
 			node.parentNode.replaceChild(span, node);
 		}
 	}
-
-	$('[data-tbclass]').each(function (index) {
-		var elt = $(this);
-		var c = elt.attr('data-tbclass');
-		elt.removeAttr('data-tbclass');
-		$.getJSON('https://mit-textbooks.herokuapp.com/popover/'+c, function(data) {
-			if (data.class_info) {
-				elt.text(data.class_info.c);
-				elt.qtip({
-					content: {
-						title: data.class_info.n,
-						text: data.class_info.d
-					},
-					position: {
-						my: 'top center',
-						at: 'bottom center',
-						target: 'event',
-						viewport: $(window)
-					},
-					style: { 
-						classes: 'qtip-bootstrap'
-					},
-					show: {
-						effect: function(offset) {
-							$(this).slideDown(250);
+	if ($('[data-tbclass]').size() < 50){
+		$('[data-tbclass]').each(function (index) {
+			var elt = $(this);
+			var c = elt.attr('data-tbclass');
+			elt.removeAttr('data-tbclass');
+			$.getJSON('https://mit-textbooks.herokuapp.com/popover/'+c, function(data) {
+				if (data.class_info) {
+					elt.text(data.class_info.c);
+					elt.qtip({
+						content: {
+							title: data.class_info.n,
+							text: data.class_info.d
 						},
-						delay: 200,
-						solo: true,
-					},
-					hide: {
-						effect: function(offset) {
-							$(this).slideUp(250);
+						position: {
+							my: 'top center',
+							at: 'bottom center',
+							target: 'event',
+							viewport: $(window)
 						},
-						delay: 200,
-						fixed: true
-					}
-				});
-
-			}
-			else {
-				elt.contents().unwrap();
-			}
+						style: { 
+							classes: 'qtip-bootstrap'
+						},
+						show: {
+							effect: function(offset) {
+								$(this).slideDown(250);
+							},
+							delay: 200,
+							solo: true,
+						},
+						hide: {
+							effect: function(offset) {
+								$(this).slideUp(250);
+							},
+							delay: 200,
+							fixed: true
+						}
+					});
+				}
+				else {
+					elt.contents().unwrap();
+				}
+			});
 		});
-	});
+	}
 	mit_textbooks_current_html = document.documentElement.innerHTML;
 }
 
