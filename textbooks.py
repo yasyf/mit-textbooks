@@ -122,11 +122,11 @@ def all_classes_view():
 def class_kv_view(key, value):
 	return render_template('classes_kv.html', k=key.upper(), v=value, classes=get_sorted_classes({key: value}))
 
-@app.route('/classes/filter', methods=['POST'])
+@app.route('/classes/filter', methods=['GET','POST'])
 @modifiers.cache_for(weeks=4)
 def classes_filter_view():
 	try:
-		sorted_classes = get_sorted_classes(json.loads(request.form.get('filters', '{}')))
+		sorted_classes = get_sorted_classes(json.loads(request.values.get('filters', '{}')))
 	except Exception as e:
 		return jsonify({'error': 'malformed json', 'message': str(e)})
 	return jsonify({'sorted_classes': [url_for('class_view', class_id=c['class'], _external=True) for c in sorted_classes]})
