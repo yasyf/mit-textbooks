@@ -16,7 +16,7 @@
 		{% endfor %}
 	</div>
 
-	<div class="col-md-1" id="nav-parent">
+	<div class="col-md-1 hidden-xs hidden-sm" id="nav-parent">
 		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" style="height:100%;overflow-y:scroll;overflow-x:visible;">
 			{% for c in classes %}
 			<li><a class='sidebar-link' href="#{{ c.class.replace('.','') }}">{{ c.class }}</a></li>
