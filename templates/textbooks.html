@@ -24,8 +24,10 @@
 		{% set class_obj = c|id_to_obj %}
 		{% set textbooks = offers[class_obj] %}
 
+		<a id="{{ class_obj.safe_id() }}"></a>
+		{% if not loop.first %}<hr>{% endif %}
 
-		<div class="panel panel-default" id="books_{{ class_obj.safe_id() }}">
+		<div class="panel panel-default">
 			<div class="panel-heading">{{ class_obj.display_name()|safe }}</div>
 			<div class="panel-body">Save up to {{ textbooks|section_saved(class_obj) }} by purchasing through MIT Textbooks!</div>
 			<div class="list-group">
@@ -34,17 +36,15 @@
 				{% endfor %}
 			</div>	
 		</div>
-
-		{% if not loop.last %}<hr>{% endif %}
 		
 		{% endfor %}
 	</div>
 
 	<div class="col-md-1 hidden-xs hidden-sm" id="nav-parent">
 
-		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110">
+		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" style="height:70%;overflow-y:scroll;overflow-x:visible;">
 			{% for c in classes %}
-			<li><a class='sidebar-link' href="#books_{{ c.replace('.','') }}">{{ c }}</a></li>
+			<li><a class='sidebar-link' href="#{{ c.replace('.','') }}">{{ c }}</a></li>
 			{% endfor %}
 		</ul>
 
