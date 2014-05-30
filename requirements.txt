@@ -16,6 +16,7 @@ futures==2.1.6
 gevent==1.0.1
 greenlet==0.4.2
 gunicorn==18.0
+hashids==1.0.0
 html5lib==0.999
 itsdangerous==0.24
 lxml==3.3.5
