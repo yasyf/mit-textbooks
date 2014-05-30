@@ -859,9 +859,11 @@ def get_sorted_classes(original_filters):
 def gen_short_url(view, args):
 	hashids = Hashids(salt=view+str(hash(frozenset(args))))
 	_hash = hashids.encrypt(len(args))
-	previous = shortlinks.find_one({'hash': _hash})
+	previous = shortlinks.find_one({'hash': _hash}) or shortlinks.find_one({'view': view, 'args': args})
 	if not previous:
 		shortlinks.insert({'view': view, 'args': args, 'hash': _hash})
+	else:
+		_hash = previous['hash']
 	return url_for('short_url_view', _hash=_hash, _external=True)
 
 def expand_short_url(_hash):
