@@ -824,25 +824,31 @@ def get_asin_from_hash(_hash):
 	return base64.b64decode(_hash)
 
 def get_sorted_classes(original_filters):
+	if not original_filters:
+		return {}
 	key_replacements = {'prereq': 'prereqs', 'coreq': 'coreqs'}
 	val_replacements = {'true': True, 'false': False, 'none': None}
 	filters = {}
 	for key, value in original_filters.iteritems():
-		value = value.split(',')
-		value = [val_replacements[v.lower()] if v.lower() in val_replacements else v for v in value]
-		if key.lower() in key_replacements:
-			key = key_replacements[key.lower()]
+		try:
+			value = value.split(',')
+			value = [val_replacements[v.lower()] if v.lower() in val_replacements else v for v in value]
+			if key.lower() in key_replacements:
+				key = key_replacements[key.lower()]
+		except AttributeError:
+			value = [value]
 		filters[key] = value
 	all_classes = []
 	proto = classes.find_one({key:{'$exists': True} for key in filters})
 	if not proto:
 		return []
 	constraints = []
-	for key in filters:
+	for key, value in filters.iteritems():
 		if hasattr(proto[key], '__iter__'):
 			constraints.append({key: {'$in': value}})
 		else:
 			constraints.append({'$or': [{key: v} for v in value]})
+	print json.dumps({'$and': constraints})
 	good_classes = set([x['class'] for x in classes.find({'$and': constraints})])
 	for c in rankings.find().sort('rating', -1):
 		if c['class'] in good_classes:
