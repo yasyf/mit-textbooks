@@ -115,7 +115,7 @@ function walkDom() {
 	mit_textbooks_current_html = document.documentElement.innerHTML;
 }
 
-if (document.domain === "textbooksearch.mit.edu") {
+if (document.domain === "textbooksearch.mit.edu" || document.getElementById('mit-tb-home')) {
 	installP = document.getElementById('mit-tb-cr-ext');
 	if (installP) {
 		installP.style.display = 'none';
