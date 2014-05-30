@@ -2,6 +2,7 @@
 
 from setup import *
 import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach, csv, StringIO, base64
+from hashids import Hashids
 from flask import g, flash, url_for, request
 from bs4 import BeautifulSoup
 from lxml import objectify
@@ -854,3 +855,16 @@ def get_sorted_classes(original_filters):
 		if c['class'] in good_classes:
 			all_classes.append(c)
 	return all_classes
+
+def gen_short_url(view, args):
+	hashids = Hashids(salt=view+str(hash(frozenset(args))))
+	_hash = hashids.encrypt(len(args))
+	previous = shortlinks.find_one({'hash': _hash})
+	if not previous:
+		shortlinks.insert({'view': view, 'args': args, 'hash': _hash})
+	return url_for('short_url_view', _hash=_hash, _external=True)
+
+def expand_short_url(_hash):
+	info = shortlinks.find_one({'hash': _hash})
+	info['args']['_external'] = True
+	return url_for(info['view'], **info['args'])

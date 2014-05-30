@@ -125,11 +125,17 @@ def class_kv_view(key, value):
 @app.route('/classes/filter', methods=['GET','POST'])
 @modifiers.cache_for(weeks=4)
 def classes_filter_view():
+	filters = request.values.get('filters', '{}')
 	try:
-		sorted_classes = get_sorted_classes(json.loads(request.values.get('filters', '{}')))
+		sorted_classes = get_sorted_classes(json.loads(filters))
 	except Exception as e:
 		return jsonify({'error': 'malformed json', 'message': str(e)})
-	return jsonify({'sorted_classes': [url_for('class_view', class_id=c['class'], _external=True) for c in sorted_classes]})
+	short_url = gen_short_url('classes_filter_view', {'filters': filters})
+	return jsonify({'sorted_classes': [url_for('class_view', class_id=c['class'], _external=True) for c in sorted_classes], 'short_url': short_url})
+
+@app.route('/short/<_hash>')
+def short_url_view(_hash):
+	return redirect(expand_short_url(_hash))
 
 @app.route('/check/<class_id>')
 def check_view(class_id):

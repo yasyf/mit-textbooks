@@ -15,7 +15,6 @@ def get_accept_function(i):
 	def f3(c):
 		course = c.split('.')[0]
 		return not course.isdigit()
-
 	return {1: f1, 2: f2, 3: f3}[i]
 
 def fail_mail(e):
