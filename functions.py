@@ -823,21 +823,27 @@ def upload_static(app):
 def get_asin_from_hash(_hash):
 	return base64.b64decode(_hash)
 
-def get_sorted_classes(key, value):
-	value = value.split(',')
-	replacements = {'true': True, 'false': False, 'none': None}
-	for v in value:
-		if v.lower() in replacements:
-			v = replacements[v.lower()]
+def get_sorted_classes(original_filters):
+	key_replacements = {'prereq': 'prereqs', 'coreq': 'coreqs'}
+	val_replacements = {'true': True, 'false': False, 'none': None}
+	filters = {}
+	for key, value in original_filters.iteritems():
+		value = value.split(',')
+		value = [val_replacements[v.lower()] if v.lower() in val_replacements else v for v in value]
+		if key.lower() in key_replacements:
+			key = key_replacements[key.lower()]
+		filters[key] = value
 	all_classes = []
-	proto = classes.find_one({key: {'$exists': True}})
+	proto = classes.find_one({key:{'$exists': True} for key in filters})
 	if not proto:
 		return []
-	if hasattr(proto[key], '__iter__'):
-		constraints = {key: {'$in': value}}
-	else:
-		constraints = {'$or': [{key: v} for v in value]}
-	good_classes = set([x['class'] for x in classes.find(constraints)])
+	constraints = []
+	for key in filters:
+		if hasattr(proto[key], '__iter__'):
+			constraints.append({key: {'$in': value}})
+		else:
+			constraints.append({'$or': [{key: v} for v in value]})
+	good_classes = set([x['class'] for x in classes.find({'$and': constraints})])
 	for c in rankings.find().sort('rating', -1):
 		if c['class'] in good_classes:
 			all_classes.append(c)

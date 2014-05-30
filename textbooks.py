@@ -115,12 +115,17 @@ def textbooks_view():
 @app.route('/classes/filter/all')
 @modifiers.cache_for(weeks=4)
 def all_classes_view():
-	return render_template('all_classes.html', classes=get_sorted_classes('error', 'None'))
+	return render_template('all_classes.html', classes=get_sorted_classes({'error': 'None'}))
 
 @app.route('/classes/filter/<key>/<value>')
 @modifiers.cache_for(weeks=4)
 def class_kv_view(key, value):
-	return render_template('classes_kv.html', k=key.upper(), v=value, classes=get_sorted_classes(key, value))
+	return render_template('classes_kv.html', k=key.upper(), v=value, classes=get_sorted_classes({key: value}))
+
+@app.route('/classes/filter', methods=['POST'])
+@modifiers.cache_for(weeks=4)
+def classes_filter_view():
+	return render_template('all_classes.html', classes=get_sorted_classes({'error': 'None'}))
 
 @app.route('/check/<class_id>')
 def check_view(class_id):
