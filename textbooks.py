@@ -134,6 +134,7 @@ def classes_filter_view():
 	return jsonify({'sorted_classes': [url_for('class_view', class_id=c['class'], _external=True) for c in sorted_classes], 'short_url': short_url})
 
 @app.route('/short/<_hash>')
+@modifiers.cache_for(weeks=4)
 def short_url_view(_hash):
 	return redirect(expand_short_url(_hash))
 

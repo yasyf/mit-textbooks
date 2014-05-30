@@ -70,6 +70,7 @@ class MITClass():
 		d['hass'] = self.hass
 		d['semesters'] = self.semesters
 		d['units'] = self.units
+		d['credits'] = sum(self.units)
 		d['instructors'] = self.instructors
 		d['stellar_url'] = self.stellar_url
 		d['class_site'] = self.class_site
