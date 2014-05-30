@@ -1,7 +1,7 @@
 {
   "name": "MIT Textbooks",
   "short_name": "MIT Textbooks",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "manifest_version": 2,
   "description": "Clickable class names on any website!",
   "author": "Yasyf Mohamedali",
@@ -25,6 +25,8 @@
       "exclude_matches": [
         "*://stellar.mit.edu/*",
         "*://*/owa/*"
+        "*://0.0.0.0:*/*"
+        "*://localhost:*/*"
       ],
       "js": [
         "jquery-2.1.1.min.js",
