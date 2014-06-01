@@ -8,13 +8,13 @@ import multiprocessing, gc
 def get_accept_function(i):
 	def f1(c):
 		course = c.split('.')[0]
-		return course.isdigit() and int(course) in range(1,16) and int(course) != 6
+		return course.isdigit() and int(course) in range(1,14) and not int(course) in {6, 8}
 	def f2(c):
 		course = c.split('.')[0]
 		return course.isdigit() and (int(course) == 6 or int(course) in range(16,25))
 	def f3(c):
 		course = c.split('.')[0]
-		return not course.isdigit()
+		return not course.isdigit() or (course.isdigit() and int(course) in {8, 14, 15})
 	return {1: f1, 2: f2, 3: f3}[i]
 
 def fail_mail(e):
