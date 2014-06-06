@@ -497,7 +497,7 @@ def get_textbook_info(class_id, semesters):
 			if 'Course Has No Materials' in book['title']:
 				continue
 			book['title'] = process_title(book['title'], book['author'], titles)
-			book['retail'] = book['price'].replace("$","")
+			book['retail'] = book['price'].replace("$","").replace(',','')
 			del book['price']
 			amazon_info = get_amazon_info(book['isbn'], book['title'], book['author'])
 			book = dict(book.items() + amazon_info.items())
@@ -600,8 +600,8 @@ def get_amazon_info(isbn, title, author):
 	except AttributeError:
 		pass
 	try:
-		d['new'] = (product.OfferSummary.LowestNewPrice.FormattedPrice.text).replace("$","")
-		d['used'] = (product.OfferSummary.LowestUsedPrice.FormattedPrice.text).replace("$","")
+		d['new'] = (product.OfferSummary.LowestNewPrice.FormattedPrice.text).replace("$","").replace(',','')
+		d['used'] = (product.OfferSummary.LowestUsedPrice.FormattedPrice.text).replace("$","").replace(',','')
 		d['availability'] = product.Offers.Offer.OfferListing.Availability.text
 	except AttributeError:
 		pass
