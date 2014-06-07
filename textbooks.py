@@ -53,12 +53,12 @@ def preprocess_request():
 	else:
 		g.scraper = False
 
-	email = session.get('email') or request.cookies.get('id_email')
+	email = session.get('email') or urllib.unquote(request.cookies.get('id_email',''))
 	if email:
-		email = urllib.unquote(email)
-		name = urllib.unquote(request.cookies.get('id_name',''))
+		name = session.get('name') or urllib.unquote(request.cookies.get('id_name',''))
 		g.user = get_user(email, name)
 		session['email'] = email
+		session['name'] = g.user.name
 	else:
 		g.user = None
 
@@ -343,6 +343,7 @@ def login_view():
 			if user.check_password(password):
 				g.user = user
 				session['email'] = email
+				session['name'] = user.name
 				g.user.reset_mobile_lockout()
 				flash('You are now logged in!', 'success')
 				return redirect(url_for('account_view'))

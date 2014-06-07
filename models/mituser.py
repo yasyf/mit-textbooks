@@ -14,7 +14,7 @@ class MITUser():
 			users.update({'_id': self.obj['_id']}, {'$set': {'dt': datetime.datetime.utcnow()}})
 		if self.obj:
 			self.recents = self.obj['recents']
-			self.name = self.obj['name']
+			self.name = self.obj['name'] or name
 
 	def get_id(self):
 		return self.email
