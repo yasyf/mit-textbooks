@@ -3,7 +3,7 @@
 {% block body %}
 <h1>Mobile Login</h1>
 
-<form class='form-horizontal' role='form' method="POST" action="{{ url_for('login_view') }}">
+<form id='login_form' class='form-horizontal' role='form' method="POST" action="{{ url_for('login_view') }}">
 	<div class='form-group'>
 		<label for='email' class='col-sm-2 control-label'>Email</label>
 		<div class="col-sm-10">
@@ -18,7 +18,7 @@
 	</div>
 	<div class='form-group'>
 		 <div class="col-sm-offset-2 col-sm-10">
-			<input type='submit' id='login_submit' class='form-control btn btn-primary' ></input>
+			<input type='submit' id='login_submit' value="Login" class='form-control btn btn-primary'></input>
 		</div>
 	</div>
 </form>
