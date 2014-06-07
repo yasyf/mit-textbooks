@@ -35,6 +35,9 @@ if [[ WEB -eq 1 ]]; then
 	git push heroku web_procfile:master --force
 	git checkout master
 	git branch -D web_procfile
+	for i in `seq 1 10`; do
+        curl -s 'http://textbooksearch.mit.edu/' > /dev/null &
+    done
 fi
 
 if [[ RECOMMENDERS -eq 1 ]]; then
