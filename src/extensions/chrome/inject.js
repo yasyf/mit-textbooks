@@ -9,7 +9,7 @@ function checkNode(node) {
 	if (node.attr('data-tb') === 'replaced') {
 		return false;
 	}
-	if ($.inArray(node.prop("tagName"), excludes) !== -1) {
+	if ($.inArray(node.prop("tagName").toLowerCase(), excludes) !== -1) {
 		return false;
 	}
 	if ($.inArray(node.attr('role'), bad_roles) !== -1) {
