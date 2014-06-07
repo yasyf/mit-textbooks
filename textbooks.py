@@ -326,7 +326,7 @@ def account_view():
 				url = url_for('account_view', _external=True)
 				return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids), override_url=url))
 	session['loading'] = None
-	if g.user.is_mobile_locked_out():
+	if g.user and g.user.is_mobile_locked_out():
 		flash('Your mobile account was locked out, and has now been re-enabled')
 		g.user.reset_mobile_lockout()
 	return render_template('account.html')
