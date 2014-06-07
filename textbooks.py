@@ -604,6 +604,10 @@ def get_display_names_filter(classes):
 def get_half_star_filter(i):
 	return float('.'+str(i).split('.')[-1]) > 0.5
 
+@app.template_filter('get_cache_buster')
+def get_cache_buster_filter(s):
+	return os.environ.get('REV', '')
+
 if __name__ == '__main__':
 	if os.environ.get('PORT'):
 		app.run(host='0.0.0.0',port=int(os.environ.get('PORT')),debug=dev)

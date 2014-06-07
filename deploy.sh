@@ -27,6 +27,7 @@ esac
 
 if [[ WEB -eq 1 ]]; then
 	echo "Deploying Web"
+	heroku config:set REV=$(git rev-parse HEAD) --app mit-textbooks
 	git checkout -b web_procfile
 	echo "web: ./web.sh" > Procfile
 	git add Procfile
