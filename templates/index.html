@@ -10,25 +10,36 @@
 {% endblock %}
 {% block js %}<script src="{{ url_for('static', filename='js/jquery.easy-ticker.min.js') }}"></script>{% endblock %}
 {% block body %}
-<p>
+<p class='hide-on-native'>
 	MIT Textbooks is a search engine for all your classes, as well as a marketplace for buying and selling new and used textbooks from other MIT students and online vendors. We try to find you the best price, as well as the most convenient delivery options for all your class textbooks.
 </p>
-<p>
+<p class='hide-on-native'>
 	Don't forget, as an MIT student, you also get access to <strong>free</strong> two-day shipping with <a href="{{ url_for('amazon_prime_student_view') }}" target="_blank">Amazon Prime Student</a>.
 </p>
-<p>
+<p class='hide-on-native'>
 	Searching for a class pulls up all the information you could ever want, along with links to the cheapest copies of the textbooks available online. If you search for a group of classes, you can also export them to CourseRoad, name and share them, or view and export them to your calendar.
 </p>
 <p>
 	Use search bar above to find a class. You can search for multiple classes by separating them with a comma.
 </p>
-<p id='mit-tb-cr-ext'>
+<p id='mit-tb-cr-ext' class='hide-on-native'>
 	Check out our <a onclick='showExtension();' class='btn btn-primary btn-xs'>Chrome Extension</a> for clickable class names on any website.
 </p>
-<p>
+<p class='hide-on-native'>
 	If you find the site useful, be sure to tell your friends and give us a like on Facebook!
 </p>
-<div class="fb-like" data-send="false" data-width="450" data-href="https://www.facebook.com/MITTextbooks" data-layout="standard" data-action="like" data-show-faces="true" data-share="false"></div>
+<div class='hide-on-native'>
+	<div
+	class="fb-like"
+	data-send="false"
+	data-width="450"
+	data-href="https://www.facebook.com/MITTextbooks"
+	data-layout="standard"
+	data-action="like"
+	data-show-faces="true"
+	data-share="false">
+	</div>
+</div>
 <hr style="margin-top: 15px;">
 
 <div class="panel panel-default">
