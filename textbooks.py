@@ -342,17 +342,26 @@ def login_view():
 			if user.check_password(password):
 				g.user = user
 				session['email'] = email
+				g.user.reset_mobile_lockout()
 				flash('You are now logged in!', 'success')
 				return redirect(url_for('account_view'))
 			else:
 				session['email'] = False
-				flash('Your password was incorrect', 'danger')
+				if user.is_mobile_locked_out():
+					flash('You account has been locked out. Login on desktop to restore access.', 'danger')
+					return(redirect(url_for('forgot_view')))
+				flash('Your password was incorrect.', 'danger')
+
 		else:
 			session['email'] = False
-			flash('That user does not exist', 'danger')
+			flash('That user does not exist.', 'danger')
 		return redirect(url_for('login_view'))	
 	else:
 		return render_template('login.html')
+
+@app.route('/forgot')
+def forgot_view():
+	return render_template('forgot.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout_view():
