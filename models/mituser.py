@@ -21,7 +21,7 @@ class MITUser():
 
 	def get_password(self):
 		secret = os.environ['sk']
-		weekday = str(datetime.datetime.utcnow().isocalendar()[1])
+		weekday = str(datetime.datetime.utcnow().isocalendar()[2])
 		obj_id = str(self.obj['_id'])
 		i = abs(hash(weekday + secret + obj_id))
 		return str(i)[:5]
