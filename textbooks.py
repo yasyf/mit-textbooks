@@ -334,6 +334,7 @@ def account_view():
 @app.route('/login', methods=['GET', 'POST'])
 def login_view():
 	g.user = None
+	session['email'] = None
 	if request.method == 'POST':
 		email = request.form.get('email')
 		password = request.form.get('password')

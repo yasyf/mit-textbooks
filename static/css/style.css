@@ -54,6 +54,10 @@ blockquote{
 	padding-right: 5px;
 }
 
+.show-on-native {
+	display: none;
+}
+
 @media only screen and (min-width : 993px) and (max-width : 1200px) {
 	.rec span:nth-child(n+4) {
 		display: none;
