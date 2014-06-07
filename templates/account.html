@@ -25,6 +25,20 @@
 {% endif %}
 
 <div class="panel panel-default">
+	<div class="panel-heading">Mobile Login Details</div>
+	<div class="list-group">
+		<a class="list-group-item">
+			<h4 class="list-group-item-heading">Username</h4>
+			<p class="list-group-item-text">{{ g.user.get_id() }}</p>
+		</a>
+		<a class="list-group-item">
+			<h4 class="list-group-item-heading">Password</h4>
+			<p class="list-group-item-text">{{ g.user.get_password() }}</p>
+		</a>
+	</div>	
+</div>
+
+<div class="panel panel-default">
 	<div class="panel-heading">Postings</div>
 	<div class="list-group">
 		{% for offer in g.user.get_postings() %}

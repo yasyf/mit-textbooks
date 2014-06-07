@@ -53,11 +53,12 @@ def preprocess_request():
 	else:
 		g.scraper = False
 
-	email = request.cookies.get('id_email')
+	email = session.get('email') or request.cookies.get('id_email')
 	if email:
 		email = urllib.unquote(email)
 		name = urllib.unquote(request.cookies.get('id_name',''))
 		g.user = get_user(email, name)
+		session['email'] = email
 	else:
 		g.user = None
 
@@ -325,7 +326,39 @@ def account_view():
 				url = url_for('account_view', _external=True)
 				return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids), override_url=url))
 	session['loading'] = None
+	if g.user.is_mobile_locked_out():
+		flash('Your mobile account was locked out, and has now been re-enabled')
+		g.user.reset_mobile_lockout()
 	return render_template('account.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login_view():
+	g.user = None
+	if request.method == 'POST':
+		email = request.form.get('email')
+		password = request.form.get('password')
+		user = get_user(email, None, create=False)
+		if user.is_logged_in():
+			if user.check_password(password):
+				g.user = user
+				session['email'] = email
+				flash('You are now logged in!', 'success')
+				return redirect(url_for('account_view'))
+			else:
+				session['email'] = False
+				flash('Your password was incorrect', 'danger')
+		else:
+			session['email'] = False
+			flash('That user does not exist', 'danger')
+		return redirect(url_for('login_view'))	
+	else:
+		return render_template('login.html')
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout_view():
+	g.user = None
+	session['email'] = None
+	return redirect(url_for('index_view'))
 
 @app.route('/search', methods=['POST', 'GET'])
 def search_view():
