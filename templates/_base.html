@@ -164,7 +164,7 @@
   });
   $("#search_input").focus(function(e) { $(this).select(); });
   $("#search_input").mouseup(function(e) { e.preventDefault(); });
-  $("#search_input").bind("typeahead:selected", function(e,s) { $('#search').submit(); });
+  $("#search_input").bind("typeahead:selected", function(e,s) { $('#search_oid').val(s._id.$oid); $('#search').submit(); });
   </script>
 </body>
 </html>

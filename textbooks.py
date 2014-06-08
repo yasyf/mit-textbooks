@@ -195,6 +195,16 @@ def loading_view(class_ids, override_url=None):
 			flash(message, 'danger')
 	return render_template('loading.html', class_ids=class_ids, classes=statuses, percent=percent, url=override_url if override_url else url, t=t, can_blacklist=can_blacklist, penalty=penalty)
 
+@app.route('/class/oid/<_id>')
+@modifiers.cache_for(weeks=4)
+def class_oid_view(_id):
+	c = classes.find_one({'_id': ObjectId(_id)})
+	if c:
+		return redirect(url_for('class_view', class_id=c['class']))
+	else:
+		session['404'] = None
+		return redirect(url_for('_404_view'))
+
 @app.route('/class/<class_id>')
 @modifiers.cache_for(hours=12)
 def class_view(class_id):
@@ -374,8 +384,9 @@ def logout_view():
 def search_view():
 	if request.method == 'GET':
 		return redirect(url_for('index_view'))
+	_id = request.form.get('_id') 
 	search_term = request.form.get('search_term')
-	return go_view(search_term)
+	return go_view(search_term, _id=_id)
 
 @app.route('/opensearchdescription.xml')
 def opensearchdescription_view():
@@ -408,7 +419,9 @@ def popover_view(class_id):
 	return jsonify(popover(format_class(class_id)))
 
 @app.route('/go/<search_term>')
-def go_view(search_term):
+def go_view(search_term, _id=None):
+	if _id:
+		return redirect(url_for('class_oid_view', _id=_id))
 	classes = [format_class(c) for c in search_term.split(',')]
 	if len(classes) == 1:
 		if request_wants_json():
