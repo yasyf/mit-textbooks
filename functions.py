@@ -82,7 +82,7 @@ def get_class(class_id):
 	class_id = format_class(class_id)
 	if class_id in class_objects:
 		return class_objects[class_id]
-	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]})
+	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
 	if class_info:
 		if 'error' in class_info:
 			return None
@@ -102,7 +102,7 @@ def get_class(class_id):
 	classes.insert({"class": class_id, "error": 404, 'dt': time.time()})
 
 def update_textbooks(class_id):
-	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]})
+	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
 	class_info['textbooks'] = get_textbook_info(class_info['class'], class_info['semesters'])
 	classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
 
@@ -117,10 +117,17 @@ def get_group(group_id):
 		return group_obj
 
 def format_class(c):
-	c = c.upper()
-	if c and c[-1] == 'J':
-		c = c[:-1]
-	return c.split(',')[0].strip()
+	if not c:
+		return c
+	c = c.strip()
+	c_up = c.upper()
+	if re.match(CLASS_REGEX, c_up):
+		c = c_up
+		if c[-1] == 'J':
+			c = c[:-1]
+		return c.split(',')[0].strip()
+	else:
+		return c
 
 def is_int(value):
   try:
@@ -205,7 +212,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		
 		old_class = classes.find_one({'class': class_info['class']})
 		if old_class:
-			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id}})
+			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
 			return classes.find_one({'class': class_info['class']})
 
 		when = []
@@ -265,7 +272,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['class_site'] = get_class_site(class_id)
 		class_info['evaluation'] = get_subject_evaluation(class_id)
 		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
-		class_info['search_term'] = [class_id]
+		class_info['search_term'] = [class_id.lower()]
 		return class_info
 	except Exception:
 		return
@@ -641,7 +648,7 @@ def check_class_json(class_id):
 	return {'loaded': loaded}
 
 def check_class(class_id):
-	loaded = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id]}}]}) != None
+	loaded = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]}) != None
 	return loaded
 
 def check_group(class_ids):
