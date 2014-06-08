@@ -51,8 +51,12 @@ def calculate_similarity(c1, c2):
 		else:
 			dists.append(float(class_1_f != class_2_f))
 	for f in bool_fields_deep:
-		class_1_f = class1[f] if f in class1 else None
-		class_2_f = class2[f] if f in class2 else None
+		if hasattr(f, '__iter__'):
+			class_1_f = class1[f[0]][f[1]] if f[0] in class1 and f[1] in class1[f[0]] else None
+			class_2_f = class2[f[0]][f[1]] if f[0] in class2 and f[1] in class2[f[0]] else None
+		else:
+			class_1_f = class1[f] if f in class1 else None
+			class_2_f = class2[f] if f in class2 else None
 		if class_1_f is None or class_2_f is None or len(class_1_f)+len(class_2_f) == 0:
 			dists.append(0.0)
 		else:
@@ -179,7 +183,7 @@ if __name__ == '__main__':
 	data = dict(zip(all_c, all_classes))
 	distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
 	bool_fields = ['course', 'grad', 'hass']
-	bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters']
+	bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters', ('meta','keywords'), ('meta','entities')]
 	custom_fields = ['name', 'description', 'in_groups', 'in_history', 'less_advanced']
 	fields = distance_fields + bool_fields + bool_fields_deep + custom_fields
 
