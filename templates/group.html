@@ -39,6 +39,7 @@
 </p>
 <hr>
 {% for class_obj in classes %}
+{% set rec = recs[loop.index0] %}
 {% include '_class.html' %}
 {% if not loop.last %}
 <hr>

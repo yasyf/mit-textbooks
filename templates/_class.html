@@ -5,6 +5,7 @@
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
 	<button type="button" class="btn btn-primary btn-sm" onclick="embedly.modal();">Embed</button>
 </p>
+{% endif %}
 {% if rec %}
 <hr>
 <div class='rec'>
@@ -13,7 +14,6 @@
 	<span><a href="{{ url_for('class_view', class_id=r.id) }}">{{ r.display_name(short=True)|safe }}</a></span>
 	{% endfor %}
 </div>
-{% endif %}
 <hr>
 
 {% endif %}

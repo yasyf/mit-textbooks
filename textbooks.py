@@ -211,9 +211,7 @@ def class_view(class_id):
 	if not g.scraper:
 		update_recents_with_class(class_obj)
 	g.search_val = class_id
-	rec = class_obj.get_rec(g.user)
-	if rec:
-		rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
+	rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
 	return render_template('class.html', class_obj=class_obj, rec=rec)
 
 @app.route('/calendar/<group_id>')
@@ -279,7 +277,8 @@ def group_view(group_id):
 		classes = ', '.join(overlaps[:-1]) + ' and ' + overlaps[-1] if len(overlaps) > 1 else ' and '.join(overlaps) if len(overlaps) == 2 else overlaps[0]
 		flash(classes + ' have conflicting lecture times!', 'warning')
 	g.search_val = ', '.join(g_filtered_ids)
-	return render_template('group.html', classes=g_filtered, group_obj=group_obj)
+	recs = [[get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)] for class_obj in g_filtered]
+	return render_template('group.html', classes=g_filtered, group_obj=group_obj, recs=recs)
 
 @app.route('/name_group/<group_id>/<group_name>')
 def name_group_view(group_id, group_name):

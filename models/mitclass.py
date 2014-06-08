@@ -274,7 +274,7 @@ class MITClass():
 			if current:
 				return current['default']['class_ids'][:-1]
 			else:
-				return None
+				return []
 
 		if user:
 			uid = user.get_id().split("@")[0]
