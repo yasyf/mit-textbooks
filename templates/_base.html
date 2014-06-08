@@ -44,6 +44,8 @@
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.2/typeahead.jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/algoliasearch/2.5.2/algoliasearch.min.js"></script>
   
   {% block js %}{% endblock %}
 
@@ -140,6 +142,29 @@
   </script>
     <script>
    $('.popover_activate').popover();
+  </script>
+  <script>
+  client = new AlgoliaSearch('XBE4YTW1TS', '7a8a7ecc7cf2935949f179ba1567aef1');
+  index = client.initIndex('classes');
+  $('#search_input').typeahead(
+    {
+      highlight: true,
+      hint: true
+    },
+    {
+      source: index.ttAdapter(),
+      displayKey: 'class',
+      templates: {
+        suggestion: function (suggestion) {
+          name = suggestion.short_name ? suggestion.short_name : suggestion.name;
+          inner = suggestion.class + ' <small>' + name.substring(0,15-suggestion.class.length) + '</small>';
+          return '<p class="algolia">' + inner + '</p>'
+        }
+      }
+  });
+  $("#search_input").focus(function(e) { $(this).select(); });
+  $("#search_input").mouseup(function(e) { e.preventDefault(); });
+  $("#search_input").bind("typeahead:selected", function(e,s) { $('#search').submit(); });
   </script>
 </body>
 </html>

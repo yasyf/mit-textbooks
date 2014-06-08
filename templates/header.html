@@ -9,7 +9,7 @@
       </button>
       <a class="navbar-brand" href="{{ url_for('index_view') }}"><img src="{{ url_for('static', filename='images/mit.png') }}" class='mit_logo' alt='MIT'> Textbooks</a>
     </div>
-    <div class="collapse navbar-collapse">
+    <div class="collapse navbar-collapse" id='search_div'>
     	{% if not hide_search %}
       <form action="{{ url_for('search_view') }}" method="POST" class="navbar-form navbar-right has-error" id="search" role="search">
     		<div class="form-group">
