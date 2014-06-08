@@ -7,7 +7,7 @@ class MITUser():
 		self.name = name
 		self.obj = users.find_one({"email": self.email})
 		if not self.obj:
-			if create:
+			if create and self.email and self.name:
 				users.insert({"name": self.name, "email": self.email, "dt": datetime.datetime.utcnow(), 'recents': []})
 				self.obj = users.find_one({"email": self.email})
 		elif self.obj['dt'] < (datetime.datetime.utcnow() - datetime.timedelta(days=1)):
