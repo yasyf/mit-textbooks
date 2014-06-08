@@ -117,9 +117,13 @@ def get_embedly_info(class_site):
 	url = class_site[1]
 
 	result = client.make_request('extract', url=url)
-	entities = [x['name'] for x in result['entities'][:min(5,len(result['entities']))] if text_exclude(x['name'])]
-	keywords = [x['name'] for x in result['keywords'][:min(5,len(result['keywords']))] if text_exclude(x['name'])]
-	description = result['description']
+
+	entities = result.get('entities',[])
+	keywords = result.get('keywords',[])
+
+	entities = [x['name'] for x in entities[:min(5,len(entities))] if text_exclude(x['name'])]
+	keywords = [x['name'] for x in keywords[:min(5,len(keywords))] if text_exclude(x['name'])]
+	description = result.get('description','')
 
 	c['entities'] = entities
 	c['keywords'] = keywords
