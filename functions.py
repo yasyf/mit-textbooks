@@ -107,6 +107,7 @@ def get_embedly_info(class_site):
 	excludes = {'mit', 'exam', 'recitation', 'homework', 'pset', 'course', 'class', 'stellar'}
 	c = {}
 	def text_exclude(s):
+		s = s.lower()
 		for x in excludes:
 			if s in x or x in s:
 				return False
@@ -118,9 +119,11 @@ def get_embedly_info(class_site):
 	result = client.make_request('extract', url=url)
 	entities = [x['name'] for x in result['entities'][:min(5,len(result['entities']))] if text_exclude(x['name'])]
 	keywords = [x['name'] for x in result['keywords'][:min(5,len(result['keywords']))] if text_exclude(x['name'])]
+	description = result['description']
 
 	c['entities'] = entities
 	c['keywords'] = keywords
+	c['description'] = description
 
 	return c
 		
@@ -296,7 +299,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['class_site'] = get_class_site(class_id)
 		class_info['evaluation'] = get_subject_evaluation(class_id)
 		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
-		class_info_cleaned['meta'] = get_embedly_info(c['class_site'])
+		class_info_cleaned['meta'] = get_embedly_info(class_info['class_site'])
 		class_info['search_term'] = [class_id.lower()]
 		return class_info
 	except Exception:
@@ -320,7 +323,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evaluation(class_info['id'])
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
-	class_info_cleaned['meta'] = get_embedly_info(c['class_site'])
+	class_info_cleaned['meta'] = get_embedly_info(class_info_cleaned['class_site'])
 	class_info_cleaned['search_term'] = []
 	if lecture_info:
 		data = lecture_info['timeAndPlace'].split(' ')

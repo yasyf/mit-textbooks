@@ -49,7 +49,8 @@ class MITClass():
 		self.textbooks = class_info['textbooks']
 		self.search_term = class_info['search_term']
 		self.grad = class_info['grad'] if 'grad' in class_info else False
-		self._image = None
+		self._image = class_info.get('image') or self.image()
+		self.meta = class_info.get('meta')
 
 	def __repr__(self):
 		return "<MITClass {c}>".format(c=self.id)
@@ -78,6 +79,8 @@ class MITClass():
 		d['textbooks'] = self.textbooks
 		d['search_term'] = self.search_term
 		d['grad'] = self.grad
+		d['image'] = self._image
+		d['meta'] = self.meta
 		return d
 
 	def to_recents_dict(self):
@@ -95,7 +98,7 @@ class MITClass():
 		return d
 
 	def image(self):
-		if self._image:
+		if hasattr(self,"_image"):
 			return self._image
 		for section in self.textbooks['sections'].values():
 			for book in section:

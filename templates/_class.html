@@ -77,5 +77,10 @@
 	<div class="panel-heading">MIT {{ class_obj.display_name()|safe }} On The Web</div>
 	<div class="panel-body">
 		<a class="embedly-card" href="{{ class_obj.class_site[1] }}">{{ class_obj.class_site[0] }}</a>
+		{% if class_obj.meta %}
+		<noscript>
+			{{ class_obj.meta.description|safe }}
+		</noscript>
+		{% endif %}
 	</div>
 </div>
