@@ -10,6 +10,7 @@ from bson.objectid import ObjectId
 from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
 from models.mituser import MITUser
+from api import CachedAPI
 
 class_objects = {}
 group_objects = {}
@@ -100,6 +101,29 @@ def get_class(class_id):
 		classes.update({"class": class_obj.id}, {"$set": class_obj.to_dict()}, upsert=True)
 		return class_obj
 	classes.insert({"class": class_id, "error": 404, 'dt': time.time()})
+
+def get_embedly_info(class_site):
+	endpoint = "http://api.embed.ly/1"
+	excludes = {'mit', 'exam', 'recitation', 'homework', 'pset', 'course', 'class', 'stellar'}
+	c = {}
+	def text_exclude(s):
+		for x in excludes:
+			if s in x or x in s:
+				return False
+		return True
+
+	client = CachedAPI(endpoint, ('key', os.getenv('EMBEDLY_KEY')))
+	url = class_site[1]
+
+	result = client.make_request('extract', url=url)
+	entities = [x['name'] for x in result['entities'][:min(5,len(result['entities']))] if text_exclude(x['name'])]
+	keywords = [x['name'] for x in result['keywords'][:min(5,len(result['keywords']))] if text_exclude(x['name'])]
+
+	c['entities'] = entities
+	c['keywords'] = keywords
+
+	return c
+		
 
 def update_textbooks(class_id):
 	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
@@ -272,6 +296,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['class_site'] = get_class_site(class_id)
 		class_info['evaluation'] = get_subject_evaluation(class_id)
 		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
+		class_info_cleaned['meta'] = get_embedly_info(c['class_site'])
 		class_info['search_term'] = [class_id.lower()]
 		return class_info
 	except Exception:
@@ -295,6 +320,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['class_site'] = get_class_site(class_info['id'])
 	class_info_cleaned['evaluation'] = get_subject_evaluation(class_info['id'])
 	class_info_cleaned['textbooks'] = get_textbook_info(class_info['id'], class_info_cleaned['semesters'])
+	class_info_cleaned['meta'] = get_embedly_info(c['class_site'])
 	class_info_cleaned['search_term'] = []
 	if lecture_info:
 		data = lecture_info['timeAndPlace'].split(' ')

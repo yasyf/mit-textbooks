@@ -3,6 +3,7 @@
 {% if not group_obj %}
 <p>
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
+	<button type="button" class="btn btn-primary btn-sm" onclick="embedly.modal();">Embed</button>
 </p>
 {% if rec %}
 <hr>
@@ -72,6 +73,9 @@
 </div>
 {% endfor %}
 
-<script>
-$('.popover_activate').popover();
-</script>
+<div class="panel panel-default">
+	<div class="panel-heading">MIT {{ class_obj.display_name()|safe }} On The Web</div>
+	<div class="panel-body">
+		<a class="embedly-card" href="{{ class_obj.class_site[1] }}">{{ class_obj.class_site[0] }}</a>
+	</div>
+</div>
