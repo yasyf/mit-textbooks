@@ -216,6 +216,13 @@ def fetch_class_info(class_id):
 		class_info =  manual_class_scrape(class_id)
 		if not class_info:
 			class_info = manual_class_scrape(class_id, url=LAST_CATALOG)
+		if not class_info:
+			old_class_id = algolia.search(class_id, { "hitsPerPage": 1 })['hits'][0]['objectID']
+			old_class = classes.find_one({'_id': ObjectId(old_class_id)})
+			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
+			c = classes.find_one({'class': old_class['class']})
+			algolia.partialUpdateObject({'objectID': str(c['_id']), "search_term": c['search_term']})
+			class_info = c
 		return class_info
 
 def custom_parse_instructors(instructors):
@@ -250,7 +257,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		old_class = classes.find_one({'class': class_info['class']})
 		if old_class:
 			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
-			c = classes.find_one({'class': class_info['class']})
+			c = classes.find_one({'class': old_class['class']})
 			algolia.partialUpdateObject({'objectID': str(c['_id']), "search_term": c['search_term']})
 			return c
 
