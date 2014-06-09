@@ -200,7 +200,11 @@ def loading_view(class_ids, override_url=None):
 def class_oid_view(_id):
 	c = classes.find_one({'_id': ObjectId(_id)})
 	if c:
-		return redirect(url_for('class_view', class_id=c['class']))
+		instant = request.args.get('instant')
+		if instant:
+			return redirect(url_for('class_view', class_id=c['class'], instant=instant))
+		else:
+			return redirect(url_for('class_view', class_id=c['class']))
 	else:
 		session['404'] = None
 		return redirect(url_for('_404_view'))
@@ -218,7 +222,7 @@ def class_view(class_id):
 		return redirect(url_for('_404_view'))
 	if class_obj.master_subject_id != class_obj.id or class_id != class_obj.id:
 		return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
-	if not g.scraper:
+	if not g.scraper and not request.args.get('instant') == 'true':
 		update_recents_with_class(class_obj)
 		view_classes([class_id])
 	g.search_val = class_id
@@ -273,7 +277,7 @@ def group_view(group_id):
 		return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids)))
 	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
-	if not g.scraper:
+	if not g.scraper and not request.args.get('instant') == 'true':
 		view_classes(group_obj.class_ids)
 	g_filtered = [x for x in group if x != None]
 	g_filtered_ids = [x.master_subject_id for x in g_filtered]
