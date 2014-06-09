@@ -108,6 +108,8 @@ def get_embedly_info(class_site):
 	c = {}
 	def text_exclude(s):
 		s = s.lower()
+		if s[0].isdigit():
+			return False
 		for x in excludes:
 			if s in x or x in s:
 				return False
