@@ -52,6 +52,9 @@ def fail_mail(e):
 	except Exception:
 		pass
 
+for c in classes.find({'error': None}):
+	algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c['views']})
+
 try:
 	while True:
 		last_task = task

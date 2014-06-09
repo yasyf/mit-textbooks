@@ -98,7 +98,10 @@ def get_class(class_id):
 	if class_info:
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
-		classes.update({"class": class_obj.id}, {"$set": class_obj.to_dict()}, upsert=True)
+		class_d = class_obj.to_dict()
+		classes.update({"class": class_obj.id}, {"$set": class_d}, upsert=True)
+		class_d['objectID'] = str(class_d['_id'])
+		algolia.saveObject(class_d)
 		return class_obj
 	classes.insert({"class": class_id, "error": 404, 'dt': time.time()})
 
@@ -138,6 +141,7 @@ def update_textbooks(class_id):
 	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
 	class_info['textbooks'] = get_textbook_info(class_info['class'], class_info['semesters'])
 	classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
+	algolia.partialUpdateObject({'objectID': str(class_info['_id']), 'textbooks': class_info['textbooks']})
 
 def get_group(group_id):
 	global group_objects
@@ -246,7 +250,9 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		old_class = classes.find_one({'class': class_info['class']})
 		if old_class:
 			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
-			return classes.find_one({'class': class_info['class']})
+			c = classes.find_one({'class': class_info['class']})
+			algolia.partialUpdateObject({'objectID': str(c['_id']), "search_term": c['search_term']})
+			return c
 
 		when = []
 		for when_when,when_img in {"Fall": "fall", "IAP": "iap", "Spring": "spring", "Summer": "summer"}.iteritems():

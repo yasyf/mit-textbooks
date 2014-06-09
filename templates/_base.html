@@ -157,8 +157,9 @@
         matches = query.match(mit_textbooks_re);
         params = {"advancedSyntax": true};
         if(matches){
-          filters = "(class:{},master_subject_id:{})".replace(/\{\}/g,matches[0]);
-          params.facetFilters = filters;
+          // filters = "(class:{},master_subject_id:{})".replace(/\{\}/g,matches[0]);
+          // params.facetFilters = filters;
+          params.queryType = 'prefixNone';
         } 
         return index.ttAdapter(params)(query, cb);
       },
@@ -173,7 +174,7 @@
   });
   $("#search_input").focus(function(e) { $(this).select(); });
   $("#search_input").mouseup(function(e) { e.preventDefault(); });
-  $("#search_input").bind("typeahead:selected", function(e,s) { $('#search_oid').val(s._id.$oid); $('#search').submit(); });
+  $("#search_input").bind("typeahead:selected", function(e,s) { $('#search_oid').val(s.objectID); $('#search').submit(); });
   </script>
 </body>
 </html>
