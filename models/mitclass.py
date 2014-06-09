@@ -326,7 +326,10 @@ class MITClass():
 		return total
 
 	def get_tags(self):
+		tags = []
 		if self.meta:
-			return set(self.meta['entities'] + self.meta['keywords'])
-		else:
-			return []
+			tags.extend(self.meta['keywords'])
+			for t in self.meta['entities']:
+				if t.lower() not in tags:
+					tags.append(t)
+		return tags
