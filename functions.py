@@ -121,12 +121,12 @@ def get_embedly_info(class_site):
 	entities = result.get('entities',[])
 	keywords = result.get('keywords',[])
 
-	entities = [x['name'] for x in entities[:5] if text_exclude(x['name'])]
-	keywords = [x['name'] for x in keywords[:5] if text_exclude(x['name'])]
+	entities = [x['name'].lower() for x in entities[:5] if text_exclude(x['name'])]
+	keywords = [x['name'].lower() for x in keywords[:5] if text_exclude(x['name'])]
 	description = result.get('description','')
 
-	c['entities'] = entities
-	c['keywords'] = keywords
+	c['entities'] = set(entities)
+	c['keywords'] = set(keywords)
 	c['description'] = description
 
 	return c
