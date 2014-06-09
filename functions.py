@@ -216,7 +216,7 @@ def fetch_class_info(class_id):
 		class_info =  manual_class_scrape(class_id)
 		if not class_info:
 			class_info = manual_class_scrape(class_id, url=LAST_CATALOG)
-		if not class_info:
+		if not class_info and not class_id[0].isdigit() and not is_float(class_id) and not re.match(CLASS_REGEX, class_id.upper()):
 			old_class_id = algolia.search(class_id, { "hitsPerPage": 1 })['hits'][0]['objectID']
 			old_class = classes.find_one({'_id': ObjectId(old_class_id)})
 			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
