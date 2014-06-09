@@ -912,3 +912,6 @@ def expand_short_url(_hash):
 	info = shortlinks.find_one({'hash': _hash})
 	info['args']['_external'] = True
 	return url_for(info['view'], **info['args'])
+
+def view_classes(class_ids):
+	classes.update({'class': {'$in': class_ids}}, {'$inc': {'views': 1}})

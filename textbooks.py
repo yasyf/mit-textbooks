@@ -220,6 +220,7 @@ def class_view(class_id):
 		return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
 	if not g.scraper:
 		update_recents_with_class(class_obj)
+		view_classes([class_id])
 	g.search_val = class_id
 	rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
 	return render_template('class.html', class_obj=class_obj, rec=rec)
@@ -272,6 +273,8 @@ def group_view(group_id):
 		return redirect(url_for('loading_view', class_ids=','.join(group_obj.class_ids)))
 	session['loading'] = None
 	group = [get_class(class_id) for class_id in group_obj.class_ids]
+	if not g.scraper:
+		view_classes(group_obj.class_ids)
 	g_filtered = [x for x in group if x != None]
 	g_filtered_ids = [x.master_subject_id for x in g_filtered]
 	if not g_filtered:
