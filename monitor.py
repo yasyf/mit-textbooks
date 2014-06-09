@@ -53,7 +53,7 @@ def fail_mail(e):
 		pass
 
 for c in classes.find({'error': None}):
-	algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c['views']})
+	algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c.get('views', 0)})
 
 try:
 	while True:
