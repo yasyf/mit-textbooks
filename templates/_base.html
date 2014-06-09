@@ -144,6 +144,7 @@
    $('.popover_activate').popover();
   </script>
   <script>
+  var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
   client = new AlgoliaSearch('XBE4YTW1TS', '7a8a7ecc7cf2935949f179ba1567aef1');
   index = client.initIndex('classes');
   $('#search_input').typeahead(
@@ -152,13 +153,21 @@
       hint: true
     },
     {
-      source: index.ttAdapter(),
+      source: function (query, cb) {
+        matches = query.match(mit_textbooks_re)
+        params = {"advancedSyntax": true};
+        if(matches){
+          filters = "(class:{},master_subject_id:{})".replace(/\{\}/g,matches[0]);
+          params.facetFilters = filters;
+        } 
+        return index.ttAdapter(params)(query, cb);
+      },
       displayKey: 'class',
       templates: {
         suggestion: function (suggestion) {
           name = suggestion.short_name ? suggestion.short_name : suggestion.name;
-          inner = suggestion.class + ' <small>' + name.substring(0,15-suggestion.class.length) + '</small>';
-          return '<p class="algolia">' + inner + '</p>'
+          inner = suggestion.class + ' <small>' + name.substring(0,21-suggestion.class.length) + '</small>';
+          return '<p class="algolia">' + inner + '</p>';
         }
       }
   });

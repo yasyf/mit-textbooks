@@ -94,6 +94,11 @@ blockquote{
 	font-size: 110%;
 }
 
+.navbar-brand {
+	position: relative;
+	z-index: 1000;
+}
+
 @media only screen and (min-width : 993px) and (max-width : 1200px) {
 	.rec span:nth-child(n+4) {
 		display: none;
