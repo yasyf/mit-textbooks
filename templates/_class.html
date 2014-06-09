@@ -6,60 +6,55 @@
 	<button type="button" class="btn btn-primary btn-sm" onclick="embedly.modal();">Embed</button>
 </p>
 {% endif %}
-{% if rec %}
 <hr>
-<div class='rec'>
-	Related Classes:
-	{% for r in rec %}
-	<span><a href="{{ url_for('class_view', class_id=r.id) }}">{{ r.display_name(short=True)|safe }}</a></span>
-	{% endfor %}
+<div class="panel panel-default">
+	<div class="panel-heading">Class Info</div>
+	<div class="panel-body">
+		<p><blockquote>{{ class_obj.description }}</blockquote></p>
+		<p>
+			{% if class_obj.prereqs %}
+			This class has {{ class_obj.formatted_prereqs()|safe }}.
+			{% endif %}
+			{% if class_obj.coreqs %}
+			This class has {{ class_obj.formatted_coreqs()|safe }}.
+			{% endif %}
+			{% if not class_obj.prereqs and not class_obj.coreqs %}
+			This class has no prerequisites.
+			{% endif %}
+		</p>
+		<p>
+			{% if class_obj.is_currently_available() %}
+			{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}).{% if class_obj.current_instructors() %} It is instructed by {% endif %}
+			{% else %}
+			{{ class_obj.id }} will not be offered this semester. It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
+			{% endif %}
+			{% for instructor in class_obj.current_instructors() %}
+			<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
+			{% endfor %}
+		</p>
+		{% if class_obj.lecture %}
+		<p>
+			Lecture occurs {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}. 
+		</p>
+		{% endif %}
+		<p>
+			This class counts for a total of
+			<a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.units_detail() }}">{{ class_obj.units|sum }} credits</a>.
+			{% if class_obj.hass %}
+			This class counts as a HASS <strong>{{ class_obj.hass }}</strong>.
+			{% endif %}
+			{% if class_obj.grad %}
+			This is a graduate-level class.
+			{% endif %}
+		</p>
+		<p>
+			{% if class_obj.evaluation.date %}
+			In the {{ class_obj.evaluation.date }} Subject Evaluations, {{ class_obj.id }} was rated <a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.evaluation.percent_response }}% response rate">{{ class_obj.evaluation.rating }} out of 7.0</a>.
+			{% endif %}
+			You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at the <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0]|safe }}</a> site{% if class_obj.stellar_url %} or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar</a> site. {% else %}.{% endif %}
+		</p>
+	</div>
 </div>
-<hr>
-
-{% endif %}
-<p><blockquote>{{ class_obj.description }}</blockquote></p>
-<p>
-	{% if class_obj.prereqs %}
-	This class has {{ class_obj.formatted_prereqs()|safe }}.
-	{% endif %}
-	{% if class_obj.coreqs %}
-	This class has {{ class_obj.formatted_coreqs()|safe }}.
-	{% endif %}
-	{% if not class_obj.prereqs and not class_obj.coreqs %}
-	This class has no prerequisites.
-	{% endif %}
-</p>
-<p>
-	{% if class_obj.is_currently_available() %}
-	{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}).{% if class_obj.current_instructors() %} It is instructed by {% endif %}
-	{% else %}
-	{{ class_obj.id }} will not be offered this semester. It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
-	{% endif %}
-	{% for instructor in class_obj.current_instructors() %}
-	<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
-	{% endfor %}
-</p>
-{% if class_obj.lecture %}
-<p>
-	Lecture occurs {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}. 
-</p>
-{% endif %}
-<p>
-	This class counts for a total of
-	<a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.units_detail() }}">{{ class_obj.units|sum }} credits</a>.
-	{% if class_obj.hass %}
-	This class counts as a HASS <strong>{{ class_obj.hass }}</strong>.
-	{% endif %}
-	{% if class_obj.grad %}
-	This is a graduate-level class.
-	{% endif %}
-</p>
-<p>
-	{% if class_obj.evaluation.date %}
-	In the {{ class_obj.evaluation.date }} Subject Evaluations, {{ class_obj.id }} was rated <a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.evaluation.percent_response }}% response rate">{{ class_obj.evaluation.rating }} out of 7.0</a>.
-	{% endif %}
-	You can find more information {% if class_obj.ocw_site_url() %}on MIT OpenCourseWare{% endif %} at the <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0]|safe }}</a> site{% if class_obj.stellar_url %} or on the <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar</a> site. {% else %}.{% endif %}
-</p>
 
 {% for title, section in class_obj.textbooks.sections.iteritems() %}
 <div class="panel panel-default">
@@ -84,3 +79,28 @@
 		{% endif %}
 	</div>
 </div>
+
+{% if rec %}
+<div class="panel panel-default">
+	<div class="panel-heading">Related Classes</div>
+	<div class="panel-body">
+		<div class='rec'>
+			{% for r in rec %}
+			<span><a href="{{ url_for('class_view', class_id=r.id) }}">{{ r.display_name(short=True)|safe }}</a></span>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endif %}
+{% if class_obj.get_tags() %}
+<div class="panel panel-default">
+	<div class="panel-heading">Tags</div>
+	<div class="panel-body">
+		<div class='tag'>
+			{% for t in class_obj.get_tags() %}
+			<span>{{ t }}</span>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endif %}

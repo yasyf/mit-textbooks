@@ -154,7 +154,7 @@
     },
     {
       source: function (query, cb) {
-        matches = query.match(mit_textbooks_re)
+        matches = query.match(mit_textbooks_re);
         params = {"advancedSyntax": true};
         if(matches){
           filters = "(class:{},master_subject_id:{})".replace(/\{\}/g,matches[0]);

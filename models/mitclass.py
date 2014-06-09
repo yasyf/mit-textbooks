@@ -325,3 +325,8 @@ class MITClass():
 				total -= self.evaluation[f]
 		return total
 
+	def get_tags(self):
+		if self.meta:
+			return set(self.meta['entities'] + self.meta['keywords'])
+		else:
+			return []

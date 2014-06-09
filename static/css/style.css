@@ -54,6 +54,11 @@ blockquote{
 	padding-right: 5px;
 }
 
+.tag span {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 .show-on-native {
 	display: none;
 }
@@ -103,16 +108,25 @@ blockquote{
 	.rec span:nth-child(n+4) {
 		display: none;
 	}
+	.tag span:nth-child(n+8) {
+		display: none;
+	}
 }
 
 @media only screen and (min-width : 769px) and (max-width : 992px) {
 	.rec span:nth-child(n+3) {
 		display: none;
 	}
+	.tag span:nth-child(n+6) {
+		display: none;
+	}
 }
 
 @media only screen and (max-width : 768px) {
 	.rec span:nth-child(n+2) {
+		display: none;
+	}
+	.tag span:nth-child(n+4) {
 		display: none;
 	}
 }
