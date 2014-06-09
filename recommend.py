@@ -239,9 +239,6 @@ if __name__ == '__main__':
 				if task.get('safe', False) and _id not in all_c:
 					print '{c} not in master class list, this server is no longer reliable!'.format(c=_id)
 					is_safe = False
-					s = set(task.get('ignore',[]))
-					s.add(SERVER_NUM)
-					task['ignore'] = list(s)
 					queue.insert(task, safe=True)
 					continue
 				last_task = task
