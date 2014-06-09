@@ -921,3 +921,16 @@ def expand_short_url(_hash):
 
 def view_classes(class_ids):
 	classes.update({'class': {'$in': class_ids}}, {'$inc': {'views': 1}})
+
+def mail_password(user):
+	message = sendgrid.Mail()
+	message.add_to(user.email)
+	message.set_subject('Your MIT Textbooks Mobile Password')
+	password = user.get_password()
+	message.set_html('<pre>' + password + '</pre>')
+	message.set_text(password)
+	message.set_from('MIT Textbooks <tb_support@mit.edu>')
+	try:
+		sg.send(message)
+	except Exception, e:
+		pass

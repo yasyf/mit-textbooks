@@ -361,10 +361,11 @@ def login_view():
 				return redirect(url_for('account_view'))
 			else:
 				session['email'] = False
+				mail_password(user)
 				if user.is_mobile_locked_out():
 					flash('You account has been locked out. Login on desktop to restore access.', 'danger')
 					return(redirect(url_for('forgot_view')))
-				flash('Your password was incorrect.', 'danger')
+				flash('Your password was incorrect. Check your email for a reminder.', 'danger')
 
 		else:
 			session['email'] = False
