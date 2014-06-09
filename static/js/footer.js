@@ -37,9 +37,9 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
         if(matches){
           // filters = "(class:{},master_subject_id:{})".replace(/\{\}/g,matches[0]);
           // params.facetFilters = filters;
-          query = "'" + query + "'";
+          //query = "'" + query + "'";
           params.queryType = 'prefixNone';
-          params.minWordSizefor1Typo = 999;
+          //params.minWordSizefor1Typo = 999;
         } 
         return index.ttAdapter(params)(query, cb);
       },
