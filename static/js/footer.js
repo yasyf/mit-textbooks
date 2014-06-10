@@ -18,7 +18,7 @@ var trackOutboundLink = function(url, c, s) {
   ga('send', 'event', 'outbound', s.toLowerCase(), url, c*.04);
   window.open(url);
 }
-!function(a){var b="embedly-platform",c="script";if(!a.getElementById(b)){var d=a.createElement(c);d.id=b,d.src=("https:"===document.location.protocol?"https":"http")+"://cdn.embedly.com/widgets/platform.js";d.async=1;var e=document.getElementsByTagName(c)[0];e.parentNode.insertBefore(d,e)}}(document);
+
 $('.popover_activate').popover();
 if (window.matchMedia("only screen and (min-width : 769px)").matches) {
   var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;

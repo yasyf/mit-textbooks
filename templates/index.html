@@ -60,23 +60,5 @@
 		</div>
 	</div>
 
-<script>
-function showExtension () {
-	if (typeof chrome === 'undefined') {
-		window.open('https://chrome.google.com/webstore/detail/mit-textbooks/ndgcomkciihbdocdhnhaekkkgblcgcml');
-	} 
-	else {
-		chrome.webstore.install();
-	}
-}
-
-$('.recents').easyTicker({
-	direction: 'up',
-	speed: 'slow',
-	interval: 3000,
-	height: 'auto',
-	visible: 5,
-	mousePause: 1
-});
-</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}?{{ ''|get_cache_buster }}"></script>
 {% endblock %}

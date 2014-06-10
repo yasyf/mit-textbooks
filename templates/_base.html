@@ -99,6 +99,7 @@
   <span style='display:none;' id='mit-tb-home'></span>
   <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}?{{ ''|get_cache_buster }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/footer.js') }}?{{ ''|get_cache_buster }}"></script>
+  <script async type="text/javascript" src="//cdn.embedly.com/widgets/platform.js"></script>
   <script>
   {% if not g.user %}
     $(document).ready(function() {
