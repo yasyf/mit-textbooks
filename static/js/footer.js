@@ -27,7 +27,7 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
   var loading = false;
   var currentPreview = null;
   function load_preview (suggestion) {
-    if(suggestion.objectID != currentPreview) {
+    if(suggestion && suggestion.objectID != currentPreview) {
       currentPreview = suggestion.objectID;
       url = "/class/oid/_id?instant=true #body".replace('_id',currentPreview);
       $('#preview_body').load(url, function () {
@@ -45,13 +45,16 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
       source: function (query, cb) {
         matches = query.match(mit_textbooks_re);
         params = {"advancedSyntax": true};
-        if(matches){
+        if (query.indexOf(',') !== -1) {
+          query = currentPreview;
+        }
+        else if(matches){
           // filters = "(class:{},master_subject_id:{})".replace(/\{\}/g,matches[0]);
           // params.facetFilters = filters;
           //query = "'" + query + "'";
           params.queryType = 'prefixNone';
           //params.minWordSizefor1Typo = 999;
-        } 
+        }
         cb2 = function (suggestions) {
           cb(suggestions);
           load_preview(suggestions[0]);
