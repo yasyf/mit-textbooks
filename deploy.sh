@@ -3,8 +3,12 @@
 WEB=0
 RECOMMENDERS=0
 WORKERS=0
+STATIC=0
 
 case "$1" in
+	static)
+		STATIC=1
+		;;
 	web) 
 		WEB=1
 		;;
@@ -24,6 +28,10 @@ case "$1" in
 		;; 
 esac
 
+
+if [[ STATIC -eq 1 ]]; then
+	foreman run python upload_static.py
+fi
 
 if [[ WEB -eq 1 ]]; then
 	echo "Deploying Web"
