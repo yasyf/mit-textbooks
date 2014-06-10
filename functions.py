@@ -904,7 +904,6 @@ def get_sorted_classes(original_filters):
 			constraints.append({key: {'$in': value}})
 		else:
 			constraints.append({'$or': [{key: v} for v in value]})
-	print json.dumps({'$and': constraints})
 	good_classes = set([x['class'] for x in classes.find({'$and': constraints})])
 	for c in rankings.find().sort('rating', -1):
 		if c['class'] in good_classes:
