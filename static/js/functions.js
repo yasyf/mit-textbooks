@@ -64,3 +64,9 @@ function append_error(id, ttext) {
         $('#error'+id).html($('#error'+id).html() + '<br>' + ttext)
     }
 }
+
+function animateTo (selector) {
+    $('html, body').animate({
+        scrollTop: $(selector).offset().top - 75
+    }, 500);
+}

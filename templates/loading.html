@@ -30,12 +30,12 @@
 <div class="row">
 	{% for class, status in classes.iteritems() %}
 	<div class="col-sm-2 {% if loop.first %}col-sm-offset-{{ ((6 - classes|length))|int  }}{% endif %}">
-		<div id="{{ class|replace('.','') }}_parent" class="panel panel-{% if status == True %}success{% else %}warning{% endif %} center">
+		<div id="{{ class|replace('.','-') }}_parent" class="panel panel-{% if status == True %}success{% else %}warning{% endif %} center">
 			<div class="panel-heading">
 				<h3 class="panel-title">{{ class }}</h3>
 			</div>
 			<div class="panel-body">
-				<span id="{{ class|replace('.','') }}" class='loading'>{% if status == True %}Done!{% else %}Loading...{% endif %}</span>
+				<span id="{{ class|replace('.','-') }}" class='loading'>{% if status == True %}Done!{% else %}Loading...{% endif %}</span>
 			</div>
 		</div>
 	</div>
@@ -57,8 +57,8 @@ $(document).ready(function() {
 				$.get(url, function (data) {
 					s[id] = data.loaded;
 					if (data.loaded == true){
-						$("#"+id.replace('.','')).text('Done!');
-						$("#"+id.replace('.','')+"_parent").toggleClass('panel-warning panel-success');
+						$("#"+id.replace('.','-')).text('Done!');
+						$("#"+id.replace('.','-')+"_parent").toggleClass('panel-warning panel-success');
 						num_done += 1;
 						newval = (num_done/Object.keys(s).length) * 100;
 						if(newval > parseInt($('#progress_bar').attr('aria-valuenow'))){

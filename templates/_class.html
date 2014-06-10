@@ -1,12 +1,12 @@
-<a id='{{ class_obj.id }}'></a>
+<a id='{{ class_obj.id.replace('.','-') }}'></a>
 <h1>{{ class_obj.display_name()|safe }}</h1>
 {% if not group_obj %}
 <p>
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
 	<button type="button" class="btn btn-primary btn-sm" onclick="embedly.modal();">Embed</button>
 </p>
-{% endif %}
 <hr>
+{% endif %}
 <div class="panel panel-default">
 	<div class="panel-heading">Class Info</div>
 	<div class="panel-body">

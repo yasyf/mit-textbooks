@@ -44,7 +44,7 @@
 
 		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" style="height:70%;overflow-y:scroll;overflow-x:visible;">
 			{% for c in classes %}
-			<li><a class='sidebar-link' href="#{{ c.replace('.','') }}">{{ c }}</a></li>
+			<li><a class='sidebar-link' href="#{{ c.replace('.','-') }}">{{ c }}</a></li>
 			{% endfor %}
 		</ul>
 
