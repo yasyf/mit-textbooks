@@ -65,7 +65,8 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
       templates: {
         suggestion: function (suggestion) {
           name = suggestion.short_name ? suggestion.short_name : suggestion.name;
-          inner = suggestion.class + ' <small>' + name.substring(0,21-suggestion.class.length) + '</small>';
+          name = name.replace('&amp;','&').substring(0,28-suggestion.class.length);
+          inner = suggestion.class + ' <small>' + name + '</small>';
           return '<p class="algolia">' + inner + '</p>';
         }
       }
