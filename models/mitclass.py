@@ -113,7 +113,7 @@ class MITClass():
 		name = self.name
 		if short and len(self.name) > 25:
 			if len(self.short_name) > 25:
-				name = self.short_name[:25] + "..."
+				name = ' '.join(self.short_name[:25].split(' ')[:-1]) + "..."
 			else:
 				name = self.short_name
 			
@@ -123,7 +123,7 @@ class MITClass():
 		if len(self.description) < 150:
 			return self.description
 		else:
-			return self.description[:150] + "..."
+			return ' '.join(self.description[:150].split(' ')[:-1]) + "..."
 
 	def current_instructors(self):
 		if TERM[-2:] == 'SP' and 'Spring' in self.semesters:
