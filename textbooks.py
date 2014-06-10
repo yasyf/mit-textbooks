@@ -280,7 +280,7 @@ def group_view(group_id):
 	if not g.scraper and not request.args.get('instant') == 'true':
 		view_classes(group_obj.class_ids)
 	g_filtered = [x for x in group if x != None]
-	g_filtered_ids = [x.master_subject_id for x in g_filtered]
+	g_filtered_ids = [format_class(x.master_subject_id) for x in g_filtered]
 	if not g_filtered:
 		session['404'] = group_obj.class_ids
 		return redirect(url_for('_404_view'))
