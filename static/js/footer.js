@@ -1,3 +1,7 @@
+if (!(window.ActiveXObject) && "ActiveXObject" in window) {
+  $('#gobtn').css('top',0);
+}
+
 window.fbAsyncInit = function() {
   FB.init({
     appId      : '1497643403780485',
