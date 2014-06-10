@@ -33,6 +33,7 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
       $('#preview_body').load(url, function () {
         $('#body').fadeOut();
         $('#preview_body').fadeIn();
+        $('#search_input').addClass('algolia');
       });
     }
   }
@@ -65,7 +66,7 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
       templates: {
         suggestion: function (suggestion) {
           name = suggestion.short_name ? suggestion.short_name : suggestion.name;
-          name = name.replace('&amp;','&').substring(0,28-suggestion.class.length);
+          name = name.replace('&amp;','&').substring(0,29-suggestion.class.length);
           inner = suggestion.class + ' <small>' + name + '</small>';
           return '<p class="algolia">' + inner + '</p>';
         }
@@ -83,6 +84,7 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
   });
   $("#search_input").bind("typeahead:closed", function() {
     if(!loading) {
+      $('#search_input').removeClass('algolia');
       $('#preview_body').fadeOut();
       $('#body').fadeIn();
     }

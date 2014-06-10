@@ -121,7 +121,7 @@ blockquote{
 
 	#gobtn {
 		position: relative;
-		top: 7px;
+		top: 8px;
 	}
 
 	.tt-suggestion {
@@ -136,7 +136,7 @@ blockquote{
 		border-color: #d9230f;
 		box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
 		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-		width: 213px;
+		width: 218px;
 
 	}
 
@@ -147,7 +147,13 @@ blockquote{
 	.tt-dropdown-menu {
 		margin-top: 5px;
 		background-color: rgba(255, 255, 255, .8);
-		padding: 0 5px;
+		padding: 5px 0px;
 		font-size: 110%;
+	}
+
+	input.algolia {
+		background: url(//www.algolia.com/assets/algolia128x40.png) no-repeat;
+		background-position: 90% 80%;
+		background-size: 20%;
 	}
 }
