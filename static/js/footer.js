@@ -25,6 +25,17 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
   var client = new AlgoliaSearch('XBE4YTW1TS', '7a8a7ecc7cf2935949f179ba1567aef1');
   var index = client.initIndex('classes');
   var loading = false;
+  var currentPreview = null;
+  function load_preview (suggestion) {
+    if(suggestion.objectID != currentPreview) {
+      currentPreview = suggestion.objectID;
+      url = "/class/oid/_id?instant=true #body".replace('_id',currentPreview);
+      $('#preview_body').load(url, function () {
+        $('#body').fadeOut();
+        $('#preview_body').fadeIn();
+      });
+    }
+  }
   $('#search_input').typeahead(
     {
       highlight: true,
@@ -41,7 +52,11 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
           params.queryType = 'prefixNone';
           //params.minWordSizefor1Typo = 999;
         } 
-        return index.ttAdapter(params)(query, cb);
+        cb2 = function (suggestions) {
+          cb(suggestions);
+          load_preview(suggestions[0]);
+        }
+        return index.ttAdapter(params)(query, cb2);
       },
       displayKey: 'class',
       templates: {
@@ -60,11 +75,7 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
     $('#search').submit();
   });
   $("#search_input").bind("typeahead:cursorchanged", function(e,s) {
-    url = "/class/oid/_id?instant=true #body".replace('_id',s.objectID);
-    $('#preview_body').load(url, function () {
-      $('#body').fadeOut();
-      $('#preview_body').fadeIn();
-    });
+    load_preview(s);
   });
   $("#search_input").bind("typeahead:closed", function() {
     if(!loading) {
