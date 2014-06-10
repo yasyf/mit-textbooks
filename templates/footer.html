@@ -113,13 +113,13 @@ function save_group(){
         <h4 class='modal-title'>Special Pages</h4>
       </div>
       <div class='modal-body'>
-        <p class='center'>
-            <a data-toggle='modal' href='{{ url_for('textbooks_view') }}' class='btn btn-info'>Local Textbooks</a>
-            <a data-toggle='modal' href='{{ url_for('all_classes_view') }}' class='btn btn-info'>All Classes</a>
+        <p data-toggle='modal' class='center'>
+            <a href='{{ url_for('textbooks_view') }}' class='btn btn-info'>Local Textbooks</a>
+            <a href='{{ url_for('all_classes_view') }}' class='btn btn-info'>All Classes</a>
             <br><br>
-            <a data-toggle='modal' href='{{ url_for('class_kv_view', key='hass', value='A') }}' class='btn btn-info'>HASS A</a>
-            <a data-toggle='modal' href='{{ url_for('class_kv_view', key='hass', value='H') }}' class='btn btn-info'>HASS H</a>
-            <a data-toggle='modal' href='{{ url_for('class_kv_view', key='hass', value='S') }}' class='btn btn-info'>HASS S</a>
+            <a href='{{ url_for('class_kv_view', key='hass', value='A') }}' class='btn btn-info'>HASS A</a>
+            <a href='{{ url_for('class_kv_view', key='hass', value='H') }}' class='btn btn-info'>HASS H</a>
+            <a href='{{ url_for('class_kv_view', key='hass', value='S') }}' class='btn btn-info'>HASS S</a>
       </div>
       <div class='modal-footer'>
         <button type='button'  data-dismiss='modal' class='btn btn-primary'>Close</button>
