@@ -87,6 +87,7 @@ if (window.matchMedia("only screen and (min-width : 769px)").matches) {
       $('#search_input').removeClass('algolia');
       $('#preview_body').fadeOut();
       $('#body').fadeIn();
+      currentPreview = null;
     }
   });
 }
