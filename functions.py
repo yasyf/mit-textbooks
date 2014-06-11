@@ -100,6 +100,7 @@ def get_class(class_id):
 		class_objects[class_id] = class_obj
 		class_d = class_obj.to_dict()
 		classes.update({"class": class_obj.id}, {"$set": class_d}, upsert=True)
+		class_d = classes.find_one({"class": class_obj.id})
 		class_d['objectID'] = str(class_d['_id'])
 		algolia.saveObject(class_d)
 		return class_obj
