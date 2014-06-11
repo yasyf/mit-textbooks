@@ -41,7 +41,7 @@ class MITUser():
 		return self.obj.get('login_attempts', 0) > 5
 
 	def reset_mobile_lockout(self):
-		users.update({'_id': self.obj['_id']}, {'login_attempts': 0})
+		users.update({'_id': self.obj['_id']}, {'$set': {'login_attempts': 0}})
 		self.obj = users.find_one({'_id': self.obj['_id']})
 
 	def is_admin(self):
