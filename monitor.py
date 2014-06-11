@@ -14,12 +14,14 @@ def do_get_class(class_id):
 		except AttributeError, e:
 			print 'Worker Failure'
 			print e
+			fail_mail(e)
 			init_auth_browser()
 			time.sleep(.5*i)
 			i += 1
 		except Exception, e:
 			print 'Worker Failure'
 			print e
+			fail_mail(e)
 			time.sleep(1*i)
 			i += 1
 	task['time'] = time.time()

@@ -130,8 +130,8 @@ def get_embedly_info(class_site):
 	keywords = [x['name'].lower() for x in keywords[:5] if text_exclude(x['name'])]
 	description = result.get('description','')
 
-	c['entities'] = set(entities)
-	c['keywords'] = set(keywords)
+	c['entities'] = list(set(entities))
+	c['keywords'] = list(set(keywords))
 	c['description'] = description
 
 	return c
