@@ -17,7 +17,7 @@ def get_accept_function(i):
 		return not course.isdigit()
 	def f4(c):
 		course = c.split('.')[0]
-		return course.isdigit() and int(course) in [8] + range(11, 15)
+		return course.isdigit() and int(course) in [8] + range(11, 16)
 	return {1: f1, 2: f2, 3: f3, 4:f4}[i]
 
 def fail_mail(e):
