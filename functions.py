@@ -99,12 +99,13 @@ def get_class(class_id):
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		class_d = class_obj.to_dict()
+		class_d['error'] = None
 		classes.update({"class": class_obj.id}, {"$set": class_d}, upsert=True)
 		class_d = classes.find_one({"class": class_obj.id})
 		class_d['objectID'] = str(class_d['_id'])
 		algolia.saveObject(class_d)
 		return class_obj
-	classes.update({"class": class_id, "error": 404, 'dt': time.time()}, upsert=True)
+	classes.update({"class": class_id}, {"$set": {"error": 404, 'dt': time.time()}}, upsert=True)
 
 def get_embedly_info(class_site):
 	endpoint = "http://api.embed.ly/1"
