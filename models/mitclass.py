@@ -88,6 +88,7 @@ class MITClass():
 		d['class'] = self.id
 		d['description'] = self.summary()
 		d['display_name'] = self.display_name()
+		d['rating'] = self.get_base_rating()
 		return d
 
 	def json(self):
