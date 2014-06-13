@@ -92,6 +92,10 @@ def _500_view(e):
 		error_mail(e)
 	return render_template('500.html', e=str(e)), 500
 
+@app.route('/private/up')
+def uptest_view():
+	return 'MIT Textbooks is up as of {} UTC'.format(datetime.datetime.utcnow())
+
 @app.route('/textbooks')
 @modifiers.cache_for(hours=1)
 def textbooks_view():
