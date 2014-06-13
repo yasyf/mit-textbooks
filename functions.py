@@ -871,7 +871,8 @@ def popover(class_id):
 		else:
 			send_to_worker(class_id)
 			pending = True
-	d = {'n': c['display_name'], 'd': c['description'], 'c': class_id, 'r': c['rating']} if c else None
+	r = c['evaluation'].get('rating', 0) if 'evaluation' in c else c.get('rating', 0)
+	d = {'n': c['display_name'], 'd': c['description'], 'c': class_id, 'r': r} if c else None
 	return {'class_info': d, 'pending': pending}
 
 def upload_static(app):
