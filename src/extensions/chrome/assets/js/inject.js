@@ -1,6 +1,8 @@
 var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))/g;
 var mit_textbooks_re_search = /([\s,\(]|^)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))(([,\s\?\!\)](?!([%]|GB)))|([\.](?!([0-9])))|$)/g;
 var mit_textbooks_replace = "<a data-tbclass='$1' href='http://textbooksearch.mit.edu/go/$1' style='text-decoration:none;' target='_blank'>$1</a>";
+var mit_textbooks_inject_re = /http[s]?:\/\/(www\.)?amazon\.[\w]{2,3}/;
+var mit_textbooks_inject_replace_re = /tag=[\w\-]+/;
 var mit_textbooks_current_html;
 
 function checkNode(node) {
@@ -41,10 +43,39 @@ function getStars(rating) {
 	return output;
 }
 
+function shouldInject (node) {
+	if (node.tagName && node.tagName.toLowerCase() === "a" && node.getAttribute('href') && node.getAttribute('href').toLowerCase().indexOf('amazon') !== -1) {
+		return true;
+	}
+	return false;
+}
+
+function injectLink(node) {
+	if (node.attr('data-tb-injected') === 'true') {
+		return
+	}
+	href = node.attr('href').toLowerCase();
+	matches = href.match(mit_textbooks_inject_re);
+	if (matches) {
+		if (href.indexOf('?') !== -1) {
+			href += '&tag=mit-tb-20';
+		}
+		else if (href.indexOf('tag=') !== -1){
+			href = href.replace(mit_textbooks_inject_replace_re, "tag=mit-tb-20");
+		}
+		else {
+			href += '?tag=mit-tb-20';
+		}
+		node.attr('href', href);
+		node.attr('data-tb-injected', 'true');
+	}
+}
+
 function walkDom() {
 	if (mit_textbooks_current_html == document.documentElement.innerHTML) {
 		return;
 	}
+
 	var walker = document.createTreeWalker(
 	  document.body,
 	  NodeFilter.SHOW_TEXT,
@@ -82,12 +113,35 @@ function walkDom() {
 			node.parentNode.replaceChild(span, node);
 		}
 	}
+
+	var walker2 = document.createTreeWalker(
+	  document.body,
+	  NodeFilter.SHOW_ELEMENT,
+	  function(node) {
+	    if(shouldInject(node)) {
+	      return NodeFilter.FILTER_ACCEPT;
+	    } else {
+	      return NodeFilter.FILTER_SKIP;
+	    }
+	  },
+	  false);
+
+	var nodes2 = [];
+
+	while(walker2.nextNode()) {
+	  nodes2.push(walker2.currentNode);
+	}
+
+	for(var i = 0; node=nodes2[i] ; i++) {
+		injectLink($(node));
+	}
+
 	if ($('[data-tbclass]').size() < 50){
 		$('[data-tbclass]').each(function (index) {
 			var elt = $(this);
 			var c = elt.attr('data-tbclass');
 			elt.removeAttr('data-tbclass');
-			$.getJSON('http://0.0.0.0:5000/popover/'+c, function(data) {
+			$.getJSON('https://mit-textbooks.herokuapp.com/popover/'+c, function(data) {
 				if (data.class_info) {
 					elt.text(data.class_info.c);
 					elt.qtip({
