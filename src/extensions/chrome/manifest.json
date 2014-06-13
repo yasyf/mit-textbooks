@@ -13,9 +13,9 @@
     "keyword": "tb"
   },
   "icons": {
-    "16": "icons/16.png",
-    "48": "icons/48.png",
-    "128": "icons/128.png"
+    "16": "assets/icons/16.png",
+    "48": "assets/icons/48.png",
+    "128": "assets/icons/128.png"
   },
   "content_scripts": [
     {
@@ -29,18 +29,21 @@
         "*://localhost:*/*"
       ],
       "js": [
-        "jquery-2.1.1.min.js",
-        "jquery.qtip.min.js",
-        "inject.js"
+        "assets/js/jquery-2.1.1.min.js",
+        "assets/js/jquery.qtip.min.js",
+        "assets/js/inject.js"
       ],
       "css": [
-        "jquery.qtip.min.css"
+        "assets/css/jquery.qtip.min.css"
       ],
       "run_at": "document_end"
     }
   ],
    "background": {
       "persistent": false,
-      "scripts": ["background.js"]
-    }
+      "scripts": ["assets/js/background.js"]
+    },
+    "web_accessible_resources": [
+      "assets/img/*.png"
+    ]
 }

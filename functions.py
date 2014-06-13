@@ -392,9 +392,9 @@ def process_prereqs(prereqs):
 	d = {'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.012 or equivalent', 'GIR:CHEM': '5.111 or equivalent'}
 	for k,v in d.iteritems():
 		prereqs = prereqs.replace(k, v)
-	coreqs = re.findall(re.compile(r'\[([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})\]'), prereqs)
-	prereqs = re.sub(re.compile(r'\[[\w]{1,3}\.[0-9]{2,3}[\w]{0,1}\]'), '', prereqs)
-	prereqs = re.findall(re.compile(r'([\w]{1,3}\.[0-9]{2,3}[\w]{0,1})'), prereqs)
+	coreqs = re.findall(re.compile(r'\[([\w]{1,3}\.(?:(?:[sS]?[0-9]{2,3}[\w]{0,1})|(?:UA[TR])))\]'), prereqs)
+	prereqs = re.sub(re.compile(r'\[[\w]{1,3}\.(?:(?:[sS]?[0-9]{2,3}[\w]{0,1})|(?:UA[TR]))'), '', prereqs)
+	prereqs = re.findall(re.compile(r'([\w]{1,3}\.(?:(?:[sS]?[0-9]{2,3}[\w]{0,1})|(?:UA[TR])))'), prereqs)
 	prereqs, coreqs = [x.strip() for x in prereqs], [x.strip() for x in coreqs]
 	return prereqs, coreqs
 

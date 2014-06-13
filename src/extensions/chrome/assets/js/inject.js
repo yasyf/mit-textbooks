@@ -1,5 +1,5 @@
-var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
-var mit_textbooks_re_search = /([\s,\(]|^)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))(([,\s\?\!\)](?!([%]|GB)))|([\.](?!([0-9])))|$)/g;
+var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))/g;
+var mit_textbooks_re_search = /([\s,\(]|^)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))(([,\s\?\!\)](?!([%]|GB)))|([\.](?!([0-9])))|$)/g;
 var mit_textbooks_replace = "<a data-tbclass='$1' href='http://textbooksearch.mit.edu/go/$1' style='text-decoration:none;' target='_blank'>$1</a>";
 var mit_textbooks_current_html;
 
@@ -25,6 +25,20 @@ function checkNode(node) {
 		return false;
 	}
 	return true;
+}
+
+function getStars(rating) {
+	output = "";
+	for (var i = 0; i < Math.floor(rating); i++) {
+		output += "<img src='" + chrome.extension.getURL('/assets/img/star_ffe600_16.png') + "'>";
+	}
+	if (parseFloat(rating.toString().split('.').slice(-1)[0]) > 0.5) {
+		output += "<img style='position: relative; left: -3px;' src='" + chrome.extension.getURL('/assets/img/star-half_ffe600_16.png') + "'>";
+	}
+	if (output) {
+		output += '<br>';
+	}
+	return output;
 }
 
 function walkDom() {
@@ -73,13 +87,13 @@ function walkDom() {
 			var elt = $(this);
 			var c = elt.attr('data-tbclass');
 			elt.removeAttr('data-tbclass');
-			$.getJSON('https://mit-textbooks.herokuapp.com/popover/'+c, function(data) {
+			$.getJSON('http://0.0.0.0:5000/popover/'+c, function(data) {
 				if (data.class_info) {
 					elt.text(data.class_info.c);
 					elt.qtip({
 						content: {
 							title: data.class_info.n,
-							text: data.class_info.d
+							text: getStars(data.class_info.r) + data.class_info.d
 						},
 						position: {
 							my: 'top center',
