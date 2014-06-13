@@ -85,7 +85,7 @@ def get_class(class_id):
 		return class_objects[class_id]
 	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
 	if class_info:
-		if 'error' in class_info:
+		if class_info.get('error'):
 			return None
 		if (time.time() - class_info['textbooks']['dt']) > (CACHE_FOR/4.0) and not is_worker:
 			send_to_worker(class_id, update=True)
@@ -404,7 +404,7 @@ def update_recents_with_class(class_obj):
 		if (datetime.datetime.utcnow() - recent_entry['dt']) > datetime.timedelta(minutes=1):
 			recents.update({'class': class_obj.id}, {'$set':{'dt': datetime.datetime.utcnow()}})
 	else:
-		recents.insert({'class': class_obj.id, 'dt': datetime.datetime.utcnow(), 'display_name': class_obj.display_name(), 'description': class_obj.summary()})
+		recents.insert({'class': class_obj.id, 'dt': datetime.datetime.utcnow(), 'display_name': class_obj.display_name(), 'description': class_obj.summary(), 'rating': class_obj.get_base_rating()})
 	if g.user:
 		g.user.add_recent_class(class_obj.id)
 
@@ -871,7 +871,7 @@ def popover(class_id):
 		else:
 			send_to_worker(class_id)
 			pending = True
-	d = {'n': c['display_name'], 'd': c['description'], 'c': class_id} if c else None
+	d = {'n': c['display_name'], 'd': c['description'], 'c': class_id, 'r': c['rating']} if c else None
 	return {'class_info': d, 'pending': pending}
 
 def upload_static(app):
