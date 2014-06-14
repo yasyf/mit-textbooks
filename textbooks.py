@@ -491,7 +491,7 @@ def class_professor_evaluation_view(class_id, professor):
 def professor_view(professor):
 	term = professor + ' + MIT'
 	urls = search_google(term)
-	if url:
+	if urls:
 		return redirect(urls[0])
 	else:
 		return redirect(get_google_url(term))
