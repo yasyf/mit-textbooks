@@ -489,8 +489,12 @@ def class_professor_evaluation_view(class_id, professor):
 @app.route('/professor/<professor>')
 @modifiers.cache_for(days=7)
 def professor_view(professor):
-	url = search_google(professor + ' + MIT')[0]
-	return redirect(url)
+	term = professor + ' + MIT'
+	urls = search_google(term)
+	if url:
+		return redirect(urls[0])
+	else:
+		return redirect(get_google_url(term))
 
 @app.route('/export/courseroad/<class_ids>', methods=['POST'])
 def courseroad_export_view(class_ids):

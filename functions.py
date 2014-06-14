@@ -439,7 +439,10 @@ def search_google(term, cache=True):
 	br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:18.0) Gecko/20100101 Firefox/18.0 (compatible;)'),('Accept', '*/*')]
 	br.set_handle_robots(False)
 	google_url = get_google_url(term)
-	br.open(google_url)
+	try:
+		br.open(google_url)
+	except:
+		return None
 	def check_excludes(url):
 		excludes = ['google', 'youtube', 'blogger']
 		for ex in excludes:
