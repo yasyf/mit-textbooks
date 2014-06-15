@@ -436,7 +436,7 @@ def try_url(url):
 	except requests.exceptions.TooManyRedirects:
 		return None
 	except requests.exceptions.ConnectionError:
-		sleep 1
+		time.sleep(1)
 		return None
 
 def get_google_url(term):
