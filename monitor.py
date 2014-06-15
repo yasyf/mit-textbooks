@@ -54,11 +54,20 @@ def fail_mail(e):
 	except Exception:
 		pass
 
-for c in classes.find({'error': None}):
-	algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c.get('views', 0)})
+if not flags.find_one({'flag': 'algolia_worker'}):
+	try:
+		flags.insert({'flag': 'algolia_worker'}, safe=True)
+		for c in classes.find({'error': None}):
+			algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c.get('views', 0)})
 
-for c in classes.find({'error': {'$ne': None}}):
-	algolia.deleteObject(str(c['_id']))
+		for c in classes.find({'error': {'$ne': None}}):
+			algolia.deleteObject(str(c['_id']))
+		try:
+			flags.remove({'flag': 'algolia_worker'}, safe=True)
+		except:
+			flags.remove({'flag': 'algolia_worker'})
+	except pymongo.errors.DuplicateKeyError:
+		continue
 
 try:
 	while True:
