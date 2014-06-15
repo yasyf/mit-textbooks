@@ -951,11 +951,11 @@ def expand_short_url(_hash):
 
 def view_classes(class_ids):
 	identifier = g.user.get_id() if g.user else g.ip
-	history = view_objects.get(identifier, {})
-	frozen_ids = frozenset(class_ids)
-	if not history.get(frozen_ids, False):
+	history = view_objects.get(identifier, [])
+	class_ids = list(set(class_ids) - set(history))
+	if class_ids:
 		classes.update({'class': {'$in': class_ids}}, {'$inc': {'views': 1}})
-		history[frozen_ids] = True
+		history += class_ids
 		view_objects[identifier] = history
 
 def mail_password(user):
