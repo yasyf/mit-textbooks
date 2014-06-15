@@ -4,9 +4,11 @@
 <p>
 	Currently Offered: {% if class_obj.is_currently_available() %} Yes {% else %} No {% endif %}
 </p>
+{% if class_obj.semesters %}
 <p>
 	Availablity: {{ class_obj.formatted_summarized_availability()|safe }}
 </p>
+{% endif %}
 <p>
 	{% if class_obj.prereqs %}
 	Prereqs: {{ class_obj.formatted_prereqs_summary()|safe }}.

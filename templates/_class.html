@@ -26,7 +26,10 @@
 			{% if class_obj.is_currently_available() %}
 			{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}).{% if class_obj.current_instructors() %} It is instructed by {% endif %}
 			{% else %}
-			{{ class_obj.id }} will not be offered this semester. It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
+			{{ class_obj.id }} will not be offered this semester. 
+			{% if class_obj.semesters %}
+			It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
+			{% endif %}
 			{% endif %}
 			{% for instructor in class_obj.current_instructors() %}
 			<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last and loop.revindex0 != 1 %}, {% elif loop.revindex0 == 1 %} and {% elif loop.last %}.{% endif %}
