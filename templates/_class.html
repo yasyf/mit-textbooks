@@ -29,6 +29,8 @@
 			{{ class_obj.id }} will not be offered this semester. 
 			{% if class_obj.semesters %}
 			It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
+			{% elif class_obj.current_instructors() %}
+			It will be instructed by
 			{% endif %}
 			{% endif %}
 			{% for instructor in class_obj.current_instructors() %}
