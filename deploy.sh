@@ -76,6 +76,7 @@ if [[ WORKERS -eq 1 ]]; then
 	git push worker-1 worker_procfile:master --force
 	git push worker-2 worker_procfile:master --force
 	git push worker-3 worker_procfile:master --force
+	git push worker-4 worker_procfile:master --force
 	git checkout master
 	git branch -D worker_procfile
 fi
