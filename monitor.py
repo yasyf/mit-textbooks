@@ -67,7 +67,7 @@ if not flags.find_one({'flag': 'algolia_worker'}):
 		except:
 			flags.remove({'flag': 'algolia_worker'})
 	except pymongo.errors.DuplicateKeyError:
-		continue
+		pass
 
 try:
 	while True:
