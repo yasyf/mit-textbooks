@@ -108,10 +108,11 @@ def get_class(class_id):
 		algolia.saveObject(class_d)
 		return class_obj
 
-	if not classes.find_one({'class': class_id}):
+	old_class = classes.find_one({'class': class_id})
+	if not old_class or not old_class.get('description'):
 		classes.update({"class": class_id}, {"$set": {"error": 404, 'dt': time.time()}}, upsert=True)
 	else:
-		classes.update({"class": class_id}, {"$set": {"semesters": [], 'dt': time.time()}})
+		classes.update({"class": class_id}, {"$set": {"semesters": [], 'error': None, 'dt': time.time()}})
 
 def get_embedly_info(class_site):
 	endpoint = "http://api.embed.ly/1"
@@ -262,9 +263,9 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['master_subject_id'] = class_info['class']
 		class_info['course'] = class_info['class'].split('.')[0]
 		
-		old_class = classes.find_one({'class': class_info['class']})
+		old_class = classes.find_one({'class': class_info['class'], 'description': {'$ne': None}})
 		if old_class and class_id != class_info['class']:
-			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
+			classes.update({'_id': old_class['_id']}, {"$set": {'error': None}, "$addToSet": {"search_term": class_id.lower()}})
 			c = classes.find_one({'class': old_class['class']})
 			algolia.partialUpdateObject({'objectID': str(c['_id']), "search_term": c['search_term']})
 			return c
