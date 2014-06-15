@@ -454,7 +454,7 @@ def search_google(term, cache=True):
 	try:
 		br.open(google_url)
 	except:
-		return None
+		return []
 	def check_excludes(url):
 		excludes = ['google', 'youtube', 'blogger']
 		for ex in excludes:
