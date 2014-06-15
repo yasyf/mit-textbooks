@@ -15,6 +15,7 @@ from api import CachedAPI
 class_objects = {}
 group_objects = {}
 user_objects = {}
+view_objects = {}
 
 auth_browser = None
 
@@ -949,7 +950,12 @@ def expand_short_url(_hash):
 		return url_for('_404_view')
 
 def view_classes(class_ids):
-	classes.update({'class': {'$in': class_ids}}, {'$inc': {'views': 1}})
+	identifier = g.user.get_id() if g.user else g.ip
+	history = view_objects.get(identifier, {})
+	if not history.get(class_ids, False):
+		classes.update({'class': {'$in': class_ids}}, {'$inc': {'views': 1}})
+		history[class_ids] = True
+		view_objects[identifier] = history
 
 def mail_password(user):
 	message = sendgrid.Mail()

@@ -62,6 +62,8 @@ def preprocess_request():
 	else:
 		g.user = None
 
+	g.ip = request.headers.get("X-Forwarded-For", '')
+
 @app.after_request
 def postprocess_request(response):
 	response.headers['X-UA-Compatible'] = 'IE=edge,chrome=1'
