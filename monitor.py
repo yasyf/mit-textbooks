@@ -1,10 +1,12 @@
 from functions import *
+import system
 
 init_auth_browser()
 
 last_task = None
 task = None
 mailed = False
+fail_mailed = 0
 
 def do_get_class(class_id):
 	i = 1
@@ -50,7 +52,11 @@ def fail_mail(e):
 	message.set_text(repr(task) + '\n\n' + str(e.message) + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
-		sg.send(message)
+		if fail_mailed < 5:
+			sg.send(message)
+			fail_mailed += 1
+		else:
+			system.exit(str(e.message))
 	except Exception:
 		pass
 

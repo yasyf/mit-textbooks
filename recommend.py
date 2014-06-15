@@ -2,8 +2,10 @@ from setup import *
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-import pickle, Levenshtein, time, re, os, traceback
+import pickle, Levenshtein, time, re, os, traceback, system
 import multiprocessing, gc
+
+fail_mailed = 0
 
 def get_accept_function(i):
 	def f1(c):
@@ -29,7 +31,11 @@ def fail_mail(e):
 	message.set_text('\n\n' + str(e) + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
-		sg.send(message)
+		if fail_mailed < 5:
+			sg.send(message)
+			fail_mailed += 1
+		else:
+			system.exit(str(e.message))
 	except Exception:
 		pass
 
