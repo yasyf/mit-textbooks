@@ -18,6 +18,9 @@ class CachedAPI():
 		query_params = ['{}={}'.format(key, urllib.quote_plus(value)) for key,value in query_params.items() if value]
 		url = "{}/{}?{}".format(self.endpoint, service, '&'.join(query_params))
 		if url not in self.cache:
-			self.cache[url] = requests.get(url, headers=self.default_headers()).json()
+			try:
+				self.cache[url] = requests.get(url, headers=self.default_headers()).json()
+			else:
+				return {}
 		return self.cache[url]
 		

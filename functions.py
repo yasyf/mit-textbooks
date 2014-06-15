@@ -959,3 +959,7 @@ def mail_password(user):
 		sg.send(message)
 	except Exception, e:
 		pass
+
+if __name__ == '__main__':
+	for c in classes.find({'error': None}):
+		send_to_worker(c['class'])
