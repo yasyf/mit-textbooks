@@ -32,6 +32,9 @@ esac
 if [[ STATIC -eq 1 ]]; then
 	foreman run python upload_static.py
 	heroku config:set REV=$(git rev-parse HEAD) --app mit-textbooks
+	for i in `seq 1 10`; do
+		curl -s 'http://textbooksearch.mit.edu/' > /dev/null &
+    done
 fi
 
 if [[ WEB -eq 1 ]]; then
