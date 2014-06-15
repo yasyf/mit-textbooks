@@ -97,7 +97,7 @@ def get_class(class_id):
 			class_objects[class_id] = class_obj
 			return class_obj
 	class_info = fetch_class_info(class_id)
-	if class_info:
+	if class_info and not class_info.get('error'):
 		class_obj = MITClass(class_info)
 		class_objects[class_id] = class_obj
 		class_d = class_obj.to_dict()
@@ -213,7 +213,6 @@ def check_json_for_class(result, class_id):
 
 def fetch_class_info(class_id):
 	client = CachedAPI('http://coursews.mit.edu', ('key',''))
-
 	result = client.make_request('coursews', term=TERM, courses=class_id.split('.')[0])
 	class_info = check_json_for_class(result, class_id)
 	if not class_info:
@@ -264,7 +263,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['course'] = class_info['class'].split('.')[0]
 		
 		old_class = classes.find_one({'class': class_info['class']})
-		if old_class:
+		if old_class and class_id != class_info['class']:
 			classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
 			c = classes.find_one({'class': old_class['class']})
 			algolia.partialUpdateObject({'objectID': str(c['_id']), "search_term": c['search_term']})
@@ -332,7 +331,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['class_site'] = get_class_site(class_id)
 		class_info['evaluation'] = get_subject_evaluation(class_id)
 		class_info['textbooks'] = get_textbook_info(class_id, class_info['semesters'])
-		class_info_cleaned['meta'] = get_embedly_info(class_info['class_site'])
+		class_info['meta'] = get_embedly_info(class_info['class_site'])
 		class_info['search_term'] = [class_id.lower()]
 		return class_info
 	except Exception:
