@@ -270,8 +270,13 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 				when.append(when_when)
 		class_info['semesters'] = when
 		class_info['hass'] = ''
+		class_info['ci'] = ''
 		for img in soup.find_all('img'):
-			if img.get('src') == "/icns/hassS.gif":
+			if img.get('src') == "/icns/cihw.gif":
+				class_info['ci'] = 'HW'
+			elif img.get('src') == "/icns/cih1.gif":
+				class_info['ci'] = 'H'
+			elif img.get('src') == "/icns/hassS.gif":
 				class_info['hass'] = 'S'
 			elif img.get('src') == "/icns/hassA.gif":
 				class_info['hass'] = 'A'
@@ -338,6 +343,7 @@ def clean_class_info(class_info, lecture_info):
 	class_info_cleaned['description'] = clean_html(class_info['description'])
 	class_info_cleaned['semesters'] = class_info['semester']
 	class_info_cleaned['hass'] = class_info['hass_attribute'][-1:]
+	class_info_cleaned['ci'] = class_info['comm_req_attribute'].replace('CI','')
 	class_info_cleaned['units'] = [int(x) for x in class_info['units'].split('-')]
 	class_info_cleaned['instructors'] = {'spring': [clean_html(i) for i in custom_parse_instructors(class_info['spring_instructors'])], 'fall': [clean_html(i) for i in custom_parse_instructors(class_info['fall_instructors'])]}
 	class_info_cleaned['stellar_url'] = get_stellar_url(class_info['id'])

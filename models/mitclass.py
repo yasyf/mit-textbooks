@@ -39,7 +39,8 @@ class MITClass():
 		self.coreqs = class_info['coreqs']
 		self.lecture = class_info['lecture'].replace('TBD','').replace('TBA','')
 		self.location = class_info['location'].replace('TBD','').replace('TBA','')
-		self.hass = class_info['hass']
+		self.hass = class_info.get('hass','')
+		self.ci = class_info.get('ci','')
 		self.semesters = class_info['semesters']
 		self.units = class_info['units']
 		self.instructors = class_info['instructors']
@@ -69,6 +70,7 @@ class MITClass():
 		d['lecture'] = self.lecture
 		d['location'] = self.location
 		d['hass'] = self.hass
+		d['ci'] = self.ci
 		d['semesters'] = self.semesters
 		d['units'] = self.units
 		d['credits'] = sum(self.units)

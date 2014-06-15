@@ -41,7 +41,10 @@
 			This class counts for a total of
 			<a class="popover_activate" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ class_obj.units_detail() }}">{{ class_obj.units|sum }} credits</a>.
 			{% if class_obj.hass %}
-			This class counts as a HASS <strong>{{ class_obj.hass }}</strong>.
+			This class counts as a <strong>HASS {{ class_obj.hass }}</strong>.
+			{% endif %}
+			{% if class_obj.ci %}
+			This class counts as a <strong>CI-{{ class_obj.ci }}</strong>.
 			{% endif %}
 			{% if class_obj.grad %}
 			This is a graduate-level class.

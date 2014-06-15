@@ -187,7 +187,7 @@ if __name__ == '__main__':
 	all_r = [x['class'] for x in all_recents]
 	data = dict(zip(all_c, all_classes))
 	distance_fields = ['rating', 'learning_objectives_met', 'home_hours', 'classroom_hours', 'pace', 'assigments_useful', 'expectations_clear', 'grading_fair', 'lab_hours', 'prep_hours']
-	bool_fields = ['course', 'grad', 'hass']
+	bool_fields = ['course', 'grad', 'hass', 'ci']
 	bool_fields_deep = ['units', 'prereqs', 'coreqs', 'semesters', 'meta.keywords', 'meta.entities']
 	custom_fields = ['name', 'description', 'in_groups', 'in_history', 'less_advanced']
 	fields = distance_fields + bool_fields + bool_fields_deep + custom_fields
