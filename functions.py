@@ -434,6 +434,9 @@ def try_url(url):
 		return requests.get(url, verify=False, cert='cert.pem')
 	except requests.exceptions.TooManyRedirects:
 		return None
+	except requests.exceptions.ConnectionError:
+		sleep 1
+		return None
 
 def get_google_url(term):
 	return "http://www.google.com/search?&q={q}&btnG=Google+Search&inurl=https".format(q=urllib.quote_plus(term))
