@@ -46,8 +46,8 @@ def fail_mail(e):
 	message.add_to(os.getenv('admin_email'))
 	message.set_subject('Crashing Worker @ MIT Textbooks')
 	trace = traceback.format_exc() 
-	message.set_html('<pre>' + repr(task) + '</pre><br><br>' + e.message + '<br><br><pre>' + trace + '</pre>')
-	message.set_text(repr(task) + '\n\n' + e.message + '\n\n' + trace)
+	message.set_html('<pre>' + repr(task) + '</pre><br><br>' + str(e.message) + '<br><br><pre>' + repr(trace) + '</pre>')
+	message.set_text(repr(task) + '\n\n' + str(e.message) + '\n\n' + repr(trace))
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
 		sg.send(message)
