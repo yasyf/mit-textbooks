@@ -195,9 +195,8 @@ def create_group_info(classes, _hash):
 	group_info['class_ids'] = classes.split(',')
 	return group_info
 
-def check_json_for_class(url, class_id):
-	response = requests.get(url)
-	json_data = response.json(strict=False)["items"]
+def check_json_for_class(result, class_id):
+	json_data = result["items"]
 	relevant = {}
 	_id = clean_html(class_id)
 	for element in json_data:
@@ -208,11 +207,13 @@ def check_json_for_class(url, class_id):
 	return relevant
 
 def fetch_class_info(class_id):
-	url = "http://coursews.mit.edu/coursews/?term={term}&courses={course_number}".format(term=TERM, course_number=class_id.split('.')[0])
-	class_info = check_json_for_class(url, class_id)
+	client = CachedAPI('http://coursews.mit.edu', ('key',''))
+
+	result = client.make_request('coursews', term=TERM, courses=class_id.split('.')[0])
+	class_info = check_json_for_class(result, class_id)
 	if not class_info:
-		url = "http://coursews.mit.edu/coursews/?term={term}&courses={course_number}".format(term=TERM_LAST, course_number=class_id.split('.')[0])
-		class_info = check_json_for_class(url, class_id)
+		result = client.make_request('coursews', term=TERM_LAST, courses=class_id.split('.')[0])
+		class_info = check_json_for_class(result, class_id)
 	if class_info:
 		return clean_class_info(class_info['class'], class_info['lecture'] if 'lecture' in class_info else None)
 	else:
@@ -959,7 +960,3 @@ def mail_password(user):
 		sg.send(message)
 	except Exception, e:
 		pass
-
-if __name__ == '__main__':
-	for c in classes.find({'error': None}):
-		send_to_worker(c['class'])
