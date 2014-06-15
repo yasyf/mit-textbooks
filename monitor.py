@@ -57,6 +57,9 @@ def fail_mail(e):
 for c in classes.find({'error': None}):
 	algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c.get('views', 0)})
 
+for c in classes.find({"error": {"$exists": True}}):
+	algolia.deleteObject(str(c['_id']))
+
 try:
 	while True:
 		last_task = task
