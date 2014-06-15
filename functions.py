@@ -107,7 +107,11 @@ def get_class(class_id):
 		class_d['objectID'] = str(class_d['_id'])
 		algolia.saveObject(class_d)
 		return class_obj
-	classes.update({"class": class_id}, {"$set": {"error": 404, 'dt': time.time()}}, upsert=True)
+
+	if not classes.find_one({'class': class_id}):
+		classes.update({"class": class_id}, {"$set": {"error": 404, 'dt': time.time()}}, upsert=True)
+	else:
+		classes.update({"class": class_id}, {"$set": {"semesters": [], 'dt': time.time()}})
 
 def get_embedly_info(class_site):
 	endpoint = "http://api.embed.ly/1"
