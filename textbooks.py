@@ -626,7 +626,7 @@ def classes_length_filter(s):
 
 @app.template_filter('errors_length')
 def errors_length_filter(s):
-	return classes.find({'error': {'$exists': 1}}).count()
+	return classes.find({'error': {'$ne': None}}).count()
 
 @app.template_filter('get_display_names')
 def get_display_names_filter(classes):
