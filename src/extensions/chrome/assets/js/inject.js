@@ -57,11 +57,11 @@ function injectLink(node) {
 	href = node.attr('href').toLowerCase();
 	matches = href.match(mit_textbooks_inject_re);
 	if (matches) {
-		if (href.indexOf('?') !== -1) {
-			href += '&tag=mit-tb-20';
-		}
-		else if (href.indexOf('tag=') !== -1){
+		if (href.indexOf('tag=') !== -1){
 			href = href.replace(mit_textbooks_inject_replace_re, "tag=mit-tb-20");
+		}
+		else if (href.indexOf('?') !== -1) {
+			href += '&tag=mit-tb-20';
 		}
 		else {
 			href += '?tag=mit-tb-20';
