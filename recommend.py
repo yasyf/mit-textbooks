@@ -2,7 +2,7 @@ from setup import *
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-import pickle, Levenshtein, time, re, os, traceback, system
+import pickle, Levenshtein, time, re, os, traceback, sys
 import multiprocessing, gc
 
 fail_mailed = 0
@@ -35,7 +35,7 @@ def fail_mail(e):
 			sg.send(message)
 			fail_mailed += 1
 		else:
-			system.exit(str(e.message))
+			sys.exit(str(e.message))
 	except Exception:
 		pass
 

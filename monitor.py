@@ -1,5 +1,5 @@
 from functions import *
-import system
+import sys
 
 init_auth_browser()
 
@@ -56,7 +56,7 @@ def fail_mail(e):
 			sg.send(message)
 			fail_mailed += 1
 		else:
-			system.exit(str(e.message))
+			sys.exit(str(e.message))
 	except Exception:
 		pass
 
