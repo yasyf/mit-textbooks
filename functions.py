@@ -388,7 +388,10 @@ def clean_class_info(class_info, lecture_info):
 	return class_info_cleaned
 
 def get_eecs_staff(c):
-	data = requests.get('https://eecs.scripts.mit.edu/eduportal/who_is_teaching_what_data_out/F/{y}/'.format(y=datetime.date.today().year)).text
+	r = requests.get('https://eecs.scripts.mit.edu/eduportal/who_is_teaching_what_data_out/F/{y}/'.format(y=datetime.date.today().year))
+	if r.status_code != requests.codes.ok:
+		return []
+	data = r.text
 	reader = csv.DictReader(StringIO.StringIO(data), fieldnames=['class','name','first_name','last_name','title'])
 	instructors = []
 	for row in reader:
