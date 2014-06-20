@@ -1,7 +1,7 @@
 <a id='{{ class_obj.id.replace('.','-') }}'></a>
 <h1>{{ class_obj.display_name()|safe }}</h1>
 {% if not group_obj %}
-<p>
+<p class='hide-on-native'>
 	<button type="button" class="btn btn-primary btn-sm" onclick="share();">Share on Facebook</button>
 	<button type="button" class="btn btn-primary btn-sm" onclick="embedly.modal();">Embed</button>
 </p>

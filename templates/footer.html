@@ -1,5 +1,5 @@
-<hr>
-<div class="row">
+<hr class='hide-on-native'>
+<div class="row hide-on-native">
     <div class="col-xs-4">
         <p>
             {% if g.user %}
@@ -12,14 +12,13 @@
             {% endif %}
             {% endif %}
             {% else %}
-            <a class="btn btn-primary btn-sm hide-on-native" onclick="resetCookies();$('#login_modal').modal();">Login</a>
-            <a class="btn btn-primary btn-sm show-on-native" href="{{ url_for('login_view') }}">Login</a>
+            <a class="btn btn-primary btn-sm" onclick="resetCookies();$('#login_modal').modal();">Login</a>
             {% endif %}
         </p>
     </div>
     <div class="col-xs-4 text-center">
         <p>
-            <a onclick="$('#special_modal').modal()" class="btn btn-primary btn-sm hidden-xs hide-on-native">Special Pages</a>
+            <a onclick="$('#special_modal').modal()" class="btn btn-primary btn-sm hidden-xs">Special Pages</a>
         </p>
     </div>
     <div class="col-xs-4 text-right">
@@ -29,16 +28,16 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row hide-on-native">
     <div class="col-xs-6">
-        <p class='hide-on-native'>
+        <p>
             {% if g.user %}
             You are logged in as {{ g.user.name }}<br>
             {% endif %}
         </p>
     </div>
     <div class="col-xs-6 text-right">
-        <p class='hide-on-native'>
+        <p>
             &copy; Copyright 2014 <a href='http://www.yasyf.com' class='hidden-xs' target='_blank'>Yasyf Mohamedali</a>
         </p>
     </div>

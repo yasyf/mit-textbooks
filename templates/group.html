@@ -25,7 +25,7 @@
 	<strong class='sub_heading'><a href="#{{ class_obj.id.replace('.','-') }}" onclick='animateTo("#{{ class_obj.id.replace('.','-') }}"); return false;'>{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }}){% if not loop.last %},{% endif %}
 	{% endfor %}
 </p>
-<p>
+<p class='hide-on-native'>
 	{% if g.user %}
 	<button type="button" class="btn btn-primary btn-sm" onclick="$('#courseroad_modal').modal();">
 		CourseRoad
