@@ -64,6 +64,9 @@ def preprocess_request():
 
 	g.ip = request.headers.get("X-Forwarded-For", '')
 
+	if request.args.get('voice'):
+		session['voice'] = True
+
 @app.after_request
 def postprocess_request(response):
 	response.headers['X-UA-Compatible'] = 'IE=edge,chrome=1'

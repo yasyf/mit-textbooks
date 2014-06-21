@@ -1,3 +1,5 @@
+var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
+
 if (!(window.ActiveXObject) && "ActiveXObject" in window) {
   $('#gobtn').css('top',0);
 }
@@ -25,7 +27,6 @@ var trackOutboundLink = function(url, c, s) {
 
 $('.popover_activate').popover();
 if (window.matchMedia("only screen and (min-width : 769px)").matches) {
-  var mit_textbooks_re = /((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.([0-9]{2,4}[AJaj]?))/g;
   var client = new AlgoliaSearch('XBE4YTW1TS', '7a8a7ecc7cf2935949f179ba1567aef1');
   var index = client.initIndex('classes');
   var loading = false;

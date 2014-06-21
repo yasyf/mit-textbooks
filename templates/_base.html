@@ -123,5 +123,26 @@
       ga('set', '&uid', "{{ g.user.get_id() }}");
   {% endif %}
   </script>
+
+  {% if request.args.voice or session.voice %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/1.1.0/annyang.min.js"></script>
+    <script>
+    if (annyang) {
+      var commands = {
+        'search for *term': function(term) {
+          var matches = term.match(mit_textbooks_re);
+          if (matches){
+            window.location = "{{ url_for('go_view', search_term='TERM') }}".replace('TERM', term);
+          } else {
+            $("#search_input").focus();
+            $("#search_input").typeahead('val', term);
+          }
+        }
+      };
+      annyang.addCommands(commands);
+      annyang.start();
+    }
+    </script>
+  {% endif %}
 </body>
 </html>
