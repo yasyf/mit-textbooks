@@ -920,8 +920,9 @@ def get_sorted_classes(original_filters):
 		try:
 			value = value.split(',')
 			value = [val_replacements[v.lower()] if v.lower() in val_replacements else v for v in value]
-			if key.lower() in key_replacements:
-				key = key_replacements[key.lower()]
+			key = key.lower()
+			if key in key_replacements:
+				key = key_replacements[key]
 		except AttributeError:
 			value = [value]
 		filters[key] = value
