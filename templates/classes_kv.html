@@ -4,8 +4,8 @@
 {% block css %}<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">{% endblock %}
 
 {% block meta %}
-<link rel='canonical' href="{{ url_for('class_kv_view', key=k, value=v, _external=True) }}">
-<meta property="og:url" content="{{ url_for('class_kv_view', key=k, value=v, _external=True) }}">
+<link rel='canonical' href="{{ url_for('class_kv_view', key=k.lower(), value=v, _external=True) }}">
+<meta property="og:url" content="{{ url_for('class_kv_view', key=k.lower(), value=v, _external=True) }}">
 {% endblock %}
 
 {% block body %}
