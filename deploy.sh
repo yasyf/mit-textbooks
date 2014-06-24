@@ -42,7 +42,7 @@ if [[ WEB -eq 1 ]]; then
 	git checkout -b web_procfile
 	echo "web: ./web.sh" > Procfile
 	git add Procfile
-	git commit -m 'web Procfile'
+	git commit --amend --no-edit
 	git push heroku web_procfile:master --force
 	git checkout master
 	git branch -D web_procfile
@@ -58,7 +58,7 @@ if [[ RECOMMENDERS -eq 1 ]]; then
 	git add Procfile
 	echo -e "\nnumpy==1.7.0\nscipy==0.11.0\nscikit-learn==0.14.1\npandas==0.13.1" >> requirements.txt
 	git add requirements.txt
-	git commit -m 'recommender Procfile and requirements.txt'
+	git commit --amend --no-edit
 	git push recommender-1 recommender_procfile:master --force
 	git push recommender-2 recommender_procfile:master --force
 	git push recommender-3 recommender_procfile:master --force
@@ -72,7 +72,7 @@ if [[ WORKERS -eq 1 ]]; then
 	git checkout -b worker_procfile
 	echo "worker: ./worker.sh" > Procfile
 	git add Procfile
-	git commit -m 'worker Procfile'
+	git commit --amend --no-edit
 	git push worker-1 worker_procfile:master --force
 	git push worker-2 worker_procfile:master --force
 	git push worker-3 worker_procfile:master --force
