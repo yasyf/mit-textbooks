@@ -383,7 +383,7 @@ def login_view():
 
 		else:
 			session['email'] = False
-			flash('That user does not exist.', 'danger')
+			flash("That user doesn't exist!", 'danger')
 		return redirect(url_for('login_view'))	
 	else:
 		return render_template('login.html', hide_search=True)
