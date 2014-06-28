@@ -3,12 +3,18 @@
 {% block body %}
 <h1>Mobile Lockout</h1>
 
+{% if g.user and g.user.is_mobile_locked_out() %}
 <p>
 	You account has been locked out, as you have tried to login on mobile too many times.
 </p>
 <p>
 	Please login to the site on a desktop computer, and visit the 'Account' page to unlock your account.
 </p>
+{% else %}
+<p>
+	Your current mobile password has been emailed to you. Please check your MIT email to login.
+</p>
+{% endif %}
 <p>
 	Your current mobile password can be found on the same 'Account' page.
 </p>

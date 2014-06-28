@@ -390,6 +390,10 @@ def login_view():
 
 @app.route('/forgot')
 def forgot_view():
+	if session.get('email'):
+		user = get_user(session.get('email'), None, create=False)
+		if user.is_logged_in():
+			mail_password(user)
 	return render_template('forgot.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
