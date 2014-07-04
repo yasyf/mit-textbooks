@@ -253,6 +253,16 @@ def calendar_view(group_id):
 @app.route('/overview/<class_id>')
 @modifiers.cache_for(days=1)
 def overview_view(class_id):
+	if not check_class(class_id):
+		send_to_worker(class_id)
+		return redirect(url_for('loading_view', class_ids=class_id))
+	session['loading'] = None
+	class_obj = get_class(class_id)
+	if class_obj is None:
+		session['404'] = [class_id]
+		return redirect(url_for('_404_view'))
+	if class_obj.master_subject_id != class_obj.id or class_id != class_obj.id:
+		return redirect(url_for('overview_view', class_id=class_obj.master_subject_id))
 	return render_template('overview.html', class_obj=get_class(class_id))
 
 @app.route('/json/class/<class_id>')
