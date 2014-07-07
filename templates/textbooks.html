@@ -1,6 +1,7 @@
 {% extends "_base.html" %}
 {% block title %}Locally Available Texbooks{% endblock %}
 {% block description %}All of the textbooks available on and off campus for MIT classes. Save time and money by buying locally!{% endblock %}
+{% block og_description %}All of the textbooks available on and off campus for MIT classes. Save time and money by buying locally!{% endblock %}
 
 {% block meta %}
 <link rel='canonical' href="{{ url_for('textbooks_view', _external=True) }}">
@@ -44,7 +45,7 @@
 
 		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" style="height:70%;overflow-y:scroll;overflow-x:visible;">
 			{% for c in classes %}
-			<li><a class='sidebar-link' href="#{{ c.replace('.','-') }}">{{ c }}</a></li>
+			<li><a class='sidebar-link' href="#c_{{ c.replace('.','_') }}">{{ c }}</a></li>
 			{% endfor %}
 		</ul>
 

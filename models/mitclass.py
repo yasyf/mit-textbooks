@@ -110,7 +110,7 @@ class MITClass():
 					return self._image
 
 	def safe_id(self):
-		return self.id.replace(".","")
+		return 'c_' + self.id.replace(".","_")
 
 	def display_name(self, short=False):
 		name = self.name

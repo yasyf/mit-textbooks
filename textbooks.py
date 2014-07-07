@@ -237,8 +237,6 @@ def class_view(class_id):
     view_classes([class_id])
   g.search_val = class_id
   rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
-  print rec
-  print class_obj.get_rec(g.user) 
   return render_template('class.html', class_obj=class_obj, rec=rec)
 
 @app.route('/calendar/<group_id>')

@@ -40,8 +40,16 @@ blockquote{
 	vertical-align: -1px;
 }
 
+#sidebar {
+	margin-top: 10px;
+	height: 90%;
+	overflow-y: scroll;
+	overflow-x:visible;
+}
+
 #sidebar.affix-top {
 	position: static;
+	width: 100px;
 }
 
 #sidebar.affix {
@@ -96,6 +104,10 @@ blockquote{
 }
 
 @media only screen and (min-width : 769px) {
+	body {
+		position: relative;
+	}
+
 	.mit_logo {
 		height: 35px;
 		vertical-align: -5px;

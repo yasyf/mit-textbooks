@@ -22,7 +22,7 @@
 <p>
 	<h1>{% if group_obj.named %} {{ group_obj.name }} {% else %} {{ group_obj.class_ids|length }} Classes {% endif %} ({{ classes|sum_units }} Units)</h1>
 	{% for class_obj in classes %}
-	<strong class='sub_heading'><a href="#{{ class_obj.id.replace('.','-') }}" onclick='animateTo("#{{ class_obj.id.replace('.','-') }}"); return false;'>{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }}){% if not loop.last %},{% endif %}
+	<strong class='sub_heading'><a href="#{{ class_obj.safe_id() }}" onclick='animateTo("#{{ class_obj.safe_id() }}"); return false;'>{{ class_obj.id }}</a></strong> ({{ class_obj.units|sum }}){% if not loop.last %},{% endif %}
 	{% endfor %}
 </p>
 <p class='hide-on-native'>

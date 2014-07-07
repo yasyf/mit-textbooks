@@ -4,8 +4,7 @@
 
 		{% for c in classes %}
 
-		<a id="{{ c.class.replace('.','-') }}"></a>
-		{% if not loop.first %}<hr>{% endif %}
+		<hr id="c_{{ c.class.replace('.','_') }}">
 
 		<a href="{{ url_for('class_view', class_id=c.class) }}" class="list-group-item">
 			<h4 class="list-group-item-heading">{{ c.title }}</h4>
@@ -18,9 +17,9 @@
 	</div>
 
 	<div class="col-md-1 hidden-xs hidden-sm" id="nav-parent">
-		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" style="height:70%;overflow-y:scroll;overflow-x:visible;">
+		<ul class="nav nav-pills nav-stacked" id="sidebar" data-spy="affix" data-offset-top="110" data-offset-bottom="150">
 			{% for c in classes %}
-			<li><a class='sidebar-link' href="#{{ c.class.replace('.','-') }}">{{ c.class }}</a></li>
+			<li><a class='sidebar-link' href="#c_{{ c.class.replace('.','_') }}">{{ c.class }}</a></li>
 			{% endfor %}
 		</ul>
 

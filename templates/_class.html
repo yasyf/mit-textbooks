@@ -1,4 +1,4 @@
-<a id='{{ class_obj.id.replace('.','-') }}'></a>
+<a id='{{ class_obj.safe_id() }}'></a>
 <h1>{{ class_obj.display_name()|safe }}</h1>
 {% if not group_obj %}
 <p class='hide-on-native'>
