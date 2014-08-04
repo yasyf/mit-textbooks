@@ -44,7 +44,7 @@ def error_mail(e):
 	message = sendgrid.Mail()
 	message.add_to(os.getenv('admin_email'))
 	message.set_subject('500 Internal Server Error @ MIT Textbooks')
-	trace = traceback.format_exc() 
+	trace = traceback.format_exc()
 	message.set_html(request.url + '<br><br>' + e.message + '<br><br><pre>' + trace + '</pre>')
 	message.set_text(request.url + '\n\n' + e.message + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
@@ -144,7 +144,7 @@ def get_embedly_info(class_site):
 	c['description'] = description
 
 	return c
-		
+
 
 def update_textbooks(class_id):
 	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
@@ -202,14 +202,15 @@ def create_group_info(classes, _hash):
 	return group_info
 
 def check_json_for_class(result, class_id):
-	json_data = result["items"]
+	json_data = result.get("items")
 	relevant = {}
-	_id = clean_html(class_id)
-	for element in json_data:
-		if element['type'] == 'Class' and element['id'] == _id:
-			relevant['class'] = element
-		elif element['type'] == 'LectureSession' and element['section-of'] == _id:
-			relevant['lecture'] = element
+	if json_data:
+		_id = clean_html(class_id)
+		for element in json_data:
+			if element['type'] == 'Class' and element['id'] == _id:
+				relevant['class'] = element
+			elif element['type'] == 'LectureSession' and element['section-of'] == _id:
+				relevant['lecture'] = element
 	return relevant
 
 def fetch_class_info(class_id):
@@ -265,7 +266,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 		class_info['short_name'] = custom_shorten_name(class_info['name'])
 		class_info['master_subject_id'] = class_info['class']
 		class_info['course'] = class_info['class'].split('.')[0]
-		
+
 		old_class = classes.find_one({'class': class_info['class'], 'description': {'$ne': None}})
 		if old_class and class_id != class_info['class']:
 			classes.update({'_id': old_class['_id']}, {"$set": {'error': None}, "$addToSet": {"search_term": class_id.lower()}})
@@ -311,7 +312,7 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
 					for instructor in final_instructors:
 						search_google(instructor + ' + MIT')
 					class_info['instructors'] = {k.lower():(final_instructors if k in when else []) for k in ['Fall', 'Spring']}
-		
+
 		prereq_index_start = ssoup.find("Prereq: ") + 8
 		if prereq_index_start:
 			prereq_index_end = ssoup.find("<br/>",prereq_index_start)-1
@@ -383,7 +384,7 @@ def clean_class_info(class_info, lecture_info):
 
 	for key, instructor_set in class_info_cleaned['instructors'].iteritems():
 		class_info_cleaned['instructors'][key] = [instructor for instructor in instructor_set if test_instructor(instructor)]
-	
+
 	for instructor_set in class_info_cleaned['instructors'].values():
 		for instructor in instructor_set:
 			search_google(instructor + ' + MIT')
@@ -401,7 +402,7 @@ def get_eecs_staff(c):
 		if row['class'] == c and 'Lecturer' in row['title']:
 			instructors.append(row['first_name'] + ' ' + row['last_name'])
 	def initialize(instructor):
-		l = clean_html(instructor).split(' ') 
+		l = clean_html(instructor).split(' ')
 		return ' '.join([x[0] + '.' for x in l[:-1]]) + ' ' + l[-1]
 	return [initialize(x) for x in instructors]
 
@@ -698,17 +699,17 @@ def get_amazon_info(isbn, title, author):
 	return d
 
 def process_title(title, author, titles):
-	
+
 	replacements = {"W/6 Mo": "With 6 Month", " + ": " and ", "+": " and "}
 	removals = ["4e", "(Cs)", ">Ic", "and Study Guide"]
-	
+
 	if "Ebk" in title and len(titles) > 0:
 		Levenshtein_ratios = dict()
 		for t in titles:
 			Levenshtein_ratios[t[0]] = Levenshtein.ratio(t[1], title + " by " + author)
 		title = max(Levenshtein_ratios.iteritems(), key=operator.itemgetter(1))[0]
 		return "[Ebook] " + title
-		
+
 	else:
 		for k,v in replacements.iteritems():
 			title = title.replace(k,v)
