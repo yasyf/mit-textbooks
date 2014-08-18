@@ -353,7 +353,7 @@ def coinbase_callback_view():
 
 @app.route('/flash', methods=['POST'])
 def flash_view():
-  flash(request.json['message'], request.json.get('type', 'success'))
+  flash(request.form['message'], request.form.get('type', 'success'))
   return jsonify({'status': 'success'})
 
 @app.route('/account')
