@@ -345,6 +345,11 @@ def get_button_view(class_id, tb_id):
   button = get_button(class_id, tb_id)
   return jsonify(button['button'])
 
+@app.route('/coinbase', methods=['POST'])
+def coinbase_callback_view():
+  orders.insert(request.json)
+  return jsonify({'status': 'success'})
+
 @app.route('/account')
 def account_view():
   if 'override_url' in session:
