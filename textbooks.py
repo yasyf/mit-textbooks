@@ -351,6 +351,11 @@ def coinbase_callback_view():
   mail_order(request.json['order'])
   return jsonify({'status': 'success'})
 
+@app.route('/flash', methods=['POST'])
+def flash_view():
+  flash(request.json['message'], request.json.get('type', 'success'))
+  return jsonify({'status': 'success'})
+
 @app.route('/account')
 def account_view():
   if 'override_url' in session:

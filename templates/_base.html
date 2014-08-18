@@ -163,6 +163,26 @@
     id = $(el).attr('data-code');
     $(document).trigger('coinbase_show_modal', id);
   }
+  function flash(message, type) {
+    $.post("{{ url_for('flash_view') }}", {message: message, type: type})
+    .then(function(response){
+      window.location.reload();
+    });
+  }
+  $(document).on('coinbase_payment_complete', function(event, code){
+    console.log("Payment completed for button " + code);
+    window.location = "/confirmation.html";
+  });
+
+  $(document).on('coinbase_payment_mispaid', function(event, code) {
+    console.log("Payment mispaid for button " + code);
+    window.location = "/try-again.html";
+  });
+
+  $(document).on('coinbase_payment_expired', function(event, code) {
+    console.log("Payment expired for button " + code);
+    window.location = "/maybe-later.html";
+  });
   </script>
 </body>
 </html>

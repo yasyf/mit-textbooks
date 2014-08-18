@@ -783,6 +783,8 @@ def tb_id_to_tb(class_id, textbook_id):
 
 def get_button(class_id, tb_id):
 	tb = tb_id_to_tb(class_id, tb_id)
+	if not tb:
+		return
 	d = {'tb_id': tb_id, 'class_id': class_id}
 	button = buttons.find_one(d)
 	if button is not None:
