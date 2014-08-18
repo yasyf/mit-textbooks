@@ -31,7 +31,8 @@ def make_coinbase_request(url, body=None):
 
   try:
     resp = opener.open(req)
-    if 'error' in json.loads(resp):
+    resp = json.loads(resp.read())
+    if 'error' in resp:
       return make_coinbase_request(url, body)
     else:
       return resp

@@ -797,7 +797,7 @@ def get_button(class_id, tb_id):
 	    'type': 'buy_now',
 	    'custom': json.dumps({'tb_id': tb_id, 'class_id': class_id, 'user': g.user.get_id() if g.user else None}),
 	    'price_string' : str(price*1.15),
-	    'description': '{} by {} from MIT Textbooks ({})'.format(tb['title'], tb['author'], tb.get('availability', 'Ship as soon as possible.')),
+	    'description': u'{} by {} from MIT Textbooks ({})'.format(tb['title'], tb['author'], tb.get('availability', 'Ship as soon as possible.')),
 	    'price_currency_iso' : 'USD',
 	    'style': 'none',
 	    "include_email": True,
@@ -808,8 +808,8 @@ def get_button(class_id, tb_id):
 	    'info_url': url
 	  }
 	}
-	resp = make_coinbase_request('https://coinbase.com/api/v1/buttons', body=json.dumps(params)).read()
-	d.update(json.loads(resp))
+	resp = make_coinbase_request('https://coinbase.com/api/v1/buttons', body=json.dumps(params))
+	d.update(resp)
 	if 'button' not in d:
 		return
 	buttons.insert(d)
@@ -1038,7 +1038,7 @@ def mail_order(order):
 	message.set_subject('Your MIT Textbooks Order')
 	address_text = "\n".join(order['customer']['shipping_address'])
 	address_html = "<pre>{}</pre>".format(address_text)
-	message_text = """This is a confirmation of your purchase of {} by {} from MIT Textbooks. Your total was ${} {}. Your order identifier is {}.
+	message_text = u"""This is a confirmation of your purchase of {} by {} from MIT Textbooks. Your total was ${} {}. Your order identifier is {}.
 We will ship your textbook to the following address as soon as possible.
 {}"""
 	message_text = message_text.format(tb['title'], tb['author'], order['total_native']['cents']/100, order['total_native']['currency_iso'], order['id'], address_text)
