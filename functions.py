@@ -796,7 +796,7 @@ def get_button(class_id, tb_id):
 	    'name' : tb['title'],
 	    'type': 'buy_now',
 	    'custom': json.dumps({'tb_id': tb_id, 'class_id': class_id, 'user': g.user.get_id() if g.user else None}),
-	    'price_string' : str(price*1.1),
+	    'price_string' : str(price*1.15),
 	    'description': '{} by {} from MIT Textbooks ({})'.format(tb['title'], tb['author'], tb.get('availability', 'Ship as soon as possible.')),
 	    'price_currency_iso' : 'USD',
 	    'style': 'none',
