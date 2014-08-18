@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import urllib2
 import time
+import json
 
 #This code sample demonstrates a GET and a POST call to the Coinbase API
 #Before implementation, set environmental variables with the names API_KEY and API_SECRET.
@@ -29,7 +30,11 @@ def make_coinbase_request(url, body=None):
     req = urllib2.Request(url, headers=headers)
 
   try:
-    return opener.open(req)
+    resp = opener.open(req)
+    if 'error' in json.loads(resp):
+      return make_coinbase_request(url, body)
+    else:
+      return resp
   except urllib2.HTTPError as e:
     print e
     return e

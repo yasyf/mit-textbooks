@@ -810,6 +810,8 @@ def get_button(class_id, tb_id):
 	}
 	resp = make_coinbase_request('https://coinbase.com/api/v1/buttons', body=json.dumps(params)).read()
 	d.update(json.loads(resp))
+	if 'button' not in d:
+		return
 	buttons.insert(d)
 	return d
 
