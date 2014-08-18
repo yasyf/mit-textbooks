@@ -348,6 +348,7 @@ def get_button_view(class_id, tb_id):
 @app.route('/coinbase', methods=['POST'])
 def coinbase_callback_view():
   orders.insert(request.json)
+  mail_order(request.json['order'])
   return jsonify({'status': 'success'})
 
 @app.route('/account')

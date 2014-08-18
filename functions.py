@@ -12,6 +12,7 @@ from models.mitclassgroup import MITClassGroup
 from models.mituser import MITUser
 from api import CachedAPI
 from coinbase import make_coinbase_request
+import HTMLParser
 
 class_objects = {}
 group_objects = {}
@@ -1012,6 +1013,29 @@ def mail_password(user):
 	password = user.get_password()
 	message.set_html('<pre>' + password + '</pre>')
 	message.set_text(password)
+	message.set_from('MIT Textbooks <tb_support@mit.edu>')
+	try:
+		sg.send(message)
+	except Exception, e:
+		pass
+
+def mail_order(order):
+	custom = HTMLParser.HTMLParser().unescape((order['custom']))
+	info = json.loads(custom)
+	tb = tb_id_to_tb(info['class_id'], info['tb_id'])
+	message = sendgrid.Mail()
+	message.add_to(order['customer']['email'])
+	message.add_bcc('tb_support@mit.edu')
+	message.set_subject('Your MIT Textbooks Order')
+	address_text = "\n".join(order['customer']['shipping_address'])
+	address_html = "<pre>{}</pre>".format(address_text)
+	message_text = """This is a confirmation of your purchase of {} by {} from MIT Textbooks. Your total was ${} {}. Your order identifier is {}.
+We will ship your textbook to the following address as soon as possible.
+{}"""
+	message_text = message_text.format(tb['title'], tb['author'], order['total_native']['cents']/100, order['total_native']['currency_iso'], order['id'], address_text)
+	message_html = message_text.replace("\n", "<br>").format(tb['title'], tb['author'], order['total_native']['cents']/100, order['total_native']['currency_iso'], address_html)
+	message.set_html(message_html)
+	message.set_text(message_text)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
 	try:
 		sg.send(message)
