@@ -11,6 +11,7 @@ from models.mitclass import MITClass
 from models.mitclassgroup import MITClassGroup
 from models.mituser import MITUser
 from api import CachedAPI
+from coinbase import make_coinbase_request
 
 class_objects = {}
 group_objects = {}
@@ -771,6 +772,38 @@ def get_mit_info(email):
 		if pre.text.find("No matches") == -1:
 			l = [x.split(":")[-1].strip() for x in pre.text.split("\n")]
 			return (l[0], l[2], l[3]) #name, dorm, year
+
+def tb_id_to_tb(class_id, textbook_id):
+	class_obj = get_class(class_id)
+	for section in class_obj.textbooks['sections'].values():
+		for book in section:
+			if tb_id(book) == textbook_id:
+				return book
+
+def get_button(class_id, tb_id):
+	tb = tb_id_to_tb(class_id, tb_id)
+	d = {'tb_id': tb_id, 'class_id': class_id}
+	button = buttons.find_one(d)
+	if button is not None:
+		return button
+	params =  {
+	  'button': {
+	    'name' : tb['title'],
+	    'type': 'buy_now',
+	    'custom': json.dumps({'tb_id': tb_id, 'class_id': class_id, 'user': g.user.get_id() if g.user else None}),
+	    'price_string' : tb.get('new', tb.get('used', tb.get('retail'))),
+	    'description': '{} by {} from MIT Textbooks ({})'.format(tb['title'], tb['author'], tb.get('availability', 'Ship as soon as possible.')),
+	    'price_currency_iso' : 'USD',
+	    'style': 'none',
+	    "include_email": True,
+	    'include_address': True,
+	    'custom_secure': True
+	  }
+	}
+	resp = make_coinbase_request('https://coinbase.com/api/v1/buttons', body=json.dumps(params)).read()
+	d.update(json.loads(resp))
+	buttons.insert(d)
+	return d
 
 def sell_textbook(class_id, tb_id, form):
 	d = {}

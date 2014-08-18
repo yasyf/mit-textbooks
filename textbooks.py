@@ -43,7 +43,7 @@ def request_wants_json():
 def preprocess_request():
   browser = request.user_agent.browser
   version = request.user_agent.version and int(request.user_agent.version.split('.')[0])
- 
+
   if request.endpoint != 'static' and browser and version:
     if (browser == 'msie' and version < 10):
       return render_template('unsupported.html')
@@ -340,6 +340,11 @@ def remove_offer_view(class_id, offer_id):
   flash('Your textbook has been removed from MIT Textbooks.', 'danger')
   return redirect(url_for('class_view', class_id=class_id))
 
+@app.route('/get_button/<class_id>/<tb_id>')
+def get_button_view(class_id, tb_id):
+  button = get_button(class_id, tb_id)
+  return jsonify(button['button'])
+
 @app.route('/account')
 def account_view():
   if 'override_url' in session:
@@ -394,7 +399,7 @@ def login_view():
     else:
       session['email'] = False
       flash("That user doesn't exist!", 'danger')
-    return redirect(url_for('login_view'))  
+    return redirect(url_for('login_view'))
   else:
     return render_template('login.html', hide_search=True)
 
@@ -416,7 +421,7 @@ def logout_view():
 def search_view():
   if request.method == 'GET':
     return redirect(url_for('index_view'))
-  _id = request.form.get('_id') 
+  _id = request.form.get('_id')
   search_term = request.form.get('search_term')
   return go_view(search_term, _id=_id)
 
@@ -555,11 +560,7 @@ def tb_id_filter(textbook):
 
 @app.template_filter('tb_id_to_tb')
 def tb_id_to_tb_filter(class_id, textbook_id):
-  class_obj = get_class(class_id)
-  for section in class_obj.textbooks['sections'].values():
-    for book in section:
-      if tb_id(book) == textbook_id:
-        return book
+  return tb_id_to_tb(class_id, textbook_id)
 
 @app.template_filter('space_out')
 def space_out_filter(s):
@@ -605,7 +606,6 @@ def gcal_events_filter(classes):
 
 @app.template_filter('section_saved')
 def section_saved_filter(section, class_obj):
-  percentages = []
   all_p = [0.0]
   for book in section:
     p = 0

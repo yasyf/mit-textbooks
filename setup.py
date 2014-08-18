@@ -16,6 +16,7 @@ recommendations = db.recommendations
 rankings = db.rankings
 shortlinks = db.shortlinks
 flags = db.flags
+buttons = db.buttons
 
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 
