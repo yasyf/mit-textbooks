@@ -789,18 +789,23 @@ def get_button(class_id, tb_id):
 	button = buttons.find_one(d)
 	if button is not None:
 		return button
+	url = url_for('class_view', class_id=class_id, _external=True)
+	price = float(tb.get('new', tb.get('used', tb.get('retail'))))
 	params =  {
 	  'button': {
 	    'name' : tb['title'],
 	    'type': 'buy_now',
 	    'custom': json.dumps({'tb_id': tb_id, 'class_id': class_id, 'user': g.user.get_id() if g.user else None}),
-	    'price_string' : tb.get('new', tb.get('used', tb.get('retail'))),
+	    'price_string' : str(price*1.1),
 	    'description': '{} by {} from MIT Textbooks ({})'.format(tb['title'], tb['author'], tb.get('availability', 'Ship as soon as possible.')),
 	    'price_currency_iso' : 'USD',
 	    'style': 'none',
 	    "include_email": True,
 	    'include_address': True,
-	    'custom_secure': True
+	    'custom_secure': True,
+	    'success_url': url,
+	    'cancel_url': url,
+	    'info_url': url
 	  }
 	}
 	resp = make_coinbase_request('https://coinbase.com/api/v1/buttons', body=json.dumps(params)).read()
