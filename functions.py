@@ -784,13 +784,16 @@ def tb_id_to_tb(class_id, textbook_id):
 def get_button(class_id, tb_id):
 	tb = tb_id_to_tb(class_id, tb_id)
 	if not tb:
-		return
+		return {'button': {}}
 	d = {'tb_id': tb_id, 'class_id': class_id}
 	button = buttons.find_one(d)
 	if button is not None:
 		return button
 	url = url_for('class_view', class_id=class_id, _external=True)
-	price = float(tb.get('new', tb.get('used', tb.get('retail'))))
+	try:
+		price = float(tb.get('new', tb.get('used', tb.get('retail'))))
+	except ValueError:
+		return {'button': {}}
 	params =  {
 	  'button': {
 	    'name' : tb['title'],
@@ -811,7 +814,7 @@ def get_button(class_id, tb_id):
 	resp = make_coinbase_request('https://coinbase.com/api/v1/buttons', body=json.dumps(params))
 	d.update(resp)
 	if 'button' not in d:
-		return
+		return {'button': {}}
 	buttons.insert(d)
 	return d
 

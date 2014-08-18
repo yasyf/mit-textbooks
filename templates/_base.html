@@ -65,8 +65,14 @@
     function addCoinbaseCode (selector_base, class_id, tb_id) {
       url = "{{ url_for('get_button_view', class_id='CLASS_ID', tb_id='TB_ID') }}".replace('CLASS_ID', class_id).replace('TB_ID', tb_id);
       $.get(url).then(function(response) {
-        $("#coinbase_"+selector_base).attr('data-code', response.code);
-        $("#coinbase_button_"+selector_base).attr('data-code', response.code).attr('data-button-style', response.style).addClass('coinbase-button');
+        if (response.code) {
+          $("#coinbase_"+selector_base).attr('data-code', response.code);
+          $("#coinbase_button_"+selector_base).attr('data-code', response.code).attr('data-button-style', response.style).addClass('coinbase-button');
+        }
+        else {
+          $("#coinbase_"+selector_base).remove();
+          $("#coinbase_button_"+selector_base).remove();
+        }
       });
     }
   </script>
