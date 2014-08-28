@@ -149,10 +149,13 @@ def get_embedly_info(class_site):
 
 
 def update_textbooks(class_id):
-	class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
-	class_info['textbooks'] = get_textbook_info(class_info['class'], class_info['semesters'])
-	classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
-	algolia.partialUpdateObject({'objectID': str(class_info['_id']), 'textbooks': class_info['textbooks']})
+	try:
+		class_info = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]})
+		class_info['textbooks'] = get_textbook_info(class_info['class'], class_info['semesters'])
+		classes.update({"class": class_info['class']}, {"$set": {'textbooks': class_info['textbooks']}})
+		algolia.partialUpdateObject({'objectID': str(class_info['_id']), 'textbooks': class_info['textbooks']})
+	except:
+		send_to_worker(class_id)
 
 def get_group(group_id):
 	global group_objects
