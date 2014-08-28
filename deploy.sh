@@ -9,7 +9,7 @@ case "$1" in
 	static)
 		STATIC=1
 		;;
-	web) 
+	web)
 		WEB=1
 		;;
 	recommenders)
@@ -25,7 +25,7 @@ case "$1" in
 		;;
 	*)
 		WEB=1
-		;; 
+		;;
 esac
 
 
@@ -56,7 +56,7 @@ if [[ RECOMMENDERS -eq 1 ]]; then
 	git checkout -b recommender_procfile
 	echo "worker: ./recommender.sh" > Procfile
 	git add Procfile
-	echo -e "\nnumpy==1.7.0\nscipy==0.11.0\nscikit-learn==0.14.1\npandas==0.13.1" >> requirements.txt
+	echo -e "\nnumpy==1.8.1\nscipy==0.14.0\nscikit-learn==0.15.1\npandas==0.14.1" >> requirements.txt
 	git add requirements.txt
 	git commit --amend --no-edit
 	git push recommender-1 recommender_procfile:master --force
