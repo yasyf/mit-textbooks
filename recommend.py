@@ -10,7 +10,7 @@ fail_mailed = 0
 def get_accept_function(i):
 	def f1(c):
 		course = c.split('.')[0]
-		return course.isdigit() and int(course) in range(1,11) and not int(course) in {6, 8}
+		return course.isdigit() and int(course) in range(1,10) and not int(course) in {6, 8}
 	def f2(c):
 		course = c.split('.')[0]
 		return course.isdigit() and (int(course) == 6 or int(course) in range(16,25))
@@ -19,14 +19,16 @@ def get_accept_function(i):
 		return not course.isdigit()
 	def f4(c):
 		course = c.split('.')[0]
-		return course.isdigit() and int(course) in [8] + range(11, 16)
+		return course.isdigit() and int(course) in [8] + range(10, 16)
 	return {1: f1, 2: f2, 3: f3, 4:f4}[i]
 
 def fail_mail(e):
+	global fail_mailed
+
 	message = sendgrid.Mail()
 	message.add_to(os.getenv('admin_email'))
 	message.set_subject('Crashing Recommender @ MIT Textbooks')
-	trace = traceback.format_exc() 
+	trace = traceback.format_exc()
 	message.set_html('<br><br>' + str(e) + '<br><br><pre>' + trace + '</pre>')
 	message.set_text('\n\n' + str(e) + '\n\n' + trace)
 	message.set_from('MIT Textbooks <tb_support@mit.edu>')
@@ -127,13 +129,13 @@ def calc_distance(dists, c1, c2, weights):
 def default_weights(user_id, c, c_cmp):
 	weights = [0.8]*len(distance_fields) + [1]*(len(fields)-len(distance_fields))
 	defaults = [('course', 1.5), ('in_groups', 2.75), ('in_history', 3.5), ('prereqs', 1.5), ('coreqs', 1.5), ('name', 4), ('description', 1.75)]
-	
+
 	for k, v in defaults:
 		weights[fields.index(k)] = v
-	
+
 	if user_id in user_recents and c_cmp in user_recents[user_id]:
 		weights[fields.index('in_history')] = 0
-	
+
 	weights[fields.index('less_advanced')] = 0
 	if c.split('.')[0] == c_cmp.split('.')[0]:
 		try:
@@ -143,7 +145,7 @@ def default_weights(user_id, c, c_cmp):
 				weights[fields.index('less_advanced')] = 5
 		except Exception:
 			pass
-		
+
 	return [float(w) / sum(weights) for w in weights]
 
 def save_sd():
@@ -260,7 +262,7 @@ if __name__ == '__main__':
 						recommendations.update({'class_id': _id}, {"$addToSet": {"default_uids": uid}})
 					else:
 						recommendations.update({'class_id': _id}, {"$pull": {"default_uids": uid}, "$set": {"users.{uid}".format(uid=uid): r}})
-					
+
 					if (time.time() - current['default']['time']) > CACHE_FOR:
 						recommendations.update({'class_id': _id}, {"$set": {"default": r, "default_uids": []}})
 
