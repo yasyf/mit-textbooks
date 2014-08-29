@@ -50,6 +50,17 @@ class MITUser():
 	def get_groups(self):
 		return groups.find({"named": True, "user_id": self.get_id()})
 
+	def get_active_group(self):
+		try:
+			return self._active_group
+		except AttributeError:
+			self._active_group = None
+			for group in self.get_groups():
+				if group.get('active') is True:
+					self._active_group = group
+					break
+			return self._active_group
+
 	def get_postings(self):
 		return offers.find({"email": self.get_id()})
 
