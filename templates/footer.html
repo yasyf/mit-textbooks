@@ -8,6 +8,9 @@
             {% if not group_obj.named %}
             <a href="#" class="btn btn-primary btn-sm" onclick="$('#save_modal').modal();">Name Group</a>
             {% elif group_obj.user_id == g.user.get_id() %}
+            {% if not group_obj.active %}
+            <a href="{{ url_for('activate_group_view', group_id=group_obj.name) }}" class="btn btn-primary btn-sm btn-success">Set Active</a>
+            {% endif %}
             <a href="{{ url_for('delete_group_view', group_id=group_obj.name) }}" class="btn btn-primary btn-sm btn-danger">Delete Group</a>
             {% endif %}
             {% endif %}
@@ -54,7 +57,7 @@
             <h4 class='modal-title'>Name Class Group</h4>
           </div>
           <div class='modal-body'>
-            <form class='form-inline' role='form'>
+            <form class='form-inline' role='form' action='#' onsubmit="return false;">
               <div class='form-group'>
                     <p class='text-danger' id='save_error'></p>
                     https://tb.mit.edu/<input type='text' id='save_name' style='width:250px' class='form-control' name='course_name' pattern='[a-zA-Z0-9]+'>

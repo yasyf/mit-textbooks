@@ -20,7 +20,7 @@
 			<p class="list-group-item-text">{{ ''|classes_length }} classes cached in the database</p>
 			<p class="list-group-item-text">{{ ''|errors_length }} misses logged in the database</p>
 		</a>
-	</div>	
+	</div>
 </div>
 {% endif %}
 
@@ -35,7 +35,7 @@
 			<h4 class="list-group-item-heading">Password</h4>
 			<p class="list-group-item-text">{{ g.user.get_password() }}</p>
 		</a>
-	</div>	
+	</div>
 </div>
 
 <div class="panel panel-default">
@@ -52,19 +52,19 @@
 		</a>
 		{% include '_offer_modal.html' %}
 		{% endfor %}
-	</div>	
+	</div>
 </div>
 
 <div class="panel panel-default">
 	<div class="panel-heading">Saved Class Groups</div>
 	<div class="list-group">
 		{% for group in g.user.get_groups() %}
-			<a href="{{ url_for('group_view', group_id=group.name) }}" class="list-group-item">
+			<a href="{{ url_for('group_view', group_id=group.name) }}" class="list-group-item{% if group.active %} list-group-item-success{% endif %}">
 				<h4 class="list-group-item-heading">{{ group.name }}</h4>
 				<p class="list-group-item-text">{{ group.class_ids|space_out }}</p>
 			</a>
 		{% endfor %}
-	</div>	
+	</div>
 </div>
 
 {% endblock %}

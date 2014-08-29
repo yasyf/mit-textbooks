@@ -847,6 +847,11 @@ def delete_group(group_id):
 	if group and g.user.get_id() == group['user_id']:
 		groups.remove({"name": group_id})
 
+def activate_group(group_id):
+	group = groups.find_one({"name": group_id})
+	if group and g.user.get_id() == group['user_id']:
+		groups.update({"_id": group['_id']}, {'$set': {'active': True}})
+
 def blacklist_class(class_id):
 	b = blacklist.find_one({'class_id': class_id})
 	if b:

@@ -8,11 +8,13 @@ class MITClassGroup():
 			self.hash = None
 			self.name = group_info['name']
 			self.user_id = group_info['user_id']
+			self.active = group_info.get('active', False)
 		else:
 			self.named = False
 			self.hash = group_info['hash']
 			self.name = None
 			self.user_id = None
+			self.active = False
 		self.class_ids = group_info['class_ids']
 
 	def to_dict(self):
@@ -48,4 +50,4 @@ class MITClassGroup():
 		else:
 			classes_string = '{first} and {last}'.format(first=", ".join(display_names[:-1]), last=display_names[-1])
 			return 'Buy and sell both new and used textbooks for {classes} at MIT Textbooks.'.format(classes=classes_string)
-		
+

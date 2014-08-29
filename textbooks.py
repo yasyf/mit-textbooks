@@ -328,6 +328,12 @@ def delete_group_view(group_id):
   flash('{group} has been deleted.'.format(group=group_id), 'danger')
   return redirect(url_for('index_view'))
 
+@app.route('/activate_group/<group_id>')
+def activate_group_view(group_id):
+  activate_group(group_id)
+  flash('{group} has been set as your active class group.'.format(group=group_id), 'success')
+  return redirect(url_for('group_view', group_id=group_id))
+
 @app.route('/sell_textbook/<class_id>/<tb_id>', methods=['POST'])
 def sell_textbook_view(class_id, tb_id):
   sell_textbook(class_id, tb_id, request.form)
