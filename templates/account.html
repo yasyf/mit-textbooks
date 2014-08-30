@@ -88,7 +88,7 @@
 				if(result.error) {
 					$('#compare_error').text(result.message);
 				} else {
-					window.open("{{ url_for('go_view', search_term='SEARCH_TERM') }}".replace('SEARCH_TERM', result.class_ids));
+					window.location = "{{ url_for('go_view', search_term='SEARCH_TERM') }}".replace('SEARCH_TERM', result.class_ids);
 				}
 			});
 		}
