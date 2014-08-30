@@ -26,7 +26,7 @@
 			{% if class_obj.is_currently_available() %}
 			{{ class_obj.id }} will be offered this semester ({{ ''|current_term }}).{% if class_obj.current_instructors() %} It is instructed by {% endif %}
 			{% else %}
-			{{ class_obj.id }} will not be offered this semester. 
+			{{ class_obj.id }} will not be offered this semester.
 			{% if class_obj.semesters %}
 			It will be available {{ class_obj.formatted_availability() }}{% if class_obj.current_instructors() %}, and will be instructed by{% else %}.{% endif %}
 			{% elif class_obj.current_instructors() %}
@@ -39,7 +39,7 @@
 		</p>
 		{% if class_obj.lecture %}
 		<p>
-			Lecture occurs {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}. 
+			Lecture occurs {{ class_obj.formatted_lecture() }} {% if class_obj.location %} in <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>{% endif %}.
 		</p>
 		{% endif %}
 		<p>
@@ -72,7 +72,7 @@
 		{% for textbook in section %}
 			{% include '_textbook.html' %}
 		{% endfor %}
-	</div>	
+	</div>
 </div>
 {% endfor %}
 
@@ -105,7 +105,7 @@
 	<div class="panel-heading">Tags</div>
 	<div class="panel-body">
 		<div class='tag'>
-			{% for t in class_obj.get_tags() %}
+			{% for t in class_obj.get_tags()[:-1] %}
 			<span>{{ t }}</span>
 			{% endfor %}
 		</div>

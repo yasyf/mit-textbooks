@@ -395,12 +395,12 @@ def compare_view(email):
     return jsonify({'error': 403, 'message': 'You must be logged in to do that.'})
   if not g.user.get_active_group():
     return jsonify({'error': 404, 'message': 'You has no active class group.'})
-  them = get_user(email, None, create=False)
+  them = get_user('{}@mit.edu'.format(email), None, create=False)
   if not them.is_logged_in():
     return jsonify({'error': 404, 'message': '{} is not an active user.'.format(email)})
   if not them.get_active_group():
     return jsonify({'error': 404, 'message': '{} has no active class group.'.format(them.name)})
-  intersection = set(g.user.get_active_group()) & set(them.get_active_group())
+  intersection = set(g.user.get_active_group().get('class_ids')) & set(them.get_active_group().get('class_ids'))
   if not intersection:
     return jsonify({'error': 404, 'message': 'You and {} have no classes in common'.format(them.name)})
   return jsonify({'error': False, 'class_ids': ','.join(intersection)})

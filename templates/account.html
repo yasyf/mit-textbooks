@@ -72,7 +72,7 @@
 		<div class="panel-heading">Compare Active Class Group</div>
 		<div class="list-group">
 			<div class='list-group-item'>
-				<input type='email' id='compare_email' placeholder='kerberos@mit.edu' style='height: 35px;'>
+				<input type='email' id='compare_email' placeholder='kerberos' style='height: 35px;'>
 				<button type='button' class='btn btn-primary' id='compare_btn' onclick="compare();" style="vertical-align: 1px;">Go</button>
 				<br><br>
 				<p class="list-group-item-text text-danger" id='compare_error'></p>
@@ -82,13 +82,13 @@
 	<script>
 		function compare() {
 			$('#compare_btn').attr('disabled', true);
-			var compareUrl = "{% url_for('compare_view', email='EMAIL') %}".replace('EMAIL', $('#compare_email').val());
+			var compareUrl = "{{ url_for('compare_view', email='EMAIL') }}".replace('EMAIL', $('#compare_email').val());
 			$.get(compareUrl).then(function(result) {
 				$('#compare_btn').attr('disabled', false);
 				if(result.error) {
 					$('#compare_error').text(result.message);
 				} else {
-					window.location = "{% url_for('go_view', search_term='SEARCH_TERM') %}".replace('SEARCH_TERM', result.class_ids);
+					window.open("{{ url_for('go_view', search_term='SEARCH_TERM') }}".replace('SEARCH_TERM', result.class_ids));
 				}
 			});
 		}
