@@ -72,10 +72,12 @@
 		<div class="panel-heading">Compare Active Class Group</div>
 		<div class="list-group">
 			<div class='list-group-item'>
+				<p>Enter another user's kerberos to view any overlaps in your currently active set of classes.</p>
 				<input type='email' id='compare_email' placeholder='kerberos' style='height: 35px;'>
 				<button type='button' class='btn btn-primary' id='compare_btn' onclick="compare();" style="vertical-align: 1px;">Go</button>
-				<br><br>
-				<p class="list-group-item-text text-danger" id='compare_error'></p>
+				<hr>
+				<div class="list-group-item-text text-danger" id='compare_error'></div>
+				<div class='list-group-item-text text-success' id='compare_success'></div>
 			</div>
 		</div>
 	</div>
@@ -88,7 +90,13 @@
 				if(result.error) {
 					$('#compare_error').text(result.message);
 				} else {
-					window.location = "{{ url_for('go_view', search_term='SEARCH_TERM') }}".replace('SEARCH_TERM', result.class_ids);
+					var group_url = "{{ url_for('go_view', search_term='SEARCH_TERM') }}".replace('SEARCH_TERM', result.class_ids.join(','));
+					var html = "<h4>You have <a class='btn btn-info btn-sm' target='_blank' href='" + group_url + "'>" + result.class_ids.length + " classes</a> that overlap with " + result.name + "'s schedule.</h4>";
+					_.each(result.classes, function(c) {
+						var class_url = "{{ url_for('go_view', search_term='SEARCH_TERM') }}".replace('SEARCH_TERM', c.class);
+						html += "<p><a class='btn btn-primary btn-xs btn-warning' target='_blank' href='" + class_url + "'>" + c.class + ': ' + c.name + "</a></p>";
+					});
+					$('#compare_success').html(html);
 				}
 			});
 		}
