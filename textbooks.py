@@ -413,7 +413,7 @@ def login_view():
     email = request.form.get('email')
     password = request.form.get('password')
     user = get_user(email, None, create=False)
-    if user.is_logged_in():
+    if user and user.is_logged_in():
       if user.check_password(password):
         g.user = user
         session['email'] = email
