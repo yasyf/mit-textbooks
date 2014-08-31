@@ -367,7 +367,7 @@ def account_view():
   if 'override_url' in session:
     session.pop('override_url')
   if not g.user:
-    return redirect(url_for('index_view'))
+    return redirect(url_for('login_view'))
   classes = [offer['class_id'] for offer in g.user.get_postings()]
   if classes:
     if len(classes) == 1:
