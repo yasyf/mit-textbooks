@@ -1,6 +1,5 @@
 from setup import *
 import pandas as pd
-import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 import pickle, Levenshtein, time, re, os, traceback, sys
 import multiprocessing, gc
@@ -16,10 +15,10 @@ def get_accept_function(i):
 		return course.isdigit() and (int(course) == 6 or int(course) in range(16,25))
 	def f3(c):
 		course = c.split('.')[0]
-		return not course.isdigit()
+		return not course.isdigit() or int(course) in range(10,12)
 	def f4(c):
 		course = c.split('.')[0]
-		return course.isdigit() and int(course) in [8] + range(10, 16)
+		return course.isdigit() and int(course) in [8] + range(12,16)
 	return {1: f1, 2: f2, 3: f3, 4:f4}[i]
 
 def fail_mail(e):
