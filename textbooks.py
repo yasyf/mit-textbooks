@@ -541,7 +541,8 @@ def class_evaluation_view(class_id):
 @app.route('/evaluation/<class_id>/<professor>')
 @modifiers.cache_for(days=7)
 def class_professor_evaluation_view(class_id, professor):
-  url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=professor)
+  formatted_name = professor.split(' ')[-1] + ', ' + professor.split(' ')[0]
+  url = u"https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm?subjectCode={class_id}&instructorName={professor}&search=Search".format(class_id=class_id, professor=formatted_name)
   return redirect(url)
 
 @app.route('/professor/<professor>')

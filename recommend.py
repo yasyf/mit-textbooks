@@ -159,7 +159,6 @@ def get_sd():
 	if not os.path.exists("dat/"):
 		os.makedirs("dat/")
 	import boto
-	from boto.s3.key import Key
 	c = boto.connect_s3(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'))
 	b = c.get_bucket(os.getenv('S3_BUCKET'))
 	k = b.get_key('dat/sd.dat')
