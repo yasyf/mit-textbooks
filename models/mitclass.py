@@ -14,7 +14,7 @@ def event_to_start_end(day, m):
 	start = date + datetime.timedelta(hours=start_hour, minutes=start_minute)
 	end = date + datetime.timedelta(hours=end_hour, minutes=end_minute)
 	if m.group(6):
-		if m.group(6) == "PM":
+		if m.group(6).strip() == "PM":
 			start += datetime.timedelta(hours=12)
 			end += datetime.timedelta(hours=12)
 	else:
@@ -119,7 +119,7 @@ class MITClass():
 				name = ' '.join(self.short_name[:25].split(' ')[:-1]) + "..."
 			else:
 				name = self.short_name
-			
+
 		return '{id} {name}'.format(id=self.id, name=name)
 
 	def summary(self):
@@ -292,7 +292,7 @@ class MITClass():
 			if not queue.find_one(d):
 				d['time'] = time.time()
 				queue.insert(d)
-		
+
 		try:
 			if uid in current['default_uids']:
 				c = return_default()
@@ -304,7 +304,7 @@ class MITClass():
 		except Exception:
 			insert_to_queue()
 			return return_default()
-			
+
 		return c
 
 	def get_base_rating(self):
