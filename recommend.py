@@ -244,12 +244,18 @@ if __name__ == '__main__':
 					s = set(task.get('ignore',[]))
 					s.add(SERVER_NUM)
 					task['ignore'] = list(s)
-					queue.insert(task, safe=True)
+					try:
+						queue.insert(task, safe=True)
+					except pymongo.errors.DuplicateKeyError:
+						pass
 					continue
 				if task.get('safe', False) and _id not in all_c:
 					print '{c} not in master class list, this server is no longer reliable!'.format(c=_id)
 					is_safe = False
-					queue.insert(task, safe=True)
+					try:
+						queue.insert(task, safe=True)
+					except pymongo.errors.DuplicateKeyError:
+						pass
 					continue
 				last_task = task
 				print 'Processing {_id} for user {uid}'.format(_id=_id, uid=uid)
