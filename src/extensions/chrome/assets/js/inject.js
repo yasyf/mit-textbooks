@@ -1,12 +1,12 @@
-var mit_textbooks_re = /(?<!\/)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))/g;
+var mit_textbooks_re = /(http:\/\/.*)?((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))/g;
 var mit_textbooks_re_search = /([\s,\(]|^)((([A-Za-z]{2,3})|(([1][0-2,4-8]|[2][0-2,4]|[1-9])[AWFHLMawfhlm]?))\.(([sS]?[0-9]{2,4}[AJaj]?)|([uU][aA][TtRr])))(([,\s\?\!\)](?!([%]|GB)))|([\.](?!([0-9])))|$)/g;
-var mit_textbooks_replace = "<a data-tbclass='$1' href='http://textbooksearch.mit.edu/go/$1' style='text-decoration:none;' target='_blank'>$1</a>";
+var mit_textbooks_replace = "<a data-tbclass='$2' href='http://textbooksearch.mit.edu/go/$2' style='text-decoration:none;' target='_blank'>$2</a>";
 var mit_textbooks_inject_re = /http[s]?:\/\/(www\.)?amazon\.[\w]{2,3}/;
 var mit_textbooks_inject_replace_re = /tag=[\w\-]+/;
 var mit_textbooks_current_html;
 
 function checkNode(node) {
-	var excludes = ["script", "a", "input", "button", "textarea", "font", "h1", "h2", "h3", "header"];
+	var excludes = ["script", "a", "input", "button", "textarea", "font", "h1", "h2", "h3", "header", "markdown"];
 	var bad_roles = ["textbox", "alert"];
 	if (node.attr('data-tb') === 'replaced') {
 		return false;
@@ -109,7 +109,13 @@ function walkDom() {
 			}
 			span = document.createElement('span');
 			span.setAttribute('data-tb', 'replaced');
-			span.innerHTML = node.nodeValue.replace(mit_textbooks_re, mit_textbooks_replace);
+			span.innerHTML = node.nodeValue.replace(mit_textbooks_re, function(match, url, klass) {
+				if (url) {
+					return match;
+				} else {
+					return mit_textbooks_replace.replace(/\$2/g, klass);
+				}
+			});
 			node.parentNode.replaceChild(span, node);
 		}
 	}
