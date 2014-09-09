@@ -23,6 +23,9 @@ function checkNode(node) {
 	if (node.attr('id') === 'header') {
 		return false;
 	}
+	if (node.hasClass('markdown')) {
+		return false;
+	}
 	if (node.attr('draggable') === "true") {
 		return false;
 	}
