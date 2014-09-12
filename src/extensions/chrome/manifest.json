@@ -23,7 +23,7 @@
         "*://*/*"
       ],
       "exclude_matches": [
-        "*://stellar.mit.edu/*",
+        "*://*.mit.edu/*",
         "*://www.google.com/analytics/*",
         "*://*/owa/*",
         "*://0.0.0.0:*/*",
