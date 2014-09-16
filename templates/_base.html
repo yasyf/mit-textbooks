@@ -140,7 +140,7 @@
   {% endif %}
   </script>
 
-  {% if request.args.voice or session.voice %}
+  {% if g.voice %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/1.1.0/annyang.min.js"></script>
     <script>
     if (annyang) {

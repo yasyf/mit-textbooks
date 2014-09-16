@@ -64,8 +64,10 @@ def preprocess_request():
 
   g.ip = request.headers.get("X-Forwarded-For", '')
 
-  if request.args.get('voice'):
-    session['voice'] = True
+  if request.args.get('voice') == 'enabled':
+    g.voice = True
+  else:
+    g.voice = False
 
 @app.after_request
 def postprocess_request(response):
