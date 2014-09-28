@@ -238,7 +238,7 @@ def class_view(class_id):
     update_recents_with_class(class_obj)
     view_classes([class_id])
   g.search_val = class_id
-  rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r)]
+  rec = [get_class(r) for r in class_obj.get_rec(g.user) if check_class(r, for_errors=True)]
   return render_template('class.html', class_obj=class_obj, rec=rec)
 
 @app.route('/calendar/<group_id>')

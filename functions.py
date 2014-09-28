@@ -728,10 +728,13 @@ def check_class_json(class_id):
 	loaded = check_class(class_id)
 	return {'loaded': loaded}
 
-def check_class(class_id):
+def check_class(class_id, for_errors=False):
 	if class_id is None:
 		return False
-	loaded = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]}) != None
+	if for_errors:
+		loaded = classes.find_one({'$and': [{'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]}, {'error': None}]})
+	else:
+		loaded = classes.find_one({'$or': [{'class': class_id}, {'search_term': { "$in": [class_id.lower()]}}]}) != None
 	return loaded
 
 def check_group(class_ids):
