@@ -497,11 +497,22 @@ def get_google_site_guess(class_id):
 		return result
 	return try_url(get_google_url(term))
 
+def follow_redirects(r):
+	soup = BeautifulSoup(r.text)
+	meta = soup.find('meta', attrs={'http-equiv': 'refresh'})
+	try:
+		url = meta['content'].split("=")[-1]
+		new_r = try_url(url) or r
+		return new_r
+	except:
+		return r
+
 def get_class_site(class_id):
 	url = "http://course.mit.edu/{class_id}".format(class_id=class_id)
 	r = try_url(url)
 	if r is None or 'stellar' in r.url or 'course.mit.edu' in r.url:
 		r = get_google_site_guess(class_id)
+	r = follow_redirects(r)
 	soup = BeautifulSoup(r.text)
 	try:
 		title = soup.find('title').string
