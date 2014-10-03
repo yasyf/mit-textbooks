@@ -1,5 +1,5 @@
 from setup import *
-import datetime, calendar, json, re, random, time
+import datetime, calendar, re, random, time
 from flask import url_for
 
 def event_to_start_end(day, m):
@@ -98,6 +98,7 @@ class MITClass():
 		del d['dt']
 		d['stellar_url'] = url_for('stellar_view', class_id=self.id, _external=True)
 		d['class_site'] = url_for('site_view', class_id=self.id, _external=True)
+		d['related_classes'] = self.get_rec(None) or []
 		return d
 
 	def image(self):
