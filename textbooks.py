@@ -582,9 +582,9 @@ def out_view(_hash):
 @app.route('/combo')
 def combo_view():
   if not g.user:
-    return redirect(url_for('login_view'))
+    flash("Only MIT students can access that page!", 'danger')
+    return redirect(url_for('index_view'))
   return render_template('combo.html', combo=get_combo())
-
 
 @app.template_filter('id_to_obj')
 def id_to_obj_filter(class_id):
