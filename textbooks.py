@@ -9,6 +9,7 @@ import bugsnag, bmemcached
 from flask_s3 import FlaskS3
 from bugsnag.flask import handle_exceptions
 from functions import *
+from ssh import get_combo
 from bson.objectid import ObjectId
 
 cache = MemcachedCache(bmemcached.Client(os.environ.get('MEMCACHEDCLOUD_SERVERS').split(','), os.environ.get('MEMCACHEDCLOUD_USERNAME'), os.environ.get('MEMCACHEDCLOUD_PASSWORD')))
@@ -577,6 +578,13 @@ def amazon_prime_student_view():
 @modifiers.cache_for(days=7)
 def out_view(_hash):
   return redirect(url_for('amazon_product_view',asin=get_asin_from_hash(_hash)))
+
+@app.route('/combo')
+def combo_view():
+  if not g.user:
+    return redirect(url_for('login_view'))
+  return render_template('combo.html', combo=get_combo())
+
 
 @app.template_filter('id_to_obj')
 def id_to_obj_filter(class_id):
