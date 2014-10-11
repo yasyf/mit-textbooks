@@ -205,7 +205,7 @@ class MITClass():
 		times = []
 		for group in self.lecture.split(','):
 			m = re.match(re.compile(TIME_REGEX), group)
-			if m:
+			try:
 				days = [d[x] for x in list(m.group(1))]
 				days = ', '.join(days[:-1]) + ' and ' + days[-1] if len(days) > 1 else ' and '.join(days) if len(days) == 2 else days[0]
 				start_hour = m.group(2)
@@ -221,7 +221,7 @@ class MITClass():
 				time = "{0}:{1} {2} to {3}:{4} {5}".format(start_hour, start_minute, start_a, end_hour, end_minute, end_a)
 				times.append(time + ' on ' + days)
 				return 'from ' + ', '.join(times[:-1]) + ' and ' + times[-1] if len(times) > 1 else ' and '.join(times) if len(times) == 2 else times[0]
-			else:
+			except:
 				return 'at ' + self.lecture
 
 	def events(self):
