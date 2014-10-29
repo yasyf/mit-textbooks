@@ -218,13 +218,22 @@ def check_json_for_class(result, class_id):
 				relevant['lecture'] = element
 	return relevant
 
+def is_manual_override(class_id):
+	return bool(overrides.find_one({'term': TERM, 'reason': 'manual_scrape', 'class': class_id}))
+
+def add_manual_override(class_id):
+	overrides.insert({'term': TERM, 'reason': 'manual_scrape', 'class': class_id})
+
 def fetch_class_info(class_id):
-	client = CachedAPI('http://coursews.mit.edu', ('key',''))
-	result = client.make_request('coursews', term=TERM, courses=class_id.split('.')[0])
-	class_info = check_json_for_class(result, class_id)
-	if not class_info:
-		result = client.make_request('coursews', term=TERM_LAST, courses=class_id.split('.')[0])
+	if is_manual_override(class_id):
+		class_info = None
+	else:
+		client = CachedAPI('http://coursews.mit.edu', ('key',''))
+		result = client.make_request('coursews', term=TERM, courses=class_id.split('.')[0])
 		class_info = check_json_for_class(result, class_id)
+		if not class_info:
+			result = client.make_request('coursews', term=TERM_LAST, courses=class_id.split('.')[0])
+			class_info = check_json_for_class(result, class_id)
 	if class_info:
 		return clean_class_info(class_info['class'], class_info['lecture'] if 'lecture' in class_info else None)
 	else:
@@ -414,7 +423,7 @@ def get_eecs_staff(c):
 def process_prereqs(prereqs):
 	if not prereqs:
 		return [],[]
-	d = {'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.012 or equivalent', 'GIR:CHEM': '5.111 or equivalent'}
+	d = {'GIR:PHY1': '8.01', 'GIR:CAL1': '18.01','GIR:PHY2': '8.02', 'GIR:CAL2': '18.02', 'GIR:BIOL': '7.01x', 'GIR:CHEM': '3.091 or 5.111'}
 	for k,v in d.iteritems():
 		prereqs = prereqs.replace(k, v)
 	coreqs = re.findall(re.compile(r'\[([\w]{1,3}\.(?:(?:[sS]?[0-9]{2,3}[\w]{0,1})|(?:UA[TR])))\]'), prereqs)

@@ -5,6 +5,7 @@ client = pymongo.MongoClient(os.environ['db'])
 algolia = algoliasearch.Client(os.getenv('ALGOLIA_APP'), os.getenv('ALGOLIA_KEY')).initIndex("classes")
 db = client.mit_textbooks
 classes = db.classes
+overrides = db.overrides
 recents = db.recents
 groups = db.groups
 offers = db.offers
