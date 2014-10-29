@@ -22,19 +22,26 @@ orders = db.orders
 
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 
-TERM = "2015FA"
-TERM_LAST = "2014SP"
-
-CURRENT_TERM = 'Fall 2014'
+YEAR = datetime.date.today().year
+if datetime.date.today().month > 6:
+  TERM = "{}FA".format(YEAR+1)
+  TERM_LAST = "{}SP".format(YEAR)
+  STERM = "fa{}".format(str(YEAR)[-2:])
+  STERM_LAST = "sp{}".format(str(YEAR)[-2:])
+  CURRENT_TERM = "Fall {}".format(YEAR)
+  TERM_START = datetime.datetime(YEAR, 9, 3)
+  TERM_END = datetime.datetime(YEAR, 12, 10)
+else:
+  TERM = "{}SP".format(YEAR)
+  TERM_LAST = "{}FA".format(YEAR)
+  STERM = "sp{}".format(str(YEAR)[-2:])
+  STERM_LAST = "fa{}".format(str(YEAR-1)[-2:])
+  CURRENT_TERM = "Spring {}".format(YEAR)
+  TERM_START = datetime.datetime(2014, 2, 3)
+  TERM_END = datetime.datetime(2014, 5, 14)
 
 CURRENT_CATALOG  = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim"
 LAST_CATALOG  = "http://student.mit.edu/catalog/archive/spring/search.cgi?search={class_id}&style=verbatim"
-
-STERM = "fa14"
-STERM_LAST = "sp14"
-
-TERM_START = datetime.datetime(2014, 9, 4)
-TERM_END = datetime.datetime(2014, 12, 11)
 
 RECENTS = 20
 CACHE_FOR = 2419200

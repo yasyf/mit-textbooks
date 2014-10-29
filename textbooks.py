@@ -91,7 +91,7 @@ def _404_handler(e):
 @app.route('/404')
 def _404_view():
   classes = session.get('404',[])
-  return render_template('404.html', classes=classes), 404
+  return render_template('404.html', classes=classes, year=YEAR), 404
 
 @app.errorhandler(500)
 @app.route('/500')
