@@ -266,7 +266,7 @@ def overview_view(class_id):
     return redirect(url_for('_404_view'))
   if class_obj.master_subject_id != class_obj.id or class_id != class_obj.id:
     return redirect(url_for('overview_view', class_id=class_obj.master_subject_id))
-  return render_template('overview.html', class_obj=get_class(class_id))
+  return render_template('overview.html', class_obj=class_obj)
 
 @app.route('/json/class/<class_id>')
 @modifiers.cache_for(hours=1)

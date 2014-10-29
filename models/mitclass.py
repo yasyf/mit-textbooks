@@ -135,7 +135,7 @@ class MITClass():
 		elif TERM[-2:] == 'FA' and 'Fall' in self.semesters:
 			return self.instructors['fall']
 		else:
-			return self.instructors.values()[0]
+			return sum(self.instructors.values(), [])
 
 	def is_currently_available(self):
 		pairing = {'SP': 'Spring', 'FA': 'Fall'}
