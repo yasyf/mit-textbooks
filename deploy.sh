@@ -59,10 +59,10 @@ if [[ RECOMMENDERS -eq 1 ]]; then
 	echo -e "\nnumpy==1.8.1\nscipy==0.14.0\nscikit-learn==0.15.1\npandas==0.14.1\nnose==1.3.4" >> requirements.txt
 	git add requirements.txt
 	git commit --amend --no-edit
-	git push recommender-1 recommender_procfile:master --force
-	git push recommender-2 recommender_procfile:master --force
-	git push recommender-3 recommender_procfile:master --force
-	git push recommender-4 recommender_procfile:master --force
+	(git push recommender-1 recommender_procfile:master --force &)
+	(git push recommender-2 recommender_procfile:master --force &)
+	(git push recommender-3 recommender_procfile:master --force &)
+	(git push recommender-4 recommender_procfile:master --force &)
 	git checkout master
 	git branch -D recommender_procfile
 fi
@@ -73,10 +73,10 @@ if [[ WORKERS -eq 1 ]]; then
 	echo "worker: ./worker.sh" > Procfile
 	git add Procfile
 	git commit --amend --no-edit
-	git push worker-1 worker_procfile:master --force
-	git push worker-2 worker_procfile:master --force
-	git push worker-3 worker_procfile:master --force
-	git push worker-4 worker_procfile:master --force
+	(git push worker-1 worker_procfile:master --force &)
+	(git push worker-2 worker_procfile:master --force &)
+	(git push worker-3 worker_procfile:master --force &)
+	(git push worker-4 worker_procfile:master --force &)
 	git checkout master
 	git branch -D worker_procfile
 fi
