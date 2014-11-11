@@ -797,8 +797,9 @@ def get_mit_info(email):
 		soup = BeautifulSoup(html)
 		pre = soup.find("pre")
 		if pre.text.find("No matches") == -1:
-			l = [x.split(":")[-1].strip() for x in pre.text.split("\n")]
-			return (l[0], l[2], l[3]) #name, dorm, year
+			l = [[y.strip() for y in x.split(":")] for x in pre.text.split("\n")]
+			d = {x[0]:x[1] for x in l if len(x) is 2}
+			return d.get('name'), None, d.get('year')
 
 def tb_id_to_tb(class_id, textbook_id):
 	class_obj = get_class(class_id)
