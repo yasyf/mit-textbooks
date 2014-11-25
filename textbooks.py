@@ -225,6 +225,7 @@ def class_oid_view(_id):
 @app.route('/class/<class_id>')
 @modifiers.cache_for(hours=12)
 def class_view(class_id):
+  class_id = format_class(class_id)
   if not check_class(class_id):
     send_to_worker(class_id)
     return redirect(url_for('loading_view', class_ids=class_id))
