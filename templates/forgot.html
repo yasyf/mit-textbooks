@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
-{% block title %}Mobile Lockout{% endblock %}
+{% block title %}Mobile Password{% endblock %}
 {% block body %}
-<h1>Mobile Lockout</h1>
+<h1>Mobile Password</h1>
 
 {% if g.user and g.user.is_mobile_locked_out() %}
 <p>
@@ -10,9 +10,13 @@
 <p>
 	Please login to the site on a desktop computer, and visit the 'Account' page to unlock your account.
 </p>
-{% else %}
+{% elif g.user %}
 <p>
 	Your current mobile password has been emailed to you. Please check your MIT email to login.
+</p>
+{% else g.user %}
+<p>
+  Please log in with any incorrect password. Your actual password will then be emailed to you.
 </p>
 {% endif %}
 <p>
