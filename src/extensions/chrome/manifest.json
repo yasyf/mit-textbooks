@@ -20,6 +20,15 @@
   "content_scripts": [
     {
       "matches": [
+        "*://textbooksearch.mit.edu/*"
+      ],
+      "js": [
+        "assets/js/hide_button.js"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
         "*://*/*"
       ],
       "exclude_matches": [
