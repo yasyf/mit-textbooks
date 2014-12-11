@@ -23,7 +23,7 @@ orders = db.orders
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 
 YEAR = datetime.date.today().year
-if 6 < datetime.date.today().month < 12:
+if 4 < datetime.date.today().month < 12:
   TERM = "{}FA".format(YEAR+1)
   TERM_LAST = "{}SP".format(YEAR)
   STERM = "fa{}".format(str(YEAR)[-2:])
@@ -32,6 +32,8 @@ if 6 < datetime.date.today().month < 12:
   TERM_START = datetime.datetime(YEAR, 9, 3)
   TERM_END = datetime.datetime(YEAR, 12, 10)
 else:
+  if datetime.date.today().month == 12:
+    YEAR += 1
   TERM = "{}SP".format(YEAR)
   TERM_LAST = "{}FA".format(YEAR)
   STERM = "sp{}".format(str(YEAR)[-2:])
