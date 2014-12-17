@@ -92,7 +92,7 @@ try:
 				queue.remove(task['_id'], safe=True)
 			except Exception:
 				continue
-			_id = task['class_id']
+			_id = task['class_id'].encode('utf-8')
 			print 'Processing {_id}'.format(_id=_id)
 			if task['group']:
 				group_obj = get_group(_id)

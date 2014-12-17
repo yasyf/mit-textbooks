@@ -167,10 +167,17 @@ def get_group(group_id):
 		group_objects[group_id] = group_obj
 		return group_obj
 
+def u_strip(s):
+	whitespace_chars = [u'\u202c']
+	s = s.strip()
+	for char in whitespace_chars:
+		s = s.replace(char, '')
+	return s
+
 def format_class(c):
 	if not c:
 		return c
-	c = c.strip()
+	c = u_strip(c)
 	c_up = c.upper()
 	if re.match(CLASS_REGEX, c_up):
 		c = c_up
