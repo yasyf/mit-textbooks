@@ -174,15 +174,16 @@ def u_strip(s):
 		s = s.replace(char, '')
 	return s
 
-def format_class(c):
+def format_class(c, remove_suffix=True):
 	if not c:
 		return c
 	c = u_strip(c)
 	c_up = c.upper()
 	if re.match(CLASS_REGEX, c_up):
 		c = c_up
-		if c[-1] == 'J':
-			c = c[:-1]
+		if remove_suffix:
+			if c[-1] == 'J':
+				c = c[:-1]
 		return c.split(',')[0].strip()
 	else:
 		return c

@@ -225,7 +225,7 @@ def class_oid_view(_id):
 @app.route('/class/<class_id>')
 @modifiers.cache_for(hours=12)
 def class_view(class_id):
-  class_id = format_class(class_id)
+  class_id = format_class(class_id, False)
   if not check_class(class_id):
     send_to_worker(class_id)
     return redirect(url_for('loading_view', class_ids=class_id))
@@ -234,7 +234,7 @@ def class_view(class_id):
   if class_obj is None:
     session['404'] = [class_id]
     return redirect(url_for('_404_view'))
-  if class_obj.master_subject_id != class_obj.id or class_id != class_obj.id:
+  if class_obj.master_subject_id != class_obj.id or class_id != format_class(class_obj.id, False):
     return redirect(url_for('class_view', class_id=class_obj.master_subject_id))
   if not g.scraper and not request.args.get('instant') == 'true':
     update_recents_with_class(class_obj)
