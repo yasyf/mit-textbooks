@@ -39,8 +39,8 @@ else:
   STERM = "sp{}".format(str(YEAR)[-2:])
   STERM_LAST = "fa{}".format(str(YEAR-1)[-2:])
   CURRENT_TERM = "Spring {}".format(YEAR)
-  TERM_START = datetime.datetime(2014, 2, 3)
-  TERM_END = datetime.datetime(2014, 5, 14)
+  TERM_START = datetime.datetime(YEAR, 2, 3)
+  TERM_END = datetime.datetime(YEAR, 5, 14)
 
 CURRENT_CATALOG  = "http://student.mit.edu/catalog/search.cgi?search={class_id}&style=verbatim"
 LAST_CATALOG  = "http://student.mit.edu/catalog/archive/spring/search.cgi?search={class_id}&style=verbatim"

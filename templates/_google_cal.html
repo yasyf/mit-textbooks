@@ -6,7 +6,7 @@
     <h4 class='modal-title'>Select Calendar</h4>
     </div>
     <div class='modal-body'>
-    <form class='form-horizontal' role='form' method="POST" target="_blank" action="{{ url_for('courseroad_export_view', class_ids=group_obj.class_ids|join(',')) }}" id="courseroad_form">
+    <form class='form-horizontal' role='form'>
       <div class='form-group'>
         <label for='year' class='col-lg-2 control-label'>Calendar</label>
         <div class='col-lg-10'>
@@ -36,12 +36,12 @@ function makeApiCall2 (calendarId) {
   var left = Object.keys(resources).length;
   gapi.client.load('calendar', 'v3', function() {
     $.each(resources, function(i, resource) {
+      resource.summary = unescapeHtml(resource.summary);
       var request = gapi.client.calendar.events.insert({
         'calendarId': calendarId,
         'resource': resource
       });
       request.execute(function(resp) {
-        resource.summary = unescapeHtml(resource.summary);
         $("#gcal_message").text("Adding " + resource.summary);
         left --;
         if (left == 0){
@@ -62,7 +62,7 @@ $(document).ready(function() {
   $("#gcal").click(function () {
      handleAuthClick();
   });
-}); 
+});
 </script>
 
 <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
