@@ -168,7 +168,10 @@ def get_group(group_id):
 		return group_obj
 
 def u_strip(s):
-	whitespace_chars = [u'\u202c']
+	s = unicode(s)
+	if s.count('+') > 1:
+		s = s[:s.index('+')]
+	whitespace_chars = [u'\u202c', u'\ufffd']
 	s = s.strip()
 	for char in whitespace_chars:
 		s = s.replace(char, '')
@@ -190,10 +193,10 @@ def format_class(c, remove_suffix=True):
 
 def is_int(value):
   try:
-	int(value)
-	return True
+		int(value)
+		return True
   except ValueError:
-	return False
+		return False
 
 def prepare_class_hash(classes):
 	classes = ','.join(list(sorted(set([format_class(clean_html(c)) for c in classes if len(c) > 1]), key=lambda x: float(x) if is_float(x) else int(x.split('.')[0]) if '.' in x and is_int(x.split('.')[0]) else x)))
