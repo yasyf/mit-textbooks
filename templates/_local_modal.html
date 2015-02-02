@@ -1,23 +1,23 @@
 <div class='modal fade' id='modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local'>
   <div class='modal-dialog'>
-	<div class='modal-content'>
-	  <div class='modal-header'>
-		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'>Locally Availble Copies</h4>
-	  </div>
-	  <div class='modal-body'>
-		<p class='center'>
-			{% for offer in class_obj.offers(textbook|tb_id) %}
-			<a href='javascript:$("#modal_{{ offer._id }}").modal();' class='btn btn-info'>
-				${{ offer.price }} ({{ offer.condition }} Condition)
-			</a>
-			{% endfor %}
-		</p>
-	  </div>
-	  <div class='modal-footer'>
-		<button type='button' onclick='$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local").modal("hide");' class='btn btn-primary'>Close</button>
-	  </div>
-	</div><!-- /.modal-content -->
+  <div class='modal-content'>
+    <div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+    <h4 class='modal-title'>Locally Availble Copies</h4>
+    </div>
+    <div class='modal-body'>
+    <p class='center'>
+      {% for offer in class_obj.offers(textbook|tb_id) %}
+      <a href='javascript:$("#modal_{{ offer._id }}").modal();' class='btn btn-info'>
+        ${{ offer.price }} ({{ offer.condition }} Condition)
+      </a>
+      {% endfor %}
+    </p>
+    </div>
+    <div class='modal-footer'>
+    <button type='button' onclick='$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local").modal("hide");' class='btn btn-primary'>Close</button>
+    </div>
+  </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 {% for offer in class_obj.offers(textbook|tb_id) %}

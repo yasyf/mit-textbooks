@@ -1,60 +1,60 @@
 <div class='modal fade' id='modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
   <div class='modal-dialog'>
-	<div class='modal-content'>
-	  <div class='modal-header'>
-		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'><i>{{ textbook.title|safe }}</i></h4>
-	  </div>
-	  <div class='modal-body'>
-		<p class='center'>
-			{% if textbook.purchase %}
-			<a
-			href="{{ textbook.purchase[1] }}"
-			target='_blank'
-			onclick="trackOutboundLink('{{ textbook.purchase[1] }}', '{{ textbook.new }}', '{{ textbook.purchase[0] }}'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
-			class='btn btn-{% if class_obj.has_local() %}info{% else %}success{% endif %}'>
-				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; {{ textbook.purchase[0] }}
-			</a>
-			{% endif %}
-			<a
-			{% if textbook.asin %}
-			href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
-			onclick="trackOutboundLink('{{ url_for('amazon_product_view', asin=textbook.asin) }}', '{{ textbook.new }}', 'amazon'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
-			{% else %}
-			href="{{ url_for('amazon_search_view', title=textbook.title) }}"
-			onclick="trackOutboundLink('{{ url_for('amazon_search_view', title=textbook.title) }}', '{{ textbook.new }}', 'amazon'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
-			{% endif %}
-			target='_blank'
-			class='btn btn-{% if textbook.purchase or class_obj.has_local() %}info{% else %}success{% endif %}'>
-				<span class='glyphicon glyphicon-credit-card'></span> &nbsp; Amazon
-			</a>
-			{% if class_obj.has_local() %}
-			<a
-			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local').modal();"
-			class='btn btn-success'>
-				<span class='glyphicon glyphicon-home'></span> &nbsp; Local
-			</a>
-			{% endif %}
-			<a onclick="triggerCoinbase(this);"
-					id='coinbase_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' class='btn btn-warning'>
-				<span class='glyphicon glyphicon-bold'></span> &nbsp; Buy with Bitcoin
-			</a>
-			<a
-			href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
-			class='btn btn-danger'>
-				<span class='glyphicon glyphicon-usd'></span> &nbsp; Sell Locally
-			</a>
-		</p>
-	  </div>
-	  <div class='modal-footer'>
-		<button type='button' onclick='$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}").modal("hide");' class='btn btn-primary'>Close</button>
-	  </div>
-	</div><!-- /.modal-content -->
+  <div class='modal-content'>
+    <div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+    <h4 class='modal-title'><i>{{ textbook.title|safe }}</i></h4>
+    </div>
+    <div class='modal-body'>
+    <p class='center'>
+      {% if textbook.purchase %}
+      <a
+      href="{{ textbook.purchase[1] }}"
+      target='_blank'
+      onclick="trackOutboundLink('{{ textbook.purchase[1] }}', '{{ textbook.new }}', '{{ textbook.purchase[0] }}'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
+      class='btn btn-{% if class_obj.has_local() %}info{% else %}success{% endif %}'>
+        <span class='glyphicon glyphicon-credit-card'></span> &nbsp; {{ textbook.purchase[0] }}
+      </a>
+      {% endif %}
+      <a
+      {% if textbook.asin %}
+      href="{{ url_for('amazon_product_view', asin=textbook.asin) }}"
+      onclick="trackOutboundLink('{{ url_for('amazon_product_view', asin=textbook.asin) }}', '{{ textbook.new }}', 'amazon'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
+      {% else %}
+      href="{{ url_for('amazon_search_view', title=textbook.title) }}"
+      onclick="trackOutboundLink('{{ url_for('amazon_search_view', title=textbook.title) }}', '{{ textbook.new }}', 'amazon'); $('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}').modal('hide'); return false;"
+      {% endif %}
+      target='_blank'
+      class='btn btn-{% if textbook.purchase or class_obj.has_local() %}info{% else %}success{% endif %}'>
+        <span class='glyphicon glyphicon-credit-card'></span> &nbsp; Amazon
+      </a>
+      {% if class_obj.has_local() %}
+      <a
+      href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_local').modal();"
+      class='btn btn-success'>
+        <span class='glyphicon glyphicon-home'></span> &nbsp; Local
+      </a>
+      {% endif %}
+      <a onclick="triggerCoinbase(this);"
+          id='coinbase_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' class='btn btn-warning'>
+        <span class='glyphicon glyphicon-bold'></span> &nbsp; Buy with Bitcoin
+      </a>
+      <a
+      href="javascript:$('#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell').modal();"
+      class='btn btn-danger'>
+        <span class='glyphicon glyphicon-usd'></span> &nbsp; Sell Locally
+      </a>
+    </p>
+    </div>
+    <div class='modal-footer'>
+    <button type='button' onclick='$("#modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}").modal("hide");' class='btn btn-primary'>Close</button>
+    </div>
+  </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <div id='coinbase_button_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'></div>
 <script>
-	addCoinbaseCode('{{ class_obj.safe_id() }}_{{ textbook|tb_id }}', '{{ class_obj.id }}', '{{ textbook|tb_id }}');
+  addCoinbaseCode('{{ class_obj.safe_id() }}_{{ textbook|tb_id }}', '{{ class_obj.id }}', '{{ textbook|tb_id }}');
 </script>
 {% if class_obj.has_local() %}
 {% include '_local_modal.html' %}

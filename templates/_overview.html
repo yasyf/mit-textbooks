@@ -2,69 +2,69 @@
 <h1>{{ class_obj.display_name()|safe }}</h1>
 <hr>
 <p>
-	Currently Offered: {% if class_obj.is_currently_available() %} Yes {% else %} No {% endif %}
+  Currently Offered: {% if class_obj.is_currently_available() %} Yes {% else %} No {% endif %}
 </p>
 {% if class_obj.semesters %}
 <p>
-	Availablity: {{ class_obj.formatted_summarized_availability()|safe }}
+  Availablity: {{ class_obj.formatted_summarized_availability()|safe }}
 </p>
 {% endif %}
 <p>
-	{% if class_obj.prereqs %}
-	Prereqs: {{ class_obj.formatted_prereqs_summary()|safe }}.
-	{% endif %}
-	{% if class_obj.coreqs %}
-	Coreqs: {{ class_obj.formatted_coreqs_summary()|safe }}.
-	{% endif %}
+  {% if class_obj.prereqs %}
+  Prereqs: {{ class_obj.formatted_prereqs_summary()|safe }}.
+  {% endif %}
+  {% if class_obj.coreqs %}
+  Coreqs: {{ class_obj.formatted_coreqs_summary()|safe }}.
+  {% endif %}
 </p>
 {% if class_obj.lecture %}
 <p>
-	Lecture: {{ class_obj.formatted_lecture() }}
+  Lecture: {{ class_obj.formatted_lecture() }}
 </p>
 {% endif %}
 <p>
-	{% if class_obj.location %}
-	Location: <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>
-	{% endif %}
+  {% if class_obj.location %}
+  Location: <a href="http://whereis.mit.edu/?go={{ class_obj.location|urlencode }}" target='_blank'>{{ class_obj.location }}</a>
+  {% endif %}
 </p>
 {% if class_obj.current_instructors() %}
 <p>
-	Instructors: 
-	{% for instructor in class_obj.current_instructors() %}
-	<a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last %}, {% endif %}
-	{% endfor %}
+  Instructors:
+  {% for instructor in class_obj.current_instructors() %}
+  <a href="{{ url_for('professor_view', professor=instructor) }}" target='_blank'>{{ instructor }}</a>{% if not loop.last %}, {% endif %}
+  {% endfor %}
 </p>
 {% endif %}
 <p>
-	{% if class_obj.hass %}
-	HASS: <strong>{{ class_obj.hass }}</strong>
-	{% endif %}
-	{% if class_obj.ci %}
-	CI: <strong>{{ class_obj.ci }}</strong>
-	{% endif %}
-	{% if class_obj.grad %}
-	Grad: <strong>Y</strong>
-	{% endif %}
+  {% if class_obj.hass %}
+  HASS: <strong>{{ class_obj.hass }}</strong>
+  {% endif %}
+  {% if class_obj.ci %}
+  CI: <strong>{{ class_obj.ci }}</strong>
+  {% endif %}
+  {% if class_obj.grad %}
+  Grad: <strong>Y</strong>
+  {% endif %}
 </p>
 <p>
-	Units: {{ class_obj.formatted_units() }} ({{ class_obj.units_detail() }})
+  Units: {{ class_obj.formatted_units() }} ({{ class_obj.units_detail() }})
 </p>
 <p>
-	{% if class_obj.evaluation.date %}
-	Evaluation: {{ class_obj.evaluation.rating }}/7.0 ({{ class_obj.evaluation.percent_response }}% response from {{ class_obj.evaluation.date }})
-	{% endif %}
+  {% if class_obj.evaluation.date %}
+  Evaluation: {{ class_obj.evaluation.rating }}/7.0 ({{ class_obj.evaluation.percent_response }}% response from {{ class_obj.evaluation.date }})
+  {% endif %}
 </p>
 <p>
-	{% if class_obj.ocw_site_url() %}OCW{% else %}Class Site{% endif %}:
-	<a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
+  {% if class_obj.ocw_site_url() %}OCW{% else %}Class Site{% endif %}:
+  <a href="{{ url_for('site_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.class_site[0] }}</a>
 </p>
 <p>
-	{% if class_obj.stellar_url %}
-	Stellar: <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar site</a>
-	{% endif %}
+  {% if class_obj.stellar_url %}
+  Stellar: <a href="{{ url_for('stellar_view', class_id=class_obj.id) }}" target='_blank'>{{ class_obj.id }} Stellar site</a>
+  {% endif %}
 </p>
 <p>
-	{% if class_obj.textbooks|tb_len %}
-	Textbooks: {{ class_obj.textbooks|tb_len }} at <a href="{{ url_for('class_view', class_id=class_obj.id) }}">{{ class_obj.display_name()|safe }} on MIT Textbooks</a>
-	{% endif %}
+  {% if class_obj.textbooks|tb_len %}
+  Textbooks: {{ class_obj.textbooks|tb_len }} at <a href="{{ url_for('class_view', class_id=class_obj.id) }}">{{ class_obj.display_name()|safe }} on MIT Textbooks</a>
+  {% endif %}
 </p>

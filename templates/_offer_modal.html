@@ -1,47 +1,47 @@
 <div class='modal fade' id='modal_{{ offer._id }}'>
   <div class='modal-dialog'>
-	<div class='modal-content'>
-	  <div class='modal-header'>
-		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'>${{ offer.price }} ({{ offer.condition }} Condition)</h4>
-	  </div>
-	  <div class='modal-body'>
-		<p class='center'>
-			<a data-toggle='modal' href='mailto:{{ offer.email }}?subject={{ offer.class_id }}%20Textbook%20({{ textbook.title }})' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Email Seller</a>
-			<a data-toggle='modal' target='_blank' href='https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to={{ offer.email }}&amp;su={{ offer.class_id }}%20Textbook%20({{ textbook.title }})' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Gmail Seller</a>
-			<a data-toggle='modal' onclick='$("#modal_{{ offer._id }}_info").modal();' class='btn btn-info'><span class='glyphicon glyphicon-envelope'></span> &nbsp; Contact Seller</a>
-			{% if g.user and g.user.get_id() == offer.email %}
-			<a data-toggle='modal' href="{{ url_for('remove_offer_view', class_id=class_obj.id, offer_id=offer._id|string) }}" class='btn btn-danger'><span class='glyphicon glyphicon-trash'></span></a>
-			{% endif %}
-		</p>
-	  </div>
-	  <div class='modal-footer'>
-		<button type='button' onclick='$("#modal_{{ offer._id }}").modal("hide");' class='btn btn-primary'>Close</button>
-	  </div>
-	</div><!-- /.modal-content -->
+  <div class='modal-content'>
+    <div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+    <h4 class='modal-title'>${{ offer.price }} ({{ offer.condition }} Condition)</h4>
+    </div>
+    <div class='modal-body'>
+    <p class='center'>
+      <a data-toggle='modal' href='mailto:{{ offer.email }}?subject={{ offer.class_id }}%20Textbook%20({{ textbook.title }})' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Email Seller</a>
+      <a data-toggle='modal' target='_blank' href='https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to={{ offer.email }}&amp;su={{ offer.class_id }}%20Textbook%20({{ textbook.title }})' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Gmail Seller</a>
+      <a data-toggle='modal' onclick='$("#modal_{{ offer._id }}_info").modal();' class='btn btn-info'><span class='glyphicon glyphicon-envelope'></span> &nbsp; Contact Seller</a>
+      {% if g.user and g.user.get_id() == offer.email %}
+      <a data-toggle='modal' href="{{ url_for('remove_offer_view', class_id=class_obj.id, offer_id=offer._id|string) }}" class='btn btn-danger'><span class='glyphicon glyphicon-trash'></span></a>
+      {% endif %}
+    </p>
+    </div>
+    <div class='modal-footer'>
+    <button type='button' onclick='$("#modal_{{ offer._id }}").modal("hide");' class='btn btn-primary'>Close</button>
+    </div>
+  </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <div class='modal fade' id='modal_{{ offer._id }}_info'>
   <div class='modal-dialog'>
-	<div class='modal-content'>
-	  <div class='modal-header'>
-		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'>Seller Contact Information</h4>
-	  </div>
-	  <div class='modal-body'>
-		<p>Name: {{ offer.name }}</p>
-		<p>Email: {{ offer.email }}</p>
-		{% if offer.address %}
-		<p>Address: {{ offer.address }}</p>
-		{% endif %}
-		{% if offer.year %}
-		<p>Year: {{ offer.year|year_from_i }}</p>
-		{% endif %}
-	  </div>
-	  <div class='modal-footer'>
-		<button type='button'  onclick='$("#modal_{{ offer._id }}_info").modal("hide");' class='btn btn-primary'>Close</button>
-	  </div>
-	</div><!-- /.modal-content -->
+  <div class='modal-content'>
+    <div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+    <h4 class='modal-title'>Seller Contact Information</h4>
+    </div>
+    <div class='modal-body'>
+    <p>Name: {{ offer.name }}</p>
+    <p>Email: {{ offer.email }}</p>
+    {% if offer.address %}
+    <p>Address: {{ offer.address }}</p>
+    {% endif %}
+    {% if offer.year %}
+    <p>Year: {{ offer.year|year_from_i }}</p>
+    {% endif %}
+    </div>
+    <div class='modal-footer'>
+    <button type='button'  onclick='$("#modal_{{ offer._id }}_info").modal("hide");' class='btn btn-primary'>Close</button>
+    </div>
+  </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

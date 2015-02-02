@@ -24,11 +24,11 @@
 
 <script>
 function share() {
-	FB.ui({
-	  method: 'feed',
-	  link: "{{ url_for('class_view', class_id=class_obj.id, _external=True) }}",
-	  caption: 'Check out {{ class_obj.display_name()|safe }} on MIT Textbooks!',
-	}, function(response){});
+  FB.ui({
+    method: 'feed',
+    link: "{{ url_for('class_view', class_id=class_obj.id, _external=True) }}",
+    caption: 'Check out {{ class_obj.display_name()|safe }} on MIT Textbooks!',
+  }, function(response){});
 }
 </script>
 

@@ -5,40 +5,40 @@
 <h1>Missing Page</h1>
 
 <div class="row">
-	<div class="col-sm-12">
-		<p>
-			Oops! We couldn't find {% if classes|length == 1 %}that class{% else %}those classes{% endif %}.
-			It could be that the class is not offered in the {{year}} school year, or that the class number has changed.
-		</p>
-		<p>
-			Please verify the class number, and try again. Note that you must enter the class number, and <strong>not</strong> its name.
-		</p>
-		<p>
-			If you are convinced that this class should exist, please
-			<a class="btn btn-success btn-xs" onclick="$('#feedback_modal').modal();">
-				email support
-			</a> and let us know.
-		</p>
-	</div>
+  <div class="col-sm-12">
+    <p>
+      Oops! We couldn't find {% if classes|length == 1 %}that class{% else %}those classes{% endif %}.
+      It could be that the class is not offered in the {{year}} school year, or that the class number has changed.
+    </p>
+    <p>
+      Please verify the class number, and try again. Note that you must enter the class number, and <strong>not</strong> its name.
+    </p>
+    <p>
+      If you are convinced that this class should exist, please
+      <a class="btn btn-success btn-xs" onclick="$('#feedback_modal').modal();">
+        email support
+      </a> and let us know.
+    </p>
+  </div>
 </div>
 {% if classes|length  %}
 <hr>
 <div class="row">
-	{% for class in classes %}
-	<div class="col-sm-2 {% if loop.first %}col-sm-offset-{{ ((6 - classes|length))|int  }}{% endif %}">
-		<div class="panel panel-danger center">
-			<div class="panel-heading">
-				<h3 class="panel-title">{{ class }}</h3>
-			</div>
-			<div class="panel-body">
-				Not Found
-				<a class="btn btn-success btn-sm" href='https://www.google.com/search?q=MIT+{{ class }}' target="_blank">
-					Google
-				</a>
-			</div>
-		</div>
-	</div>
-	{% endfor %}
+  {% for class in classes %}
+  <div class="col-sm-2 {% if loop.first %}col-sm-offset-{{ ((6 - classes|length))|int  }}{% endif %}">
+    <div class="panel panel-danger center">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ class }}</h3>
+      </div>
+      <div class="panel-body">
+        Not Found
+        <a class="btn btn-success btn-sm" href='https://www.google.com/search?q=MIT+{{ class }}' target="_blank">
+          Google
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 {% endif %}
 

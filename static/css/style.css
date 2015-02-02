@@ -1,176 +1,176 @@
 body {
- 	padding-top: 50px;
+   padding-top: 50px;
 }
 .main {
-	font-size: 110%;
-	padding: 40px 15px;
+  font-size: 110%;
+  padding: 40px 15px;
 }
 
 .mit_logo {
-	height: 25px;
-	vertical-align: -2px;
+  height: 25px;
+  vertical-align: -2px;
 }
 
 .glyphicon {
-	top: 2px;
+  top: 2px;
 }
 
 .center {
-	text-align:center;
+  text-align:center;
 }
 
 blockquote{
-	font-size: 105%;
+  font-size: 105%;
 }
 
 .sub_heading {
-	font-size:120%
+  font-size:120%
 }
 
 .modal-footer {
-	margin-top: 0px;
+  margin-top: 0px;
 }
 
 .slash {
-	padding: 0 5px;
-	color: #cccccc;
+  padding: 0 5px;
+  color: #cccccc;
 }
 
 .prime {
-	vertical-align: -1px;
+  vertical-align: -1px;
 }
 
 #sidebar {
-	margin-top: 10px;
-	height: 90%;
-	overflow-y: scroll;
-	overflow-x:visible;
+  margin-top: 10px;
+  height: 90%;
+  overflow-y: scroll;
+  overflow-x:visible;
 }
 
 #sidebar.affix-top {
-	position: static;
-	width: 100px;
+  position: static;
+  width: 100px;
 }
 
 #sidebar.affix {
-	position: fixed;
-	top:70px;
+  position: fixed;
+  top:70px;
 }
 
 .rec span {
-	padding-left: 5px;
-	padding-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .tag span {
-	padding-left: 10px;
-	padding-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .show-on-native {
-	display: none;
+  display: none;
 }
 
 .nudge-left {
-	position: relative;
-	left: -3px;
+  position: relative;
+  left: -3px;
 }
 
 @media only screen and (min-width : 993px) and (max-width : 1200px) {
-	.rec span:nth-child(n+4) {
-		display: none;
-	}
-	.tag span:nth-child(n+8) {
-		display: none;
-	}
+  .rec span:nth-child(n+4) {
+    display: none;
+  }
+  .tag span:nth-child(n+8) {
+    display: none;
+  }
 }
 
 @media only screen and (min-width : 769px) and (max-width : 992px) {
-	.rec span:nth-child(n+3) {
-		display: none;
-	}
-	.tag span:nth-child(n+6) {
-		display: none;
-	}
+  .rec span:nth-child(n+3) {
+    display: none;
+  }
+  .tag span:nth-child(n+6) {
+    display: none;
+  }
 }
 
 @media only screen and (max-width : 768px) {
-	.rec span:nth-child(n+2) {
-		display: none;
-	}
-	.tag span:nth-child(n+4) {
-		display: none;
-	}
+  .rec span:nth-child(n+2) {
+    display: none;
+  }
+  .tag span:nth-child(n+4) {
+    display: none;
+  }
 }
 
 @media only screen and (min-width : 769px) {
-	body {
-		position: relative;
-	}
+  body {
+    position: relative;
+  }
 
-	.mit_logo {
-		height: 35px;
-		vertical-align: -5px;
-	}
-	#search {
-		padding-top: 13px;
-		position: relative;
-		left: 47px;
-	}
-	
-	.navbar-brand {
-		font-size: 250%;
-		padding-top: 16px;
-	}
-	.navbar {
-		min-height: 70px;
-	}
+  .mit_logo {
+    height: 35px;
+    vertical-align: -5px;
+  }
+  #search {
+    padding-top: 13px;
+    position: relative;
+    left: 47px;
+  }
 
-	.navbar-brand {
-		position: relative;
-		z-index: 1000;
-	}
-	
-	#search_div {
-		position: relative;
-		top: -7px;
-	}
+  .navbar-brand {
+    font-size: 250%;
+    padding-top: 16px;
+  }
+  .navbar {
+    min-height: 70px;
+  }
 
-	#gobtn {
-		position: relative;
-		top: 8px;
-	}
+  .navbar-brand {
+    position: relative;
+    z-index: 1000;
+  }
 
-	.tt-suggestion {
-		background-color: #ffffff;
-		-webkit-border-radius: 5px;
-		-moz-border-radius: 5px;
-		border-radius: 5px;
-		margin-bottom: 5px;
-		padding: 9px 5px 0px 5px;
-		border-style: solid;
-	    border-width: 1px;
-		border-color: #d9230f;
-		box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-		width: 218px;
+  #search_div {
+    position: relative;
+    top: -7px;
+  }
 
-	}
+  #gobtn {
+    position: relative;
+    top: 8px;
+  }
 
-	.tt-cursor {
-	    border-width: 2px;
-	}
+  .tt-suggestion {
+    background-color: #ffffff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 9px 5px 0px 5px;
+    border-style: solid;
+      border-width: 1px;
+    border-color: #d9230f;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    width: 218px;
 
-	.tt-dropdown-menu {
-		margin-top: 5px;
-		background-color: rgba(255, 255, 255, .8);
-		padding: 5px 0px;
-		font-size: 110%;
-	}
+  }
 
-	input.algolia {
-		background: url(//www.algolia.com/assets/algolia128x40.png) no-repeat;
-		background-position: 90% 80%;
-		background-size: 20%;
-	}
+  .tt-cursor {
+      border-width: 2px;
+  }
+
+  .tt-dropdown-menu {
+    margin-top: 5px;
+    background-color: rgba(255, 255, 255, .8);
+    padding: 5px 0px;
+    font-size: 110%;
+  }
+
+  input.algolia {
+    background: url(//www.algolia.com/assets/algolia128x40.png) no-repeat;
+    background-position: 90% 80%;
+    background-size: 20%;
+  }
 }

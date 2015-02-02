@@ -1,85 +1,85 @@
 <div class='modal fade'  data-backdrop='static' data-keyboard='true' tabindex='-1' id='modal_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}_sell'>
   <div class='modal-dialog'>
-	<div class='modal-content'>
-	  <div class='modal-header'>
-		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-		<h4 class='modal-title'>Sell Your Textbook</h4>
-	  </div>
-	  <div class='modal-body'>
-	  	<p class='text-danger' id='error_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'></p>
-		<form class='form-horizontal' role='form' method="POST" action="{{ url_for('sell_textbook_view', class_id=class_obj.id, tb_id=textbook|tb_id) }}" id="form_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}">
-		  <div class='form-group' id='email_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
-			<label for='email' class='col-lg-2 control-label'>Email</label>
-			<div class='col-lg-10'>
-			  {% if g.user.email %}
-			  <p class='form-control-static'>
-				{{ g.user.email }}
-				<input type='hidden' id='email_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' name='email' value='{{ g.user.email }}'>
-			  </p>
-			  {% else %}
-			  <input type='email' id='email_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' class='form-control' name='email' placeholder='kerberos@mit.edu'>
-			  {% endif %}
-			</div>
-		  </div>
-		  <div class='form-group'>
-			<label for='title' class='col-lg-2 control-label'>Textbook</label>
-			<div class='col-lg-10'>
-			   <p class='form-control-static'>
-				{{ textbook.title|safe }}
-				<input type='hidden' name='tb_id' value='{{ textbook|tb_id }}'>
-			   </p>
-			</div>
-		  </div>
-		  <div class='form-group'>
-			<label for='author' class='col-lg-2 control-label'>Author(s)</label>
-			<div class='col-lg-10'>
-			   <p class='form-control-static'>
-				{{ textbook.author }}
-			   </p>
-			</div>
-		  </div>
-		  <div class='form-group'>
-			<label for='retail' class='col-lg-2 control-label'>Retail</label>
-			<div class='col-lg-10'>
-				<p class='form-control-static'>
-				{% if textbook.retail %}
-				$<span id="retail_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}">{{ textbook.retail }}</span>
-				{% else %}
-				Unknown
-				<span class="hide" id="retail_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}">150</span>
-				{% endif %}
-			   </p>
-			</div>
-		  </div>
-		  <div class='form-group' id='price_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
-			<label for='price' class='col-lg-2 control-label'>Asking</label>
-			<div class='col-lg-10'>
-			  <input type='number' id='price_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' max='{% if textbook.retail %}{{ textbook.retail }}{% else %}150{% endif %}' class='form-control' name='price' placeholder='{% if textbook.retail %}{{ ((textbook.retail|float)*0.75)|int }}{% else %}50{% endif %}'>
-			</div>
-		  </div>
-		  <div class='form-group' id='condition_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
-			<label for='condition' class='col-lg-2 control-label'>Condition</label>
-			<div class='col-lg-10'>
-			  <select name='condition' class='form-control'>
-			  <option value='New'>New</option>
-			  <option value='Like-New'>Like-New</option>
-			  <option value='Great'>Great</option>
-			  <option value='Good' selected>Good</option>
-			  <option value='Poor'>Poor</option>
-			</select>
-			</div>
-		  </div>
-		  <div class='form-group' id='location_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
-			<label for='location' class='col-lg-2 control-label'>Location</label>
-			<div class='col-lg-10'>
-			  <input type='text' class='form-control' id='location_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' name='location' placeholder='Maseeh'>
-			</div>
-		  </div>
-		</form>
-	  </div>
-	  <div class='modal-footer'>
-		<button type='button' onclick='check_sell("_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}")' id='submit_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' class='btn btn-primary'>Submit</button>
-	  </div>
-	</div><!-- /.modal-content -->
+  <div class='modal-content'>
+    <div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+    <h4 class='modal-title'>Sell Your Textbook</h4>
+    </div>
+    <div class='modal-body'>
+      <p class='text-danger' id='error_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'></p>
+    <form class='form-horizontal' role='form' method="POST" action="{{ url_for('sell_textbook_view', class_id=class_obj.id, tb_id=textbook|tb_id) }}" id="form_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}">
+      <div class='form-group' id='email_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
+      <label for='email' class='col-lg-2 control-label'>Email</label>
+      <div class='col-lg-10'>
+        {% if g.user.email %}
+        <p class='form-control-static'>
+        {{ g.user.email }}
+        <input type='hidden' id='email_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' name='email' value='{{ g.user.email }}'>
+        </p>
+        {% else %}
+        <input type='email' id='email_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' class='form-control' name='email' placeholder='kerberos@mit.edu'>
+        {% endif %}
+      </div>
+      </div>
+      <div class='form-group'>
+      <label for='title' class='col-lg-2 control-label'>Textbook</label>
+      <div class='col-lg-10'>
+         <p class='form-control-static'>
+        {{ textbook.title|safe }}
+        <input type='hidden' name='tb_id' value='{{ textbook|tb_id }}'>
+         </p>
+      </div>
+      </div>
+      <div class='form-group'>
+      <label for='author' class='col-lg-2 control-label'>Author(s)</label>
+      <div class='col-lg-10'>
+         <p class='form-control-static'>
+        {{ textbook.author }}
+         </p>
+      </div>
+      </div>
+      <div class='form-group'>
+      <label for='retail' class='col-lg-2 control-label'>Retail</label>
+      <div class='col-lg-10'>
+        <p class='form-control-static'>
+        {% if textbook.retail %}
+        $<span id="retail_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}">{{ textbook.retail }}</span>
+        {% else %}
+        Unknown
+        <span class="hide" id="retail_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}">150</span>
+        {% endif %}
+         </p>
+      </div>
+      </div>
+      <div class='form-group' id='price_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
+      <label for='price' class='col-lg-2 control-label'>Asking</label>
+      <div class='col-lg-10'>
+        <input type='number' id='price_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' max='{% if textbook.retail %}{{ textbook.retail }}{% else %}150{% endif %}' class='form-control' name='price' placeholder='{% if textbook.retail %}{{ ((textbook.retail|float)*0.75)|int }}{% else %}50{% endif %}'>
+      </div>
+      </div>
+      <div class='form-group' id='condition_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
+      <label for='condition' class='col-lg-2 control-label'>Condition</label>
+      <div class='col-lg-10'>
+        <select name='condition' class='form-control'>
+        <option value='New'>New</option>
+        <option value='Like-New'>Like-New</option>
+        <option value='Great'>Great</option>
+        <option value='Good' selected>Good</option>
+        <option value='Poor'>Poor</option>
+      </select>
+      </div>
+      </div>
+      <div class='form-group' id='location_parent_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}'>
+      <label for='location' class='col-lg-2 control-label'>Location</label>
+      <div class='col-lg-10'>
+        <input type='text' class='form-control' id='location_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' name='location' placeholder='Maseeh'>
+      </div>
+      </div>
+    </form>
+    </div>
+    <div class='modal-footer'>
+    <button type='button' onclick='check_sell("_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}")' id='submit_{{ class_obj.safe_id() }}_{{ textbook|tb_id }}' class='btn btn-primary'>Submit</button>
+    </div>
+  </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
