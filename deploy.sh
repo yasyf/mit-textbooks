@@ -63,6 +63,8 @@ if [[ RECOMMENDERS -eq 1 ]]; then
   (git push recommender-2 recommender_procfile:master --force &)
   (git push recommender-3 recommender_procfile:master --force &)
   (git push recommender-4 recommender_procfile:master --force &)
+  (git push recommender-5 recommender_procfile:master --force &)
+  (git push recommender-6 recommender_procfile:master --force &)
   git checkout master
   git branch -D recommender_procfile
 fi

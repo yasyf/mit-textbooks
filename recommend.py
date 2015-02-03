@@ -9,17 +9,24 @@ fail_mailed = 0
 def get_accept_function(i):
   def f1(c):
     course = c.split('.')[0]
-    return course.isdigit() and int(course) in range(1,10) and not int(course) in {6, 8}
+    return course.isdigit() and int(course) in {6, 8}
   def f2(c):
     course = c.split('.')[0]
-    return course.isdigit() and (int(course) == 6 or int(course) in range(16,25))
+    return course.isdigit() and int(course) in range(1,9) and int(course) not in {6, 8}
   def f3(c):
     course = c.split('.')[0]
-    return not course.isdigit() or int(course) in range(10,12)
+    return not course.isdigit() and course[:2] == '21'
   def f4(c):
     course = c.split('.')[0]
-    return course.isdigit() and int(course) in [8] + range(12,16)
-  return {1: f1, 2: f2, 3: f3, 4:f4}[i]
+    return course.isdigit() and int(course) in range(9,14)
+  def f5(c):
+    course = c.split('.')[0]
+    return course.isdigit() and int(course) in range(14,20)
+  def f6(c):
+    course = c.split('.')[0]
+    return (course.isdigit() and int(course) in range(20,25)) or \
+      (not course.isdigit() and course[:2] != '21')
+  return {1: f1, 2: f2, 3: f3, 4:f4, 5:f5, 6:f6}[i]
 
 def fail_mail(e):
   global fail_mailed
