@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setup import *
-import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, time, urllib, re, traceback, bleach, csv, StringIO, base64
+import json, hashlib, time, datetime, requests, mechanize, Levenshtein, operator, urllib, re, traceback, bleach, csv, StringIO, base64
 from hashids import Hashids
 from flask import g, flash, url_for, request
 from bs4 import BeautifulSoup
@@ -254,7 +254,7 @@ def fetch_class_info(class_id):
     if not class_info and not class_id[0].isdigit() and not is_float(class_id) and not re.match(CLASS_REGEX, class_id.upper()):
       try:
         old_class_id = algolia.search(class_id, { "hitsPerPage": 1 })['hits'][0]['objectID']
-      except IndexError:
+      except (IndexError, AlgoliaException):
         return None
       old_class = classes.find_one({'_id': ObjectId(old_class_id)})
       classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
