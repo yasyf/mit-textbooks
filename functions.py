@@ -254,7 +254,7 @@ def fetch_class_info(class_id):
     if not class_info and not class_id[0].isdigit() and not is_float(class_id) and not re.match(CLASS_REGEX, class_id.upper()):
       try:
         old_class_id = algolia.search(class_id, { "hitsPerPage": 1 })['hits'][0]['objectID']
-      except (IndexError, AlgoliaException):
+      except (IndexError, algoliasearch.AlgoliaException):
         return None
       old_class = classes.find_one({'_id': ObjectId(old_class_id)})
       classes.update({'_id': old_class['_id']}, {"$addToSet": {"search_term": class_id.lower()}})
@@ -330,7 +330,6 @@ def manual_class_scrape(class_id, url=CURRENT_CATALOG):
           instructors = nextTag.findNext().findNext().text
           all_instructors = []
           for professor in instructors.split(", "):
-            prof = professor.split(". ")
             if professor not in ["Jr.","Sr."]:
               all_instructors.append(professor)
           final_instructors = [clean_html(i) for i in custom_parse_instructors(all_instructors)]
