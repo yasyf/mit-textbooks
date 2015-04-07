@@ -23,7 +23,7 @@ orders = db.orders
 amazon = bottlenose.Amazon(os.getenv('ACCESS_KEY'), os.getenv('SECRET_KEY'), os.getenv('ASSOC_TAG'))
 
 YEAR = datetime.date.today().year
-if 4 < datetime.date.today().month < 12:
+if 4 <= datetime.date.today().month < 12:
   TERM = "{}FA".format(YEAR+1)
   TERM_LAST = "{}SP".format(YEAR)
   STERM = "fa{}".format(str(YEAR)[-2:])
