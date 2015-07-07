@@ -9,6 +9,7 @@ import bugsnag, bmemcached
 from flask_s3 import FlaskS3
 from bugsnag.flask import handle_exceptions
 from functions import *
+from crossdomain import crossdomain
 from ssh import get_combo
 from bson.objectid import ObjectId
 
@@ -484,11 +485,13 @@ def urllist_view():
 
 @app.route('/suggest/<search_term>')
 @modifiers.cache_for(days=7)
+@crossdomain(origin='*')
 def suggest_view(search_term):
   return jsonify(suggestion(search_term))
 
 @app.route('/popover/<class_id>')
 @modifiers.cache_for(days=7)
+@crossdomain(origin='*')
 def popover_view(class_id):
   return jsonify(popover(format_class(class_id)))
 
