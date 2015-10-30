@@ -219,9 +219,9 @@ if __name__ == '__main__':
     try:
       d = {'class_id': c['class_id'], 'user_id': c['default_uids'][0], 'queue': 'recommender', 'safe': True}
       if not queue.find_one(d):
-        recommendations.remove(c['_id'], safe=True)
+        recommendations.remove(c['_id'])
         d['time'] = time.time()
-        queue.insert(d, safe=True)
+        queue.insert(d)
     except Exception:
       continue
   print 'Starting Run Loop'
@@ -238,7 +238,7 @@ if __name__ == '__main__':
         task = None
       if task:
         try:
-          queue.remove(task['_id'], safe=True)
+          queue.remove(task['_id'])
         except Exception:
           continue
         if task == last_task:
@@ -251,7 +251,7 @@ if __name__ == '__main__':
           s.add(SERVER_NUM)
           task['ignore'] = list(s)
           try:
-            queue.insert(task, safe=True)
+            queue.insert(task)
           except pymongo.errors.DuplicateKeyError:
             pass
           continue
@@ -259,7 +259,7 @@ if __name__ == '__main__':
           print '{c} not in master class list, this server is no longer reliable!'.format(c=_id)
           is_safe = False
           try:
-            queue.insert(task, safe=True)
+            queue.insert(task)
           except pymongo.errors.DuplicateKeyError:
             pass
           continue

@@ -64,14 +64,14 @@ def fail_mail(e):
 
 if not flags.find_one({'flag': 'algolia_worker'}):
   try:
-    flags.insert({'flag': 'algolia_worker'}, safe=True)
+    flags.insert({'flag': 'algolia_worker'})
     for c in classes.find({'error': None}):
       algolia.partialUpdateObject({'objectID': str(c['_id']), "views": c.get('views', 0)})
 
     for c in classes.find({'error': {'$ne': None}}):
       algolia.deleteObject(str(c['_id']))
     try:
-      flags.remove({'flag': 'algolia_worker'}, safe=True)
+      flags.remove({'flag': 'algolia_worker'})
     except:
       flags.remove({'flag': 'algolia_worker'})
   except pymongo.errors.DuplicateKeyError:
@@ -89,7 +89,7 @@ try:
       error_mail()
     if task:
       try:
-        queue.remove(task['_id'], safe=True)
+        queue.remove(task['_id'])
       except Exception:
         continue
       _id = task['class_id'].encode('utf-8')

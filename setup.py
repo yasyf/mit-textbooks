@@ -1,7 +1,7 @@
 import pymongo, os, bottlenose, sendgrid, datetime
 from algoliasearch import algoliasearch
 
-client = pymongo.MongoClient(os.environ['db'])
+client = pymongo.MongoClient(os.environ['db'],  w='majority')
 algolia = algoliasearch.Client(os.getenv('ALGOLIA_APP'), os.getenv('ALGOLIA_KEY')).initIndex("classes")
 db = client.mit_textbooks
 classes = db.classes
