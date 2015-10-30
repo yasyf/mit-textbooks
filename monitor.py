@@ -81,7 +81,7 @@ try:
   while True:
     last_task = task
     try:
-      task = sorted(queue.find({'queue': 'worker'}).snapshot(), key=lambda x: x['time'])[0]
+      task = sorted(queue.find({'queue': 'worker'}, modifiers={"$snapshot": True}), key=lambda x: x['time'])[0]
     except Exception:
       task = None
     if task and last_task and task == last_task and not mailed:
