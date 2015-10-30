@@ -233,7 +233,7 @@ if __name__ == '__main__':
         query = {'queue': 'recommender', 'ignore': {'$nin': [SERVER_NUM]}}
         if not is_safe:
           query['safe'] =  None
-        task = sorted(queue.find(query, snapshot=True), key=lambda x: x['time'])[0]
+        task = sorted(queue.find(query).snapshot(), key=lambda x: x['time'])[0]
       except Exception:
         task = None
       if task:
