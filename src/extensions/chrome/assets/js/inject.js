@@ -8,7 +8,7 @@
 
   function checkNode(node) {
     var excludes = ["script", "a", "input", "button", "textarea", "font", "h1", "h2", "h3", "header", "markdown", "code", "pre"];
-    var bad_roles = ["textbox", "alert"];
+    var bad_roles = ["textbox", "alert", "application"];
     if (node.attr('data-tb') === 'replaced') {
       return false;
     }
