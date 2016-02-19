@@ -657,7 +657,7 @@ def section_saved_filter(section, class_obj):
   all_p = [0.0]
   for book in section:
     p = 0
-    if 'retail' in book and book['retail']:
+    if book and book.get('retail'):
       if class_obj.has_local():
         offers = [x['price'] for x in class_obj.offers(tb_id_filter(book))]
       retail_float = float(book['retail']) or 1
@@ -669,7 +669,7 @@ def section_saved_filter(section, class_obj):
         p = max(100 * (1 - float(book['new'])/retail_float), float(book['saved']) if 'saved' in book else 0)
       else:
         p = float(book['saved'] if 'saved' in book else 0)
-    elif 'saved' in book and book['saved']:
+    elif book and book.get('saved'):
       p = float(book['saved'])
     all_p.append(p)
   p = int(max(all_p))
