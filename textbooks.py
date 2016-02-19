@@ -81,6 +81,7 @@ def postprocess_request(response):
   return response
 
 @app.route('/')
+@modifiers.cache_for(seconds=0)
 def index_view():
   recent = recents.find().sort('dt',-1).limit(RECENTS)
   return render_template('index.html', recent=recent)
@@ -185,6 +186,7 @@ def unblacklist_view(class_ids):
   return jsonify({"error": False})
 
 @app.route('/loading/<class_ids>')
+@modifiers.cache_for(seconds=0)
 def loading_view(class_ids, override_url=None):
   t = session.get('loading')[0] if session.get('loading') and session.get('loading')[1] == class_ids else int(time.time())
   if session.get('override_url'):
@@ -224,7 +226,7 @@ def class_oid_view(_id):
     return redirect(url_for('_404_view'))
 
 @app.route('/class/<class_id>')
-@modifiers.cache_for(hours=12)
+@modifiers.cache_for(seconds=0)
 def class_view(class_id):
   class_id = format_class(class_id, False)
   if not check_class(class_id):
@@ -256,7 +258,7 @@ def calendar_view(group_id):
   return render_template('scheduler.html', events=events)
 
 @app.route('/overview/<class_id>')
-@modifiers.cache_for(days=1)
+@modifiers.cache_for(seconds=0)
 def overview_view(class_id):
   if not check_class(class_id):
     send_to_worker(class_id)
@@ -289,7 +291,7 @@ def json_group_view(group_id):
   return jsonify(group)
 
 @app.route('/group/<group_id>')
-@modifiers.cache_for(hours=12)
+@modifiers.cache_for(seconds=0)
 def group_view(group_id):
   group_obj = get_group(group_id)
   if not group_obj:
