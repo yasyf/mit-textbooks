@@ -30,8 +30,8 @@ def init_auth_browser():
   auth_browser["j_username"] = os.getenv('j_username')
   auth_browser["j_password"] = os.getenv('j_password')
   auth_browser.submit()
-  auth_browser.select_form(nr=0)
   try:
+    auth_browser.select_form(nr=0)
     auth_browser.submit()
   except Exception:
     pass
