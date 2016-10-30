@@ -580,6 +580,12 @@ def courseroad_export_view(class_ids):
 def amazon_prime_student_view():
   return redirect('http://www.amazon.com/gp/student/signup/info?ie=UTF8&tag=mit-tb-20&refcust=UF4ETMRRZEYWDKZETGTJUD2IV4&ref_type=generic')
 
+@app.route('/private/amazon_recs.js')
+def amazon_recs_view():
+  js_code = requests.get('https://z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&storeId=yasyfmoham-20&adInstanceId=b9c45005-d8f5-43b0-b8c4-b076b24a1aa9').text
+  js_code = js_code.replace('textbook', request.args.get('default', 'textbook'))
+  return Response(response=js_code, status=200, mimetype="text/javascript")
+
 @app.route('/out/<_hash>')
 @modifiers.cache_for(days=7)
 def out_view(_hash):

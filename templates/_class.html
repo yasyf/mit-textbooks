@@ -79,6 +79,14 @@
   {% endfor %}
 
   <div class="panel panel-default">
+    <div class="panel-heading">MIT {{ class_obj.display_name()|safe }} Related Textbooks</div>
+    <div class="panel-body">
+      <script src="/private/amazon_recs.js?default={{ class_obj.name|urlencode }}"></script>
+    </div>
+  </div>
+
+
+  <div class="panel panel-default">
     <div class="panel-heading">MIT {{ class_obj.display_name()|safe }} On The Web</div>
     <div class="panel-body">
       <a class="embedly-card" href="{{ class_obj.class_site[1] }}">{{ class_obj.class_site[0] }}</a>

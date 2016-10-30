@@ -23,14 +23,15 @@ auth_browser = None
 
 def init_auth_browser():
   global auth_browser
+
   auth_browser = mechanize.Browser()
   auth_browser.set_handle_robots(False)
-  auth_browser.open("https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm")
-  auth_browser.select_form(nr=1)
-  auth_browser["j_username"] = os.getenv('j_username')
-  auth_browser["j_password"] = os.getenv('j_password')
-  auth_browser.submit()
   try:
+    auth_browser.open("https://edu-apps.mit.edu/ose-rpt/subjectEvaluationSearch.htm")
+    auth_browser.select_form(nr=1)
+    auth_browser["j_username"] = os.getenv('j_username')
+    auth_browser["j_password"] = os.getenv('j_password')
+    auth_browser.submit()
     auth_browser.select_form(nr=0)
     auth_browser.submit()
   except Exception:
