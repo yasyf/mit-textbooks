@@ -58,7 +58,7 @@
     if (node.attr('data-tb-injected') === 'true') {
       return
     }
-    href = node.attr('href').toLowerCase();
+    href = node.attr('href');
     matches = href.match(mit_textbooks_inject_re);
     if (matches) {
       if (href.indexOf('tag=') !== -1){
