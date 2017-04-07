@@ -532,13 +532,13 @@ def stellar_view(class_id):
 @app.route('/amazon/product/<asin>')
 @modifiers.cache_for(days=7)
 def amazon_product_view(asin):
-  url = u"http://www.amazon.com/dp/{asin}/?tag=mittb-20".format(asin=asin)
+  url = u"http://www.amazon.com/dp/{asin}/?tag=mittb0f-20".format(asin=asin)
   return redirect(url)
 
 @app.route('/amazon/search/<title>')
 @modifiers.cache_for(days=7)
 def amazon_search_view(title):
-  url = u"http://www.amazon.com/s/?tag=mittb-20&field-keywords={title}".format(title=title)
+  url = u"http://www.amazon.com/s/?tag=mittb0f-20&field-keywords={title}".format(title=title)
   return redirect(url)
 
 @app.route('/evaluation/<class_id>')
@@ -578,7 +578,7 @@ def courseroad_export_view(class_ids):
 @app.route('/amazon_prime_student')
 @modifiers.cache_for(days=7)
 def amazon_prime_student_view():
-  return redirect('http://www.amazon.com/gp/student/signup/info?ie=UTF8&tag=mittb-20&refcust=UF4ETMRRZEYWDKZETGTJUD2IV4&ref_type=generic')
+  return redirect('http://www.amazon.com/gp/student/signup/info?ie=UTF8&tag=mittb0f-20&refcust=UF4ETMRRZEYWDKZETGTJUD2IV4&ref_type=generic')
 
 @app.route('/private/amazon_recs.js')
 def amazon_recs_view():
